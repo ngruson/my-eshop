@@ -20,6 +20,7 @@ jobs:
     - name: Install additional workloads
       run: | 
         dotnet workload install aspire
+        dotnet workload install android
         dotnet workload install maui-tizen
     - name: Restore dependencies
       run: dotnet restore
