@@ -28,7 +28,9 @@ jobs:
         run: dotnet workload update
       - name: Install Workloads
         run: dotnet workload install aspire
-      - name: Build 
+      - name: Build
+        env:
+          DOTNET_NUGET_SIGNATURE_VERIFICATION: false  
         run: dotnet build eShop.Web.slnf
       - name: Test
         run: dotnet test eShop.Web.slnf
