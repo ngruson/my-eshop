@@ -1,0 +1,46 @@
+﻿@inherits LayoutComponentBase
+
+<div class="flex">
+    <div>
+        <NavMenu/>
+    </div>
+    <div class="w-full">
+        <div class="flex justify-between py-2.5 px-6">
+            <FluentAnchor Href="" Class="border-0">
+                <FluentIcon Value="@(new Icons.Regular.Size20.ArrowCircleLeft())" />
+            </FluentAnchor>
+            <ul class="flex text-blue-300">
+                <li>
+                    @* <FluentPersona Name="Homer Simpson" ImageSize="50px" Initials="HS" /> *@
+                </li>
+                <li>
+                    @* <FluentIcon Value="@(new Icons.Regular.Size20.Home())" OnClick="@(() => open = !open)" /> *@
+                    @* <div class="[&>*]:border-0"> *@
+                </li>
+            </ul>
+        </div>
+        @Body
+    </div>
+    @* <header class="flex justify-between w-full bg-blue-900 text-white p-3">
+        <h1 class="font-bold text-2xl"><i class="fa-solid fa-file-invoice-dollar"/> AdventureWorks</h1>
+        <ul class="flex text-blue-300">
+            <li class="mx-2 hover:text-blue-500"><a href="/">Home</a></li>
+            <li class="mx-2 hover:text-blue-500"><a href="/Contact">Contact</a></li>
+        </ul>
+    </header>
+    <div class="bg-gray-100 p-2 w-full h-[calc(100vh-95px)] overflow-auto">
+        @Body
+    </div>
+    <footer class="text-center bg-black text-white">&copy; 2024 AdventureWorks</footer> *@
+</div>
+
+@* <div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div> *@
+
+@* <FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider /> *@
