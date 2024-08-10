@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http.HttpResults;
 using CardType = eShop.Ordering.API.Application.Queries.CardType;
 using Order = eShop.Ordering.API.Application.Queries.Order;
+
+namespace eShop.Ordering.API;
 
 public static class OrdersApi
 {
@@ -12,7 +14,7 @@ public static class OrdersApi
         api.MapPut("/ship", ShipOrderAsync);
         api.MapGet("{orderId:int}", GetOrderAsync);
         api.MapGet("/", GetOrdersByUserAsync);
-        api.MapGet("/cardtypes", GetCardTypesAsync);
+        api.MapGet("/cardTypes", GetCardTypesAsync);
         api.MapPost("/draft", CreateOrderDraftAsync);
         api.MapPost("/", CreateOrderAsync);
 
@@ -120,9 +122,9 @@ public static class OrdersApi
         CreateOrderRequest request,
         [AsParameters] OrderServices services)
     {
-        
+
         //mask the credit card number
-        
+
         services.Logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId}",
             request.GetGenericTypeName(),

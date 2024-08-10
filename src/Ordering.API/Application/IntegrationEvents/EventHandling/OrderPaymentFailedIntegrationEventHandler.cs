@@ -1,11 +1,11 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
+namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
 public class OrderPaymentFailedIntegrationEventHandler(
     IMediator mediator,
     ILogger<OrderPaymentFailedIntegrationEventHandler> logger) :
     IIntegrationEventHandler<OrderPaymentFailedIntegrationEvent>
 {
-    public async Task Handle(OrderPaymentFailedIntegrationEvent @event)
+    public async Task Handle(OrderPaymentFailedIntegrationEvent @event, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
@@ -18,6 +18,6 @@ public class OrderPaymentFailedIntegrationEventHandler(
             command.OrderNumber,
             command);
 
-        await mediator.Send(command);
+        await mediator.Send(command, cancellationToken);
     }
 }

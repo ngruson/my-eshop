@@ -8,24 +8,24 @@ public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEve
 {
     private volatile bool disposedValue;
 
-    public async Task PublishThroughEventBusAsync(IntegrationEvent evt)
+    public async Task PublishThroughEventBusAsync(IntegrationEvent evt, CancellationToken cancellationToken)
     {
         try
         {
             logger.LogInformation("Publishing integration event: {IntegrationEventId_published} - ({@IntegrationEvent})", evt.Id, evt);
 
-            await integrationEventLogService.MarkEventAsInProgressAsync(evt.Id);
-            await eventBus.PublishAsync(evt);
-            await integrationEventLogService.MarkEventAsPublishedAsync(evt.Id);
+            await integrationEventLogService.MarkEventAsInProgressAsync(evt.Id, cancellationToken);
+            await eventBus.PublishAsync(evt, cancellationToken);
+            await integrationEventLogService.MarkEventAsPublishedAsync(evt.Id, cancellationToken);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", evt.Id, evt);
-            await integrationEventLogService.MarkEventAsFailedAsync(evt.Id);
+            await integrationEventLogService.MarkEventAsFailedAsync(evt.Id, cancellationToken);
         }
     }
 
-    public async Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent evt)
+    public async Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent evt, CancellationToken cancellationToken)
     {
         logger.LogInformation("CatalogIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", evt.Id);
 
@@ -35,7 +35,7 @@ public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEve
         {
             // Achieving atomicity between original catalog database operation and the IntegrationEventLog thanks to a local transaction
             await catalogContext.SaveChangesAsync();
-            await integrationEventLogService.SaveEventAsync(evt, catalogContext.Database.CurrentTransaction);
+            await integrationEventLogService.SaveEventAsync(evt, catalogContext.Database.CurrentTransaction, cancellationToken);
         });
     }
 

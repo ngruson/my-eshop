@@ -1,33 +1,28 @@
-﻿namespace eShop.Ordering.API.Application.DomainEventHandlers;
+using eShop.Shared.Data;
+using eShop.Shared.IntegrationEvents;
 
-public class OrderStatusChangedToStockConfirmedDomainEventHandler
-                : INotificationHandler<OrderStatusChangedToStockConfirmedDomainEvent>
+namespace eShop.Ordering.API.Application.DomainEventHandlers;
+
+public class OrderStatusChangedToStockConfirmedDomainEventHandler(
+    IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
+    IRepository<Buyer> buyerRepository,
+    ILogger<OrderStatusChangedToStockConfirmedDomainEventHandler> logger,
+    IIntegrationEventService integrationEventService)
+        : INotificationHandler<OrderStatusChangedToStockConfirmedDomainEvent>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IBuyerRepository _buyerRepository;
-    private readonly ILogger _logger;
-    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService;
-
-    public OrderStatusChangedToStockConfirmedDomainEventHandler(
-        IOrderRepository orderRepository,
-        IBuyerRepository buyerRepository,
-        ILogger<OrderStatusChangedToStockConfirmedDomainEventHandler> logger,
-        IOrderingIntegrationEventService orderingIntegrationEventService)
-    {
-        _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-        _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _orderingIntegrationEventService = orderingIntegrationEventService;
-    }
+    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
+    private readonly IRepository<Buyer> _buyerRepository = buyerRepository;
+    private readonly ILogger _logger = logger;
+    private readonly IIntegrationEventService _integrationEventService = integrationEventService;
 
     public async Task Handle(OrderStatusChangedToStockConfirmedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        OrderingApiTrace.LogOrderStatusUpdated(_logger, domainEvent.OrderId, OrderStatus.StockConfirmed);
+        OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.OrderId, OrderStatus.StockConfirmed);
 
-        var order = await _orderRepository.GetAsync(domainEvent.OrderId);
-        var buyer = await _buyerRepository.FindByIdAsync(order.BuyerId.Value);
+        var order = await this._orderRepository.GetByIdAsync(domainEvent.OrderId, cancellationToken);
+        var buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
 
-        var integrationEvent = new OrderStatusChangedToStockConfirmedIntegrationEvent(order.Id, order.OrderStatus, buyer.Name, buyer.IdentityGuid);
-        await _orderingIntegrationEventService.AddAndSaveEventAsync(integrationEvent);
+        var integrationEvent = new OrderStatusChangedToStockConfirmedIntegrationEvent(order.Id, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!);
+        await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
     }
 }

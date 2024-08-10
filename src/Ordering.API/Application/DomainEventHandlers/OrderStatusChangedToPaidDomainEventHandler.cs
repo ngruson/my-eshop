@@ -1,30 +1,25 @@
-﻿namespace eShop.Ordering.API.Application.DomainEventHandlers;
+using eShop.Shared.Data;
+using eShop.Shared.IntegrationEvents;
 
-public class OrderStatusChangedToPaidDomainEventHandler : INotificationHandler<OrderStatusChangedToPaidDomainEvent>
+namespace eShop.Ordering.API.Application.DomainEventHandlers;
+
+public class OrderStatusChangedToPaidDomainEventHandler(
+    IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
+    ILogger<OrderStatusChangedToPaidDomainEventHandler> logger,
+    IRepository<Buyer> buyerRepository,
+    IIntegrationEventService integrationEventService) : INotificationHandler<OrderStatusChangedToPaidDomainEvent>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly ILogger _logger;
-    private readonly IBuyerRepository _buyerRepository;
-    private readonly IOrderingIntegrationEventService _orderingIntegrationEventService;
-
-    public OrderStatusChangedToPaidDomainEventHandler(
-        IOrderRepository orderRepository,
-        ILogger<OrderStatusChangedToPaidDomainEventHandler> logger,
-        IBuyerRepository buyerRepository,
-        IOrderingIntegrationEventService orderingIntegrationEventService)
-    {
-        _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
-        _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
-    }
+    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+    private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IRepository<Buyer> _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
+    private readonly IIntegrationEventService _orderingIntegrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
 
     public async Task Handle(OrderStatusChangedToPaidDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        OrderingApiTrace.LogOrderStatusUpdated(_logger, domainEvent.OrderId, OrderStatus.Paid);
+        OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.OrderId, OrderStatus.Paid);
 
-        var order = await _orderRepository.GetAsync(domainEvent.OrderId);
-        var buyer = await _buyerRepository.FindByIdAsync(order.BuyerId.Value);
+        var order = await this._orderRepository.GetByIdAsync(domainEvent.OrderId, cancellationToken);
+        var buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
 
         var orderStockList = domainEvent.OrderItems
             .Select(orderItem => new OrderStockItem(orderItem.ProductId, orderItem.Units));
@@ -32,10 +27,10 @@ public class OrderStatusChangedToPaidDomainEventHandler : INotificationHandler<O
         var integrationEvent = new OrderStatusChangedToPaidIntegrationEvent(
             domainEvent.OrderId,
             order.OrderStatus,
-            buyer.Name,
-            buyer.IdentityGuid,
+            buyer!.Name!,
+            buyer.IdentityGuid!,
             orderStockList);
 
-        await _orderingIntegrationEventService.AddAndSaveEventAsync(integrationEvent);
+        await this._orderingIntegrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
     }
 }

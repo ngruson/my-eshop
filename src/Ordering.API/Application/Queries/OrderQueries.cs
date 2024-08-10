@@ -1,16 +1,22 @@
-﻿namespace eShop.Ordering.API.Application.Queries;
+﻿using eShop.Ordering.API.Application.Specifications;
+using eShop.Shared.Data;
+using BuyerAggregate = eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
+using OrderAggregate = eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
-public class OrderQueries(OrderingContext context)
+namespace eShop.Ordering.API.Application.Queries;
+
+public class OrderQueries(
+    IRepository<BuyerAggregate.CardType> cardTypeRepository,
+    IRepository<OrderAggregate.Order> orderRepository)
     : IOrderQueries
 {
+    private readonly IRepository<OrderAggregate.Order> orderRepository = orderRepository;
+    private readonly IRepository<BuyerAggregate.CardType> cardTypeRepository = cardTypeRepository;
+
     public async Task<Order> GetOrderAsync(int id)
     {
-        var order = await context.Orders
-            .Include(o => o.OrderItems)
-            .FirstOrDefaultAsync(o => o.Id == id);
-      
-        if (order is null)
-            throw new KeyNotFoundException();
+        OrderAggregate.Order order = await this.orderRepository.SingleOrDefaultAsync(new GetOrderSpecification(id))
+            ?? throw new KeyNotFoundException();
 
         return new Order
         {
@@ -21,10 +27,10 @@ public class OrderQueries(OrderingContext context)
             Country = order.Address.Country,
             State = order.Address.State,
             Street = order.Address.Street,
-            Zipcode = order.Address.ZipCode,
+            ZipCode = order.Address.ZipCode,
             Status = order.OrderStatus.ToString(),
             Total = order.GetTotal(),
-            OrderItems = order.OrderItems.Select(oi => new Orderitem
+            OrderItems = order.OrderItems.Select(oi => new OrderItem
             {
                 ProductName = oi.ProductName,
                 Units = oi.Units,
@@ -36,18 +42,22 @@ public class OrderQueries(OrderingContext context)
 
     public async Task<IEnumerable<OrderSummary>> GetOrdersFromUserAsync(string userId)
     {
-        return await context.Orders
-            .Where(o => o.Buyer.IdentityGuid == userId)  
+        List<OrderAggregate.Order> orders = await this.orderRepository.ListAsync(new GetOrdersFromUserSpecification(userId));
+
+        return orders
             .Select(o => new OrderSummary
             {
                 OrderNumber = o.Id,
                 Date = o.OrderDate,
                 Status = o.OrderStatus.ToString(),
-                Total =(double) o.OrderItems.Sum(oi => oi.UnitPrice* oi.Units)
-            })
-            .ToListAsync();
-    } 
-    
-    public async Task<IEnumerable<CardType>> GetCardTypesAsync() => 
-        await context.CardTypes.Select(c=> new CardType { Id = c.Id, Name = c.Name }).ToListAsync();
+                Total = (double)o.OrderItems.Sum(oi => oi.UnitPrice * oi.Units)
+            });
+    }
+
+    public async Task<IEnumerable<CardType>> GetCardTypesAsync()
+    {
+        List<BuyerAggregate.CardType> cardTypes = await this.cardTypeRepository.ListAsync();
+
+        return cardTypes.Select(c => new CardType { Id = c.Value, Name = c.Name });
+    }        
 }

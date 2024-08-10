@@ -1,4 +1,4 @@
-﻿namespace eShop.PaymentProcessor.IntegrationEvents.EventHandling;
+namespace eShop.PaymentProcessor.IntegrationEvents.EventHandling;
 
 public class OrderStatusChangedToStockConfirmedIntegrationEventHandler(
     IEventBus eventBus,
@@ -6,7 +6,7 @@ public class OrderStatusChangedToStockConfirmedIntegrationEventHandler(
     ILogger<OrderStatusChangedToStockConfirmedIntegrationEventHandler> logger) :
     IIntegrationEventHandler<OrderStatusChangedToStockConfirmedIntegrationEvent>
 {
-    public async Task Handle(OrderStatusChangedToStockConfirmedIntegrationEvent @event)
+    public async Task Handle(OrderStatusChangedToStockConfirmedIntegrationEvent @event, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
@@ -29,6 +29,6 @@ public class OrderStatusChangedToStockConfirmedIntegrationEventHandler(
 
         logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", orderPaymentIntegrationEvent.Id, orderPaymentIntegrationEvent);
 
-        await eventBus.PublishAsync(orderPaymentIntegrationEvent);
+        await eventBus.PublishAsync(orderPaymentIntegrationEvent, cancellationToken);
     }
 }

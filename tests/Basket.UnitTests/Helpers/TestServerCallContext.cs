@@ -15,23 +15,23 @@ public class TestServerCallContext : ServerCallContext
 
         private TestServerCallContext(Metadata requestHeaders, CancellationToken cancellationToken)
         {
-            _requestHeaders = requestHeaders;
-            _cancellationToken = cancellationToken;
-            _responseTrailers = new Metadata();
-            _authContext = new AuthContext(string.Empty, new Dictionary<string, List<AuthProperty>>());
-            _userState = new Dictionary<object, object>();
+            this._requestHeaders = requestHeaders;
+            this._cancellationToken = cancellationToken;
+            this._responseTrailers = [];
+            this._authContext = new AuthContext(string.Empty, []);
+            this._userState = [];
         }
 
         protected override string MethodCore => "MethodName";
         protected override string HostCore => "HostName";
         protected override string PeerCore => "PeerName";
         protected override DateTime DeadlineCore { get; }
-        protected override Metadata RequestHeadersCore => _requestHeaders;
-        protected override CancellationToken CancellationTokenCore => _cancellationToken;
-        protected override Metadata ResponseTrailersCore => _responseTrailers;
+        protected override Metadata RequestHeadersCore => this._requestHeaders;
+        protected override CancellationToken CancellationTokenCore => this._cancellationToken;
+        protected override Metadata ResponseTrailersCore => this._responseTrailers;
         protected override Status StatusCore { get; set; }
-        protected override WriteOptions WriteOptionsCore { get => _writeOptions; set { _writeOptions = value; } }
-        protected override AuthContext AuthContextCore => _authContext;
+        protected override WriteOptions WriteOptionsCore { get => this._writeOptions; set { this._writeOptions = value; } }
+        protected override AuthContext AuthContextCore => this._authContext;
 
         protected override ContextPropagationToken CreatePropagationTokenCore(ContextPropagationOptions options)
         {
@@ -40,19 +40,19 @@ public class TestServerCallContext : ServerCallContext
 
         protected override Task WriteResponseHeadersAsyncCore(Metadata responseHeaders)
         {
-            if (ResponseHeaders != null)
+            if (this.ResponseHeaders != null)
             {
                 throw new InvalidOperationException("Response headers have already been written.");
             }
 
-            ResponseHeaders = responseHeaders;
+            this.ResponseHeaders = responseHeaders;
             return Task.CompletedTask;
         }
 
-        protected override IDictionary<object, object> UserStateCore => _userState;
+        protected override IDictionary<object, object> UserStateCore => this._userState;
 
         internal void SetUserState(object key, object value)
-            => _userState[key] = value;
+            => this._userState[key] = value;
 
         public static TestServerCallContext Create(Metadata requestHeaders = null, CancellationToken cancellationToken = default)
         {

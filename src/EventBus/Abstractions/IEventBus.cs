@@ -1,6 +1,8 @@
-﻿namespace eShop.EventBus.Abstractions;
+﻿using Ardalis.Result;
+
+namespace eShop.EventBus.Abstractions;
 
 public interface IEventBus
 {
-    Task PublishAsync(IntegrationEvent @event);
+    Task<Result> PublishAsync(IntegrationEvent @event, CancellationToken cancellationToken);
 }

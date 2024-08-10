@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using eShop.Shared.Data;
 
 namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
@@ -9,15 +10,15 @@ public class Order
 
     // Address is a Value Object pattern example persisted as EF Core 2.0 owned entity
     [Required]
-    public Address Address { get; private set; }
+    public Address? Address { get; private set; }
 
     public int? BuyerId { get; private set; }
 
-    public Buyer Buyer { get; }
+    public Buyer? Buyer { get; }
 
     public OrderStatus OrderStatus { get; private set; }
     
-    public string Description { get; private set; }
+    public string? Description { get; private set; }
 
     // Draft orders have this set to true. Currently we don't check anywhere the draft status of an Order, but we could do it if needed
 #pragma warning disable CS0414 // The field 'Order._isDraft' is assigned but its value is never used
@@ -30,7 +31,7 @@ public class Order
     // but only through the method OrderAggregateRoot.AddOrderItem() which includes behavior.
     private readonly List<OrderItem> _orderItems;
    
-    public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
+    public IReadOnlyCollection<OrderItem> OrderItems => this._orderItems.AsReadOnly();
 
     public int? PaymentId { get; private set; }
 
@@ -45,22 +46,22 @@ public class Order
 
     protected Order()
     {
-        _orderItems = new List<OrderItem>();
-        _isDraft = false;
+        this._orderItems = [];
+        this._isDraft = false;
     }
 
     public Order(string userId, string userName, Address address, int cardTypeId, string cardNumber, string cardSecurityNumber,
             string cardHolderName, DateTime cardExpiration, int? buyerId = null, int? paymentMethodId = null) : this()
     {
-        BuyerId = buyerId;
-        PaymentId = paymentMethodId;
-        OrderStatus = OrderStatus.Submitted;
-        OrderDate = DateTime.UtcNow;
-        Address = address;
+        this.BuyerId = buyerId;
+        this.PaymentId = paymentMethodId;
+        this.OrderStatus = OrderStatus.Submitted;
+        this.OrderDate = DateTime.UtcNow;
+        this.Address = address;
 
         // Add the OrderStarterDomainEvent to the domain events collection 
         // to be raised/dispatched when committing changes into the Database [ After DbContext.SaveChanges() ]
-        AddOrderStartedDomainEvent(userId, userName, cardTypeId, cardNumber,
+        this.AddOrderStartedDomainEvent(userId, userName, cardTypeId, cardNumber,
                                     cardSecurityNumber, cardHolderName, cardExpiration);
     }
 
@@ -70,9 +71,9 @@ public class Order
     // in order to maintain consistency between the whole Aggregate. 
     public void AddOrderItem(int productId, string productName, decimal unitPrice, decimal discount, string pictureUrl, int units = 1)
     {
-        var existingOrderForProduct = _orderItems.SingleOrDefault(o => o.ProductId == productId);
+        var existingOrderForProduct = this._orderItems.SingleOrDefault(o => o.ProductId == productId);
 
-        if (existingOrderForProduct != null)
+        if (existingOrderForProduct is not null)
         {
             //if previous line exist modify it with higher discount  and units..
             if (discount > existingOrderForProduct.Discount)
@@ -86,84 +87,84 @@ public class Order
         {
             //add validated new order item
             var orderItem = new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units);
-            _orderItems.Add(orderItem);
+            this._orderItems.Add(orderItem);
         }
     }
 
     public void SetPaymentMethodVerified(int buyerId, int paymentId)
     {
-        BuyerId = buyerId;
-        PaymentId = paymentId;
+        this.BuyerId = buyerId;
+        this.PaymentId = paymentId;
     }
     
     public void SetAwaitingValidationStatus()
     {
-        if (OrderStatus == OrderStatus.Submitted)
+        if (this.OrderStatus == OrderStatus.Submitted)
         {
-            AddDomainEvent(new OrderStatusChangedToAwaitingValidationDomainEvent(Id, _orderItems));
-            OrderStatus = OrderStatus.AwaitingValidation;
+            this.AddDomainEvent(new OrderStatusChangedToAwaitingValidationDomainEvent(Id, _orderItems));
+            this.OrderStatus = OrderStatus.AwaitingValidation;
         }
     }
 
     public void SetStockConfirmedStatus()
     {
-        if (OrderStatus == OrderStatus.AwaitingValidation)
+        if (this.OrderStatus == OrderStatus.AwaitingValidation)
         {
-            AddDomainEvent(new OrderStatusChangedToStockConfirmedDomainEvent(Id));
+            this.AddDomainEvent(new OrderStatusChangedToStockConfirmedDomainEvent(this.Id));
 
-            OrderStatus = OrderStatus.StockConfirmed;
-            Description = "All the items were confirmed with available stock.";
+            this.OrderStatus = OrderStatus.StockConfirmed;
+            this.Description = "All the items were confirmed with available stock.";
         }
     }
 
     public void SetPaidStatus()
     {
-        if (OrderStatus == OrderStatus.StockConfirmed)
+        if (this.OrderStatus == OrderStatus.StockConfirmed)
         {
-            AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(Id, OrderItems));
+            this.AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(Id, OrderItems));
 
-            OrderStatus = OrderStatus.Paid;
-            Description = "The payment was performed at a simulated \"American Bank checking bank account ending on XX35071\"";
+            this.OrderStatus = OrderStatus.Paid;
+            this.Description = "The payment was performed at a simulated \"American Bank checking bank account ending on XX35071\"";
         }
     }
 
     public void SetShippedStatus()
     {
-        if (OrderStatus != OrderStatus.Paid)
+        if (this.OrderStatus != OrderStatus.Paid)
         {
-            StatusChangeException(OrderStatus.Shipped);
+            this.StatusChangeException(OrderStatus.Shipped);
         }
 
-        OrderStatus = OrderStatus.Shipped;
-        Description = "The order was shipped.";
-        AddDomainEvent(new OrderShippedDomainEvent(this));
+        this.OrderStatus = OrderStatus.Shipped;
+        this.Description = "The order was shipped.";
+        this.AddDomainEvent(new OrderShippedDomainEvent(this));
     }
 
     public void SetCancelledStatus()
     {
-        if (OrderStatus == OrderStatus.Paid ||
-            OrderStatus == OrderStatus.Shipped)
+        if (this.OrderStatus == OrderStatus.Paid ||
+            this.OrderStatus == OrderStatus.Shipped)
         {
-            StatusChangeException(OrderStatus.Cancelled);
+            this.StatusChangeException(OrderStatus.Cancelled);
         }
 
-        OrderStatus = OrderStatus.Cancelled;
-        Description = $"The order was cancelled.";
-        AddDomainEvent(new OrderCancelledDomainEvent(this));
+        this.OrderStatus = OrderStatus.Cancelled;
+        this.Description = $"The order was cancelled.";
+        this.AddDomainEvent(new OrderCancelledDomainEvent(this));
     }
 
     public void SetCancelledStatusWhenStockIsRejected(IEnumerable<int> orderStockRejectedItems)
     {
-        if (OrderStatus == OrderStatus.AwaitingValidation)
+        if (this.OrderStatus == OrderStatus.AwaitingValidation)
         {
-            OrderStatus = OrderStatus.Cancelled;
+            this.OrderStatus = OrderStatus.Cancelled;
 
-            var itemsStockRejectedProductNames = OrderItems
+            var itemsStockRejectedProductNames = this.OrderItems
                 .Where(c => orderStockRejectedItems.Contains(c.ProductId))
                 .Select(c => c.ProductName);
 
             var itemsStockRejectedDescription = string.Join(", ", itemsStockRejectedProductNames);
-            Description = $"The product items don't have stock: ({itemsStockRejectedDescription}).";
+            this.Description = $"The product items don't have stock: ({itemsStockRejectedDescription}).";
         }
     }
 
@@ -179,8 +180,8 @@ public class Order
 
     private void StatusChangeException(OrderStatus orderStatusToChange)
     {
-        throw new OrderingDomainException($"Is not possible to change the order status from {OrderStatus} to {orderStatusToChange}.");
+        throw new OrderingDomainException($"Is not possible to change the order status from {this.OrderStatus} to {orderStatusToChange}.");
     }
 
-    public decimal GetTotal() => _orderItems.Sum(o => o.Units * o.UnitPrice);
+    public decimal GetTotal() => this._orderItems.Sum(o => o.Units * o.UnitPrice);
 }

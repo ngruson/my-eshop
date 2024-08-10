@@ -1,4 +1,6 @@
-﻿public class OrderServices(
+namespace eShop.Ordering.API;
+
+public class OrderServices(
     IMediator mediator,
     IOrderQueries queries,
     IIdentityService identityService,

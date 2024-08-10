@@ -1,9 +1,9 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
+namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 public class OrderStockRejectedIntegrationEventHandler(
     IMediator mediator,
     ILogger<OrderStockRejectedIntegrationEventHandler> logger) : IIntegrationEventHandler<OrderStockRejectedIntegrationEvent>
 {
-    public async Task Handle(OrderStockRejectedIntegrationEvent @event)
+    public async Task Handle(OrderStockRejectedIntegrationEvent @event, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
@@ -21,6 +21,6 @@ public class OrderStockRejectedIntegrationEventHandler(
             command.OrderNumber,
             command);
 
-        await mediator.Send(command);
+        await mediator.Send(command, cancellationToken);
     }
 }

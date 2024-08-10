@@ -2,6 +2,6 @@
 
 public interface ICatalogIntegrationEventService
 {
-    Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent evt);
-    Task PublishThroughEventBusAsync(IntegrationEvent evt);
+    Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent evt, CancellationToken cancellationToken);
+    Task PublishThroughEventBusAsync(IntegrationEvent evt, CancellationToken cancellationToken);
 }

@@ -1,5 +1,6 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using eShop.Catalog.API.Services;
+using eShop.Shared.Data;
 using Pgvector;
 
 namespace eShop.Catalog.API.Infrastructure;
@@ -8,40 +9,44 @@ public partial class CatalogContextSeed(
     IWebHostEnvironment env,
     IOptions<CatalogOptions> settings,
     ICatalogAI catalogAI,
-    ILogger<CatalogContextSeed> logger) : IDbSeeder<CatalogContext>
+    ILogger<CatalogContextSeed> logger) : IDbSeeder
 {
-    public async Task SeedAsync(CatalogContext context)
+    public async Task SeedAsync(IServiceProvider services)
     {
         var useCustomizationData = settings.Value.UseCustomizationData;
         var contentRootPath = env.ContentRootPath;
         var picturePath = env.WebRootPath;
 
         // Workaround from https://github.com/npgsql/efcore.pg/issues/292#issuecomment-388608426
-        context.Database.OpenConnection();
-        ((NpgsqlConnection)context.Database.GetDbConnection()).ReloadTypes();
+        //context.Database.OpenConnection();
+        //((NpgsqlConnection)context.Database.GetDbConnection()).ReloadTypes();
 
-        if (!context.CatalogItems.Any())
+        IRepository<CatalogItem> catalogItemRepository = services.GetRequiredService<IRepository<CatalogItem>>();
+        IRepository<CatalogBrand> catalogBrandRepository = services.GetRequiredService<IRepository<CatalogBrand>>();
+        IRepository<CatalogType> catalogTypeRepository = services.GetRequiredService<IRepository<CatalogType>>();
+
+        if (!await catalogItemRepository.AnyAsync())
         {
             var sourcePath = Path.Combine(contentRootPath, "Setup", "catalog.json");
             var sourceJson = File.ReadAllText(sourcePath);
             var sourceItems = JsonSerializer.Deserialize<CatalogSourceEntry[]>(sourceJson);
 
-            context.CatalogBrands.RemoveRange(context.CatalogBrands);
-            await context.CatalogBrands.AddRangeAsync(sourceItems.Select(x => x.Brand).Distinct()
+            await catalogBrandRepository.DeleteRangeAsync(await catalogBrandRepository.ListAsync());
+            await catalogBrandRepository.AddRangeAsync(sourceItems!.Select(x => x.Brand).Distinct()
                 .Select(brandName => new CatalogBrand { Brand = brandName }));
-            logger.LogInformation("Seeded catalog with {NumBrands} brands", context.CatalogBrands.Count());
+            IEnumerable<CatalogBrand> addedBrands = await catalogBrandRepository.ListAsync();
+            logger.LogInformation("Seeded catalog with {NumBrands} brands", addedBrands.Count());
 
-            context.CatalogTypes.RemoveRange(context.CatalogTypes);
-            await context.CatalogTypes.AddRangeAsync(sourceItems.Select(x => x.Type).Distinct()
+            await catalogTypeRepository.DeleteRangeAsync(await catalogTypeRepository.ListAsync());
+            await catalogTypeRepository.AddRangeAsync(sourceItems!.Select(x => x.Type).Distinct()
                 .Select(typeName => new CatalogType { Type = typeName }));
-            logger.LogInformation("Seeded catalog with {NumTypes} types", context.CatalogTypes.Count());
+            IEnumerable<CatalogType> addedTypes = await catalogTypeRepository.ListAsync();
+            logger.LogInformation("Seeded catalog with {NumTypes} types", addedTypes.Count());
 
-            await context.SaveChangesAsync();
+            var brandIdsByName = addedBrands.ToDictionary(x => x.Brand, x => x.Id);
+            var typeIdsByName = addedTypes.ToDictionary(x => x.Type, x => x.Id);
 
-            var brandIdsByName = await context.CatalogBrands.ToDictionaryAsync(x => x.Brand, x => x.Id);
-            var typeIdsByName = await context.CatalogTypes.ToDictionaryAsync(x => x.Type, x => x.Id);
-
-            var catalogItems = sourceItems.Select(source => new CatalogItem
+            CatalogItem[] catalogItems = sourceItems!.Select(source => new CatalogItem
             {
                 Id = source.Id,
                 Name = source.Name,
@@ -65,19 +70,18 @@ public partial class CatalogContextSeed(
                 }
             }
 
-            await context.CatalogItems.AddRangeAsync(catalogItems);
-            logger.LogInformation("Seeded catalog with {NumItems} items", context.CatalogItems.Count());
-            await context.SaveChangesAsync();
+            await catalogItemRepository.AddRangeAsync(catalogItems);
+            logger.LogInformation("Seeded catalog with {NumItems} items", catalogItems.Length);
         }
     }
 
     private class CatalogSourceEntry
     {
         public int Id { get; set; }
-        public string Type { get; set; }
-        public string Brand { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public required string Type { get; set; }
+        public required string Brand { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
         public decimal Price { get; set; }
     }
 }

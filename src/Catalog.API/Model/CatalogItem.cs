@@ -1,29 +1,30 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using eShop.Shared.Data;
 using Pgvector;
 
 namespace eShop.Catalog.API.Model;
 
-public class CatalogItem
+public class CatalogItem : IAggregateRoot
 {
     public int Id { get; set; }
 
     [Required]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
-    public string Description { get; set; }
+    public required string Description { get; set; }
 
     public decimal Price { get; set; }
 
-    public string PictureFileName { get; set; }
+    public string? PictureFileName { get; set; }
 
-    public int CatalogTypeId { get; set; }
+    public int? CatalogTypeId { get; set; }
 
-    public CatalogType CatalogType { get; set; }
+    public CatalogType? CatalogType { get; set; }
 
-    public int CatalogBrandId { get; set; }
+    public int? CatalogBrandId { get; set; }
 
-    public CatalogBrand CatalogBrand { get; set; }
+    public CatalogBrand? CatalogBrand { get; set; }
 
     // Quantity in stock
     public int AvailableStock { get; set; }
@@ -37,14 +38,12 @@ public class CatalogItem
 
     /// <summary>Optional embedding for the catalog item's description.</summary>
     [JsonIgnore]
-    public Vector Embedding { get; set; }
+    public Vector? Embedding { get; set; }
 
     /// <summary>
     /// True if item is on reorder
     /// </summary>
     public bool OnReorder { get; set; }
-
-    public CatalogItem() { }
 
 
     /// <summary>
@@ -61,9 +60,9 @@ public class CatalogItem
     /// 
     public int RemoveStock(int quantityDesired)
     {
-        if (AvailableStock == 0)
+        if (this.AvailableStock == 0)
         {
-            throw new CatalogDomainException($"Empty stock, product item {Name} is sold out");
+            throw new CatalogDomainException($"Empty stock, product item {this.Name} is sold out");
         }
 
         if (quantityDesired <= 0)

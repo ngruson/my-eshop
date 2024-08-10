@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -52,12 +52,12 @@ namespace Ordering.Infrastructure.Migrations
                 schema: "ordering",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
+                    Value = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_cardtypes", x => x.Id);
+                    table.PrimaryKey("PK_cardtypes", x => x.Value);
                 });
 
             migrationBuilder.CreateTable(
@@ -115,7 +115,7 @@ namespace Ordering.Infrastructure.Migrations
                         column: x => x.CardTypeId,
                         principalSchema: "ordering",
                         principalTable: "cardtypes",
-                        principalColumn: "Id",
+                        principalColumn: "Value",
                         onDelete: ReferentialAction.Cascade);
                 });
 

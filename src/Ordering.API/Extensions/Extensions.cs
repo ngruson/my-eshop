@@ -1,4 +1,10 @@
-﻿internal static class Extensions
+using eShop.Shared.Behaviors;
+using eShop.Shared.Data;
+using eShop.Shared.Data.EntityFramework;
+using eShop.Shared.IntegrationEvents;
+using Ordering.Infrastructure.Repositories;
+
+internal static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
@@ -12,24 +18,25 @@
         // The DbContext of type 'OrderingContext' cannot be pooled because it does not have a public constructor accepting a single parameter of type DbContextOptions or has more than one constructor.
         services.AddDbContext<OrderingContext>(options =>
         {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("orderingdb"));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("orderingDb"));
         });
+        services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<OrderingContext>());
         builder.EnrichNpgsqlDbContext<OrderingContext>();
 
-        services.AddMigration<OrderingContext, OrderingContextSeed>();
+        services.AddMigration<OrderingContext>(typeof(CardTypesSeed));
 
         // Add the integration services that consume the DbContext
         services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService<OrderingContext>>();
 
-        services.AddTransient<IOrderingIntegrationEventService, OrderingIntegrationEventService>();
+        services.AddTransient<IIntegrationEventService, OrderingIntegrationEventService>();
 
-        builder.AddRabbitMqEventBus("eventbus")
+        builder.AddRabbitMqEventBus("eventBus")
                .AddEventBusSubscriptions();
 
         services.AddHttpContextAccessor();
         services.AddTransient<IIdentityService, IdentityService>();
 
-        // Configure mediatR
+        // Configure Mediator
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
@@ -46,8 +53,7 @@
         services.AddSingleton<IValidator<ShipOrderCommand>, ShipOrderCommandValidator>();
 
         services.AddScoped<IOrderQueries, OrderQueries>();
-        services.AddScoped<IBuyerRepository, BuyerRepository>();
-        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped<IRequestManager, RequestManager>();
     }
 

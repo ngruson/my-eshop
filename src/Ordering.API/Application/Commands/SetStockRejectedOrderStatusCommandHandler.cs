@@ -1,14 +1,12 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
+using eShop.Shared.Data;
+using Order = eShop.Ordering.Domain.AggregatesModel.OrderAggregate.Order;
+
+namespace eShop.Ordering.API.Application.Commands;
 
 // Regular CommandHandler
-public class SetStockRejectedOrderStatusCommandHandler : IRequestHandler<SetStockRejectedOrderStatusCommand, bool>
+public class SetStockRejectedOrderStatusCommandHandler(IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository) : IRequestHandler<SetStockRejectedOrderStatusCommand, bool>
 {
-    private readonly IOrderRepository _orderRepository;
-
-    public SetStockRejectedOrderStatusCommandHandler(IOrderRepository orderRepository)
-    {
-        _orderRepository = orderRepository;
-    }
+    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
 
     /// <summary>
     /// Handler which processes the command when
@@ -21,30 +19,26 @@ public class SetStockRejectedOrderStatusCommandHandler : IRequestHandler<SetStoc
         // Simulate a work time for rejecting the stock
         await Task.Delay(10000, cancellationToken);
 
-        var orderToUpdate = await _orderRepository.GetAsync(command.OrderNumber);
-        if (orderToUpdate == null)
+        Order? orderToUpdate = await this._orderRepository.GetByIdAsync(command.OrderNumber, cancellationToken);
+
+        if (orderToUpdate is null)
         {
             return false;
         }
 
         orderToUpdate.SetCancelledStatusWhenStockIsRejected(command.OrderStockItems);
 
-        return await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        return await this._orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
     }
 }
 
 
 // Use for Idempotency in Command process
-public class SetStockRejectedOrderStatusIdentifiedCommandHandler : IdentifiedCommandHandler<SetStockRejectedOrderStatusCommand, bool>
+public class SetStockRejectedOrderStatusIdentifiedCommandHandler(
+    IMediator mediator,
+    IRequestManager requestManager,
+    ILogger<IdentifiedCommandHandler<SetStockRejectedOrderStatusCommand, bool>> logger) : IdentifiedCommandHandler<SetStockRejectedOrderStatusCommand, bool>(mediator, requestManager, logger)
 {
-    public SetStockRejectedOrderStatusIdentifiedCommandHandler(
-        IMediator mediator,
-        IRequestManager requestManager,
-        ILogger<IdentifiedCommandHandler<SetStockRejectedOrderStatusCommand, bool>> logger)
-        : base(mediator, requestManager, logger)
-    {
-    }
-
     protected override bool CreateResultForDuplicateRequest()
     {
         return true; // Ignore duplicate requests for processing order.
