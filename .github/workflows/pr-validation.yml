@@ -34,7 +34,10 @@ jobs:
           DOTNET_NUGET_SIGNATURE_VERIFICATION: false
         run: dotnet build eShop.Web.slnf
       - name: Test
-        run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+        run: |
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/Basket.UnitTests/Basket.UnitTests.csproj \
+            tests/Ordering.UnitTests/Ordering.UnitTests.csproj
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
