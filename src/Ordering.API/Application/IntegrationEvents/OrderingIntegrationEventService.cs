@@ -1,4 +1,5 @@
 using eShop.Shared.IntegrationEvents;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace eShop.Ordering.API.Application.IntegrationEvents;
 
@@ -7,10 +8,10 @@ public class OrderingIntegrationEventService(IEventBus eventBus,
     IIntegrationEventLogService integrationEventLogService,
     ILogger<OrderingIntegrationEventService> logger) : IIntegrationEventService
 {
-    private readonly IEventBus _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
-    private readonly OrderingContext _orderingContext = orderingContext ?? throw new ArgumentNullException(nameof(orderingContext));
-    private readonly IIntegrationEventLogService _eventLogService = integrationEventLogService ?? throw new ArgumentNullException(nameof(integrationEventLogService));
-    private readonly ILogger<OrderingIntegrationEventService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IEventBus _eventBus = eventBus;
+    private readonly OrderingContext _orderingContext = orderingContext;
+    private readonly IIntegrationEventLogService _eventLogService = integrationEventLogService;
+    private readonly ILogger<OrderingIntegrationEventService> _logger = logger;
 
     public async Task PublishEventsThroughEventBusAsync(Guid transactionId, CancellationToken cancellationToken)
     {
@@ -37,8 +38,13 @@ public class OrderingIntegrationEventService(IEventBus eventBus,
 
     public async Task AddAndSaveEventAsync(IntegrationEvent evt, CancellationToken cancellationToken)
     {
-        this._logger.LogInformation("Enqueuing integration event {IntegrationEventId} to repository ({@IntegrationEvent})", evt.Id, evt);
+        IDbContextTransaction? transaction = this._orderingContext.GetCurrentTransaction();
 
-        await this._eventLogService.SaveEventAsync(evt, this._orderingContext.GetCurrentTransaction(), cancellationToken);
+        if (transaction is not null)
+        {
+            this._logger.LogInformation("Enqueuing integration event {IntegrationEventId} to repository ({@IntegrationEvent})", evt.Id, evt);
+
+            await this._eventLogService.SaveEventAsync(evt, transaction, cancellationToken);
+        }
     }
 }

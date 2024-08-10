@@ -1,4 +1,4 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents.Events;
+namespace eShop.Ordering.API.Application.IntegrationEvents.Events;
 
 public record OrderStatusChangedToAwaitingValidationIntegrationEvent : IntegrationEvent
 {
@@ -12,11 +12,11 @@ public record OrderStatusChangedToAwaitingValidationIntegrationEvent : Integrati
         int orderId, OrderStatus orderStatus, string buyerName, string buyerIdentityGuid,
         IEnumerable<OrderStockItem> orderStockItems)
     {
-        OrderId = orderId;
-        OrderStockItems = orderStockItems;
-        OrderStatus = orderStatus;
-        BuyerName = buyerName;
-        BuyerIdentityGuid = buyerIdentityGuid;
+        this.OrderId = orderId;
+        this.OrderStockItems = orderStockItems;
+        this.OrderStatus = orderStatus;
+        this.BuyerName = buyerName;
+        this.BuyerIdentityGuid = buyerIdentityGuid;
     }
 }
 
@@ -27,7 +27,7 @@ public record OrderStockItem
 
     public OrderStockItem(int productId, int units)
     {
-        ProductId = productId;
-        Units = units;
+        this.ProductId = productId;
+        this.Units = units;
     }
 }

@@ -9,10 +9,10 @@ public class OrderStatusChangedToPaidDomainEventHandler(
     IRepository<Buyer> buyerRepository,
     IIntegrationEventService integrationEventService) : INotificationHandler<OrderStatusChangedToPaidDomainEvent>
 {
-    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-    private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    private readonly IRepository<Buyer> _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
-    private readonly IIntegrationEventService _orderingIntegrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
+    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
+    private readonly ILogger _logger = logger;
+    private readonly IRepository<Buyer> _buyerRepository = buyerRepository;
+    private readonly IIntegrationEventService _orderingIntegrationEventService = integrationEventService;
 
     public async Task Handle(OrderStatusChangedToPaidDomainEvent domainEvent, CancellationToken cancellationToken)
     {

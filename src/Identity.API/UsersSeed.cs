@@ -1,9 +1,11 @@
 
+using eShop.Shared.DI;
+
 namespace eShop.Identity.API;
 
 public class UsersSeed(ILogger<UsersSeed> logger, UserManager<ApplicationUser> userManager) : IDbSeeder
 {
-    public async Task SeedAsync(IServiceProvider services)
+    public async Task SeedAsync(ServiceProviderWrapper services)
     {
         var alice = await userManager.FindByNameAsync("alice");
 

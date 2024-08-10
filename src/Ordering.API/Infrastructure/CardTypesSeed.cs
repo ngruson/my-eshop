@@ -3,12 +3,13 @@ namespace eShop.Ordering.API.Infrastructure;
 using System.Reflection;
 using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 using eShop.Shared.Data;
+using eShop.Shared.DI;
 
 public class CardTypesSeed: IDbSeeder
 {
-    public async Task SeedAsync(IServiceProvider services)
+    public async Task SeedAsync(ServiceProviderWrapper serviceProviderWrapper)
     {
-        IRepository<CardType> cardTypeRepository = services.GetRequiredService<IRepository<CardType>>();
+        IRepository<CardType> cardTypeRepository = serviceProviderWrapper.GetRequiredService<IRepository<CardType>>();
 
         if (!await cardTypeRepository.AnyAsync())
         {

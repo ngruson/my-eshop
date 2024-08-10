@@ -20,6 +20,7 @@ public static class Extensions
 
         // REVIEW: This is done for development ease but shouldn't be here in production
         builder.Services.AddMigration<CatalogContext>(typeof(CatalogContextSeed));
+        builder.Services.AddScoped<CatalogContextSeed>();
 
         builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 

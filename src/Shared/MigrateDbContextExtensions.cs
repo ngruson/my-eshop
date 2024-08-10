@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using eShop.Shared.DI;
 
 namespace Microsoft.AspNetCore.Hosting;
 
@@ -11,7 +12,7 @@ internal static class MigrateDbContextExtensions
         where TContext : DbContext
         => services.AddMigration<TContext>(Array.Empty<Type>());
 
-    private static IServiceCollection AddMigration<TContext>(this IServiceCollection services, params Func<IServiceProvider, IDbSeeder>[] seederFactories)
+    private static IServiceCollection AddMigration<TContext>(this IServiceCollection services, params Func<ServiceProviderWrapper, IDbSeeder>[] seederFactories)
         where TContext : DbContext
     {
         // Enable migration tracing
@@ -23,7 +24,7 @@ internal static class MigrateDbContextExtensions
     public static IServiceCollection AddMigration<TContext>(this IServiceCollection services, params Type[] seederTypes)
         where TContext : DbContext
     {
-        List<Func<IServiceProvider, IDbSeeder>> seederFactories = [];
+        List<Func<ServiceProviderWrapper, IDbSeeder>> seederFactories = [];
 
         foreach (Type seederType in seederTypes)
         {
@@ -39,7 +40,7 @@ internal static class MigrateDbContextExtensions
         return services.AddMigration<TContext>(seederFactories.ToArray());
     }
 
-    private static async Task MigrateDbContextAsync<TContext>(this IServiceProvider services, params Func<IServiceProvider, IDbSeeder>[] seederFactories) where TContext : DbContext
+    private static async Task MigrateDbContextAsync<TContext>(this IServiceProvider services, params Func<ServiceProviderWrapper, IDbSeeder>[] seederFactories) where TContext : DbContext
     {
         using var scope = services.CreateScope();
         var scopeServices = scope.ServiceProvider;
@@ -54,7 +55,10 @@ internal static class MigrateDbContextExtensions
 
             var strategy = context.Database.CreateExecutionStrategy();
 
-            await strategy.ExecuteAsync(() => InvokeSeeders(context, scopeServices, seederFactories));
+            ServiceProviderWrapper serviceProviderWrapper =
+                new(scopeServices);
+
+            await strategy.ExecuteAsync(() => InvokeSeeders(context, serviceProviderWrapper, seederFactories));
         }
         catch (Exception ex)
         {
@@ -66,7 +70,7 @@ internal static class MigrateDbContextExtensions
         }
     }
 
-    private static async Task InvokeSeeders<TContext>(TContext context, IServiceProvider services, params Func<IServiceProvider, IDbSeeder>[] seederFactories)
+    private static async Task InvokeSeeders<TContext>(TContext context, ServiceProviderWrapper services, params Func<ServiceProviderWrapper, IDbSeeder>[] seederFactories)
         where TContext : DbContext
     {
         using var activity = ActivitySource.StartActivity($"Migrating {typeof(TContext).Name}");
@@ -75,7 +79,7 @@ internal static class MigrateDbContextExtensions
         {
             await context.Database.MigrateAsync();
 
-            foreach (Func<IServiceProvider, IDbSeeder> seederFactory in seederFactories)
+            foreach (Func<ServiceProviderWrapper, IDbSeeder> seederFactory in seederFactories)
             {
                 IDbSeeder seeder = seederFactory(services);
                 await seeder.SeedAsync(services);
@@ -89,7 +93,7 @@ internal static class MigrateDbContextExtensions
         }
     }
     
-    private class MigrationHostedService<TContext>(IServiceProvider serviceProvider, params Func<IServiceProvider, IDbSeeder>[] seederFactories)
+    private class MigrationHostedService<TContext>(IServiceProvider serviceProvider, params Func<ServiceProviderWrapper, IDbSeeder>[] seederFactories)
         : BackgroundService where TContext : DbContext
     {
         public override Task StartAsync(CancellationToken cancellationToken)
@@ -105,5 +109,5 @@ internal static class MigrateDbContextExtensions
 }
 public interface IDbSeeder
 {
-    Task SeedAsync(IServiceProvider services);
+    Task SeedAsync(ServiceProviderWrapper serviceProviderWrapper);
 }

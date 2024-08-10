@@ -34,9 +34,9 @@ public record OrderDraftDTO
                 Discount = oi.Discount,
                 ProductId = oi.ProductId,
                 UnitPrice = oi.UnitPrice,
-                PictureUrl = oi.PictureUrl,
+                PictureUrl = oi.PictureUrl!,
                 Units = oi.Units,
-                ProductName = oi.ProductName
+                ProductName = oi.ProductName!
             }),
             Total = order.GetTotal()
         };

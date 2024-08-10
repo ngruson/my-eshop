@@ -6,8 +6,8 @@ public class UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler(
     IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
     ILogger<UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler> logger) : INotificationHandler<BuyerAndPaymentMethodVerifiedDomainEvent>
 {
-    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-    private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
+    private readonly ILogger _logger = logger;
 
     // Domain Logic comment:
     // When the Buyer and Buyer's payment method have been created or verified that they existed, 

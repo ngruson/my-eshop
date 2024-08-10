@@ -7,82 +7,150 @@ using eShop.Ordering.API;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using NSubstitute.ExceptionExtensions;
+using Microsoft.AspNetCore.Routing;
 
 public class OrdersApiUnitTests
 {
-    [Theory, AutoNSubstituteData]
-    public async Task Cancel_order_with_requestId_success(
-        [Substitute, Frozen] IMediator mediator,
-        OrderServices orderServices)
+    public class MapOrdersApi
     {
-        // Arrange
+        [Theory, AutoNSubstituteData]
+        public void success(
+            IEndpointRouteBuilder routeBuilder)
+        {
+            // Arrange
 
-        mediator.Send(Arg.Any<IdentifiedCommand<CancelOrderCommand, bool>>(), default)
-            .Returns(Task.FromResult(true));
+            // Act
 
-        // Act
-        
-        var result = await OrdersApi.CancelOrderAsync(Guid.NewGuid(), new CancelOrderCommand(1), orderServices);
+            routeBuilder = routeBuilder.MapOrdersApiV1();
 
-        // Assert
-        Assert.IsType<Ok>(result.Result);
+            // Assert
+
+            Assert.Single(routeBuilder.DataSources);
+        }
+    }
+    public class CancelOrder
+    {
+        [Theory, AutoNSubstituteData]
+        public async Task With_requestId_success(
+        [Substitute, Frozen] IMediator mediator,
+        OrderServices orderServices,
+        CancelOrderCommand command,
+        Guid requestId)
+        {
+            // Arrange
+
+            mediator.Send(Arg.Any<IdentifiedCommand<CancelOrderCommand, bool>>(), default)
+                .Returns(Task.FromResult(true));
+
+            // Act
+
+            var result = await OrdersApi.CancelOrderAsync(requestId, command, orderServices);
+
+            // Assert
+            Assert.IsType<Ok>(result.Result);
+        }
+
+        [Theory, AutoNSubstituteData]
+        public async Task With_empty_request_id_bad_request(
+            OrderServices orderServices,
+            CancelOrderCommand command)
+        {
+            // Arrange
+
+            // Act
+
+            var result = await OrdersApi.CancelOrderAsync(Guid.Empty, command, orderServices);
+
+            // Assert
+
+            Assert.IsType<BadRequest<string>>(result.Result);
+        }
+
+        [Theory, AutoNSubstituteData]
+        public async Task When_command_fails_problem(
+            [Substitute, Frozen] IMediator mediator,
+            OrderServices orderServices,
+            CancelOrderCommand command,
+            Guid requestId)
+        {
+            // Arrange
+
+            mediator.Send(Arg.Any<IdentifiedCommand<CancelOrderCommand, bool>>(), default)
+                .Returns(Task.FromResult(false));
+
+            // Act
+
+            var result = await OrdersApi.CancelOrderAsync(requestId, command, orderServices);
+
+            // Assert
+
+            Assert.IsType<ProblemHttpResult>(result.Result);
+        }
     }
 
-    [Theory, AutoNSubstituteData]
-    public async Task Cancel_order_bad_request(
-        [Substitute, Frozen] IMediator mediator,
-        OrderServices orderServices)
+    public class ShipOrder
     {
-        // Arrange
+        [Theory, AutoNSubstituteData]
+        public async Task With_requestId_success(
+            [Substitute, Frozen] IMediator mediator,
+            OrderServices orderServices,
+            ShipOrderCommand command,
+            Guid requestId)
+        {
+            // Arrange
 
-        mediator.Send(Arg.Any<IdentifiedCommand<CancelOrderCommand, bool>>(), default)
-            .Returns(Task.FromResult(true));
+            mediator.Send(Arg.Any<IdentifiedCommand<ShipOrderCommand, bool>>(), default)
+                .Returns(Task.FromResult(true));
 
-        // Act
+            // Act
 
-        var result = await OrdersApi.CancelOrderAsync(Guid.Empty, new CancelOrderCommand(1), orderServices);
+            var result = await OrdersApi.ShipOrderAsync(requestId, command, orderServices);
 
-        // Assert
+            // Assert
 
-        Assert.IsType<BadRequest<string>>(result.Result);
-    }
+            Assert.IsType<Ok>(result.Result);
+        }
 
-    [Theory, AutoNSubstituteData]
-    public async Task Ship_order_with_requestId_success(
-        [Substitute, Frozen] IMediator mediator,
-        OrderServices orderServices)
-    {
-        // Arrange
+        [Theory, AutoNSubstituteData]
+        public async Task With_empty_request_id_bad_request(
+            [Substitute, Frozen] IMediator mediator,
+            OrderServices orderServices,
+            ShipOrderCommand command)
+        {
+            // Arrange
 
-        mediator.Send(Arg.Any<IdentifiedCommand<ShipOrderCommand, bool>>(), default)
-            .Returns(Task.FromResult(true));
+            mediator.Send(Arg.Any<IdentifiedCommand<CreateOrderCommand, bool>>(), default)
+                .Returns(Task.FromResult(true));
 
-        // Act
-        
-        var result = await OrdersApi.ShipOrderAsync(Guid.NewGuid(), new ShipOrderCommand(1), orderServices);
+            // Act
 
-        // Assert
+            var result = await OrdersApi.ShipOrderAsync(Guid.Empty, command, orderServices);
 
-        Assert.IsType<Ok>(result.Result);
-    }
+            // Assert
 
-    [Theory, AutoNSubstituteData]
-    public async Task Ship_order_bad_request(
-        [Substitute, Frozen] IMediator mediator,
-        OrderServices orderServices)
-    {
-        // Arrange
+            Assert.IsType<BadRequest<string>>(result.Result);
+        }
 
-        mediator.Send(Arg.Any<IdentifiedCommand<CreateOrderCommand, bool>>(), default)
-            .Returns(Task.FromResult(true));
+        [Theory, AutoNSubstituteData]
+        public async Task When_command_fails_problem(
+            [Substitute, Frozen] IMediator mediator,
+            OrderServices orderServices,
+            ShipOrderCommand command,
+            Guid requestId)
+        {
+            // Arrange
 
-        // Act
-        
-        var result = await OrdersApi.ShipOrderAsync(Guid.Empty, new ShipOrderCommand(1), orderServices);
+            mediator.Send(Arg.Any<IdentifiedCommand<CancelOrderCommand, bool>>(), default)
+                .Returns(Task.FromResult(false));
 
-        // Assert
+            // Act
 
-        Assert.IsType<BadRequest<string>>(result.Result);
+            var result = await OrdersApi.ShipOrderAsync(requestId, command, orderServices);
+
+            // Assert
+
+            Assert.IsType<ProblemHttpResult>(result.Result);
+        }
     }
 
     [Theory, AutoNSubstituteData]
@@ -100,41 +168,121 @@ public class OrdersApiUnitTests
         Assert.IsType<Ok<IEnumerable<OrderSummary>>>(result);
     }
 
-    [Theory, AutoNSubstituteData]
-    public async Task Get_order_success(
+    public class GetOrder
+    {
+        [Theory, AutoNSubstituteData]
+        public async Task success(
         [Substitute, Frozen] OrderServices orderServices,
         int orderId,
         Order order)
-    {
-        // Arrange
+        {
+            // Arrange
 
-        orderServices.Queries.GetOrderAsync(orderId)
-            .Returns(Task.FromResult(order));
+            orderServices.Queries.GetOrderAsync(orderId)
+                .Returns(Task.FromResult(order));
 
-        // Act
+            // Act
 
-        var result = await OrdersApi.GetOrderAsync(orderId, orderServices);
+            var result = await OrdersApi.GetOrderAsync(orderId, orderServices);
 
-        // Assert
-        Assert.IsType<Ok<Order>>(result.Result);
-        Assert.Equal(order, ((Ok<Order>)result.Result).Value);
+            // Assert
+            Assert.IsType<Ok<Order>>(result.Result);
+            Assert.Equal(order, ((Ok<Order>)result.Result).Value);
+        }
+
+        [Theory, AutoNSubstituteData]
+        public async Task When_exception_return_not_found(
+            [Substitute, Frozen] OrderServices orderServices,
+            int orderId)
+        {
+            // Arrange
+
+            orderServices.Queries.GetOrderAsync(orderId)
+                .ThrowsAsync<Exception>();
+
+            // Act
+
+            var result = await OrdersApi.GetOrderAsync(orderId, orderServices);
+
+            // Assert
+            Assert.IsType<NotFound>(result.Result);
+        }
     }
 
     [Theory, AutoNSubstituteData]
-    public async Task Get_order_fails(
+    public async Task Create_order_draft(
         [Substitute, Frozen] OrderServices orderServices,
-        int orderId)
+        CreateOrderDraftCommand command,
+        OrderDraftDTO dto)
     {
         // Arrange
 
-        orderServices.Queries.GetOrderAsync(orderId).ThrowsAsync<Exception>();
+        orderServices.Mediator.Send(command)
+            .Returns(Task.FromResult(dto));
 
         // Act
 
-        var result = await OrdersApi.GetOrderAsync(orderId, orderServices);
+        var result = await OrdersApi.CreateOrderDraftAsync(command, orderServices);
 
         // Assert
-        Assert.IsType<NotFound>(result.Result);
+
+        Assert.Equal(dto, result);
+    }
+
+    public class CreateOrder
+    {
+        [Theory, AutoNSubstituteData]
+        public async Task When_command_succeeds_return_ok(
+            [Substitute, Frozen] OrderServices orderServices,
+            CreateOrderRequest request,
+            Guid requestId)
+        {
+            // Arrange
+
+            orderServices.Mediator.Send(Arg.Any<IdentifiedCommand<CreateOrderCommand, bool>>())
+                .Returns(Task.FromResult(true));
+
+            // Act
+
+            var result = await OrdersApi.CreateOrderAsync(requestId, request, orderServices);
+
+            // Assert
+
+            Assert.IsType<Ok>(result.Result);
+        }
+
+        [Theory, AutoNSubstituteData]
+        public async Task When_command_fails_return_ok(
+            OrderServices orderServices,
+            CreateOrderRequest request,
+            Guid requestId)
+        {
+            // Arrange
+
+            // Act
+
+            var result = await OrdersApi.CreateOrderAsync(requestId, request, orderServices);
+
+            // Assert
+
+            Assert.IsType<Ok>(result.Result);
+        }
+
+        [Theory, AutoNSubstituteData]
+        public async Task With_empty_request_id_return_bad_request(
+            OrderServices orderServices,
+            CreateOrderRequest request)
+        {
+            // Arrange
+
+            // Act
+
+            var result = await OrdersApi.CreateOrderAsync(Guid.Empty, request, orderServices);
+
+            // Assert
+
+            Assert.IsType<BadRequest<string>>(result.Result);
+        }
     }
 
     [Theory, AutoNSubstituteData]

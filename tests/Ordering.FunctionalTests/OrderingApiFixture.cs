@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
 
 namespace eShop.Ordering.FunctionalTests;
@@ -11,16 +11,16 @@ public sealed class OrderingApiFixture : WebApplicationFactory<Program>, IAsyncL
     public IResourceBuilder<PostgresServerResource> IdentityDB { get; private set; }
     public IResourceBuilder<ProjectResource> IdentityApi { get; private set; }
 
-    private string _postgresConnectionString;
+    private string _connectionString;
 
     public OrderingApiFixture()
     {
         var options = new DistributedApplicationOptions { AssemblyName = typeof(OrderingApiFixture).Assembly.FullName, DisableDashboard = true };
         var appBuilder = DistributedApplication.CreateBuilder(options);
-        Postgres = appBuilder.AddPostgres("OrderingDB");
-        IdentityDB = appBuilder.AddPostgres("IdentityDB");
-        IdentityApi = appBuilder.AddProject<Projects.Identity_API>("identity-api").WithReference(IdentityDB);
-        _app = appBuilder.Build();
+        this.Postgres = appBuilder.AddPostgres("OrderingDB");
+        this.IdentityDB = appBuilder.AddPostgres("IdentityDB");
+        this.IdentityApi = appBuilder.AddProject<Projects.Identity_API>("identity-api").WithReference(this.IdentityDB);
+        this._app = appBuilder.Build();
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
@@ -29,8 +29,8 @@ public sealed class OrderingApiFixture : WebApplicationFactory<Program>, IAsyncL
         {
             config.AddInMemoryCollection(new Dictionary<string, string>
             {
-                { $"ConnectionStrings:{Postgres.Resource.Name}", _postgresConnectionString },
-                { "Identity:Url", IdentityApi.GetEndpoint("http").Url }
+                { $"ConnectionStrings:{this.Postgres.Resource.Name}", this._connectionString },
+                { "Identity:Url", this.IdentityApi.GetEndpoint("http").Url }
             });
         });
         builder.ConfigureServices(services =>
@@ -43,21 +43,21 @@ public sealed class OrderingApiFixture : WebApplicationFactory<Program>, IAsyncL
     public new async Task DisposeAsync()
     {
         await base.DisposeAsync();
-        await _app.StopAsync();
-        if (_app is IAsyncDisposable asyncDisposable)
+        await this._app.StopAsync();
+        if (this._app is IAsyncDisposable asyncDisposable)
         {
             await asyncDisposable.DisposeAsync().ConfigureAwait(false);
         }
         else
         {
-            _app.Dispose();
+            this._app.Dispose();
         }
     }
 
     public async Task InitializeAsync()
     {
-        await _app.StartAsync();
-        _postgresConnectionString = await Postgres.Resource.GetConnectionStringAsync();
+        await this._app.StartAsync();
+        this._connectionString = await this.Postgres.Resource.GetConnectionStringAsync();
     }
 
     private class AutoAuthorizeStartupFilter : IStartupFilter

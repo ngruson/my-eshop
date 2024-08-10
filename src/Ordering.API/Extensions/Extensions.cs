@@ -1,6 +1,7 @@
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;
 using eShop.Shared.Data.EntityFramework;
+using eShop.Shared.DI;
 using eShop.Shared.IntegrationEvents;
 using Ordering.Infrastructure.Repositories;
 

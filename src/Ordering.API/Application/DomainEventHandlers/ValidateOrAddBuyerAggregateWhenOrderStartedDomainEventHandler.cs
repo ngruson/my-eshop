@@ -10,9 +10,9 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler(
     IIntegrationEventService integrationEventService)
         : INotificationHandler<OrderStartedDomainEvent>
 {
-    private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    private readonly IRepository<Buyer> _buyerRepository = buyerRepository ?? throw new ArgumentNullException(nameof(buyerRepository));
-    private readonly IIntegrationEventService _integrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
+    private readonly ILogger _logger = logger;
+    private readonly IRepository<Buyer> _buyerRepository = buyerRepository;
+    private readonly IIntegrationEventService _integrationEventService = integrationEventService;
 
     public async Task Handle(OrderStartedDomainEvent domainEvent, CancellationToken cancellationToken)
     {

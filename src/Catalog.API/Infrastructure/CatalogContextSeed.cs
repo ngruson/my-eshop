@@ -1,6 +1,7 @@
 using System.Text.Json;
 using eShop.Catalog.API.Services;
 using eShop.Shared.Data;
+using eShop.Shared.DI;
 using Pgvector;
 
 namespace eShop.Catalog.API.Infrastructure;
@@ -11,7 +12,7 @@ public partial class CatalogContextSeed(
     ICatalogAI catalogAI,
     ILogger<CatalogContextSeed> logger) : IDbSeeder
 {
-    public async Task SeedAsync(IServiceProvider services)
+    public async Task SeedAsync(ServiceProviderWrapper services)
     {
         var useCustomizationData = settings.Value.UseCustomizationData;
         var contentRootPath = env.ContentRootPath;
