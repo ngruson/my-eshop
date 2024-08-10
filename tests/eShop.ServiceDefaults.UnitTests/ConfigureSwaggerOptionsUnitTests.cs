@@ -1,8 +1,9 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using Microsoft.Extensions.Configuration;
-using Moq;
+using NSubstitute;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace eShop.ServiceDefaults.UnitTests;
@@ -10,14 +11,13 @@ public class ConfigureSwaggerOptionsUnitTests
 {
     private static readonly string[] scopes = ["basket"];
 
-    [Theory]
-    [AutoMoqData]
+    [Theory, AutoNSubstituteData]
     internal void Configure_WithValidConfig_OAuthConfigured(
-        [Frozen] Mock<IApiVersionDescriptionProvider> mockProvider)
+        [Substitute, Frozen] IApiVersionDescriptionProvider mockProvider)
     {
         // Arrange
 
-        mockProvider.Setup(x => x.ApiVersionDescriptions)
+        mockProvider.ApiVersionDescriptions
             .Returns(
             [
                 new(apiVersion: new(1, 0), groupName: "v1", deprecated: false)
@@ -36,7 +36,7 @@ public class ConfigureSwaggerOptionsUnitTests
             .Build();
 
         ConfigureSwaggerOptions sut = new(
-            mockProvider.Object,
+            mockProvider,
             configuration);
 
         // Act
@@ -53,14 +53,13 @@ public class ConfigureSwaggerOptionsUnitTests
         Assert.Equivalent(scopes, options.OperationFilterDescriptors[0].Arguments[0]);
     }
 
-    [Theory]
-    [AutoMoqData]
+    [Theory, AutoNSubstituteData]
     internal void Configure_WithoutIdentityConfig_OAuthNotConfigured(
-        [Frozen] Mock<IApiVersionDescriptionProvider> mockProvider)
+        [Substitute, Frozen] IApiVersionDescriptionProvider mockProvider)
     {
         // Arrange
 
-        mockProvider.Setup(x => x.ApiVersionDescriptions)
+        mockProvider.ApiVersionDescriptions
             .Returns(
             [
                 new(apiVersion: new(1, 0), groupName: "v1", deprecated: false)
@@ -77,7 +76,7 @@ public class ConfigureSwaggerOptionsUnitTests
             .Build();
 
         ConfigureSwaggerOptions sut = new(
-            mockProvider.Object,
+            mockProvider,
             configuration);
 
         // Act
@@ -92,14 +91,13 @@ public class ConfigureSwaggerOptionsUnitTests
         Assert.Empty(options.OperationFilterDescriptors);
     }
 
-    [Theory]
-    [AutoMoqData]
+    [Theory, AutoNSubstituteData]
     internal void Configure_WithValidConfig_DocumentIsSetCorrectly(
-        [Frozen] Mock<IApiVersionDescriptionProvider> mockProvider)
+        [Substitute, Frozen] IApiVersionDescriptionProvider mockProvider)
     {
         // Arrange
 
-        mockProvider.Setup(x => x.ApiVersionDescriptions)
+        mockProvider.ApiVersionDescriptions
             .Returns(
             [
                 new(apiVersion: new(1, 0), groupName: "v1", deprecated: true)
@@ -116,7 +114,7 @@ public class ConfigureSwaggerOptionsUnitTests
             .Build();
 
         ConfigureSwaggerOptions sut = new(
-            mockProvider.Object,
+            mockProvider,
             configuration);
 
         // Act
@@ -132,14 +130,13 @@ public class ConfigureSwaggerOptionsUnitTests
         Assert.Equal("documentTitle", options.SwaggerGeneratorOptions.SwaggerDocs["v1"].Title);
     }
 
-    [Theory]
-    [AutoMoqData]
+    [Theory, AutoNSubstituteData]
     internal void Configure_ApiIsDeprecated_DocumentIsSetCorrectly(
-        [Frozen] Mock<IApiVersionDescriptionProvider> mockProvider)
+        [Substitute, Frozen] IApiVersionDescriptionProvider mockProvider)
     {
         // Arrange
 
-        mockProvider.Setup(x => x.ApiVersionDescriptions)
+        mockProvider.ApiVersionDescriptions
             .Returns(
             [
                 new(apiVersion: new(1, 0), groupName: "v1", deprecated: true)
@@ -156,7 +153,7 @@ public class ConfigureSwaggerOptionsUnitTests
             .Build();
 
         ConfigureSwaggerOptions sut = new(
-            mockProvider.Object,
+            mockProvider,
             configuration);
 
         // Act
@@ -170,15 +167,14 @@ public class ConfigureSwaggerOptionsUnitTests
         Assert.Equal("documentDescription. This API version has been deprecated.", options.SwaggerGeneratorOptions.SwaggerDocs["v1"].Description);
     }
 
-    [Theory]
-    [AutoMoqData]
+    [Theory, AutoNSubstituteData]
     internal void Configure_ApiIsSunset_DocumentIsSetCorrectly(
-        [Frozen] Mock<IApiVersionDescriptionProvider> mockProvider,
+        [Substitute, Frozen] IApiVersionDescriptionProvider mockProvider,
         DateTimeOffset sunsetDate)
     {
         // Arrange
 
-        mockProvider.Setup(x => x.ApiVersionDescriptions)
+        mockProvider.ApiVersionDescriptions
             .Returns(
             [
                 new(apiVersion: new(1, 0), groupName: "v1", deprecated: true, 
@@ -197,7 +193,7 @@ public class ConfigureSwaggerOptionsUnitTests
             .Build();
 
         ConfigureSwaggerOptions sut = new(
-            mockProvider.Object,
+            mockProvider,
             configuration);
 
         // Act
