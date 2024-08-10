@@ -1,5 +1,10 @@
-﻿using eShop.Catalog.API.Services;
+using Catalog.API.Infrastructure;
+using eShop.Catalog.API.Services;
+using eShop.Shared.Behaviors;
+using eShop.Shared.Data;
 using Microsoft.SemanticKernel;
+
+namespace Catalog.API.Extensions;
 
 public static class Extensions
 {
@@ -14,12 +19,24 @@ public static class Extensions
         });
 
         // REVIEW: This is done for development ease but shouldn't be here in production
-        builder.Services.AddMigration<CatalogContext, CatalogContextSeed>();
+        builder.Services.AddMigration<CatalogContext>(typeof(CatalogContextSeed));
+
+        builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 
         // Add the integration services that consume the DbContext
         builder.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService<CatalogContext>>();
 
         builder.Services.AddTransient<ICatalogIntegrationEventService, CatalogIntegrationEventService>();
+
+        // Configure Mediator
+        builder.Services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
+
+            cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(ValidatorBehavior<,>));
+            cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
+        });
 
         builder.AddRabbitMqEventBus("eventbus")
                .AddSubscription<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>()

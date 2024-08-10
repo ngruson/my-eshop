@@ -1,6 +1,8 @@
-﻿namespace eShop.Ordering.API.Application.Queries;
+﻿using eShop.Shared.Data;
 
-public record Orderitem
+namespace eShop.Ordering.API.Application.Queries;
+
+public record OrderItem
 {
     public string ProductName { get; init; }
     public int Units { get; init; }
@@ -8,7 +10,7 @@ public record Orderitem
     public string PictureUrl { get; init; }
 }
 
-public record Order
+public record Order : IAggregateRoot
 {
     public int OrderNumber { get; init; }
     public DateTime Date { get; init; }
@@ -17,9 +19,9 @@ public record Order
     public string Street { get; init; }
     public string City { get; init; }
     public string State { get; init; }
-    public string Zipcode { get; init; }
+    public string ZipCode { get; init; }
     public string Country { get; init; }
-    public List<Orderitem> OrderItems { get; set; }
+    public List<OrderItem> OrderItems { get; set; }
     public decimal Total { get; set; }
 }
 

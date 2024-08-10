@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using eShop.Shared.Data;
 
 namespace eShop.Catalog.API.Model;
 
-public class CatalogType
+public class CatalogType : IAggregateRoot
 {
     public int Id { get; set; }
 
     [Required]
-    public string Type { get; set; }
+    public required string Type { get; set; }
 }

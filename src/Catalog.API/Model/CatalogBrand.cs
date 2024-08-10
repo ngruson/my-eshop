@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using eShop.Shared.Data;
 
 namespace eShop.Catalog.API.Model;
 
-public class CatalogBrand
+public class CatalogBrand : IAggregateRoot
 {
     public int Id { get; set; }
 
     [Required]
-    public string Brand { get; set; }
+    public required string Brand { get; set; }
 }

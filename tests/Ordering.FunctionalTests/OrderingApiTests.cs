@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Asp.Versioning;
 using Asp.Versioning.Http;
+using eShop.Ordering.API;
 using eShop.Ordering.API.Application.Commands;
 using eShop.Ordering.API.Application.Models;
 using eShop.Ordering.API.Application.Queries;
@@ -39,7 +40,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     public async Task CancelWithEmptyGuidFails()
     {
         // Act
-        var content = new StringContent(BuildOrder(), UTF8Encoding.UTF8, "application/json")
+        var content = new StringContent(BuildOrder(), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.Empty.ToString() } }
         };
@@ -54,7 +55,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     public async Task CancelNonExistentOrderFails()
     {
         // Act
-        var content = new StringContent(BuildOrder(), UTF8Encoding.UTF8, "application/json")
+        var content = new StringContent(this.BuildOrder(), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
         };
@@ -69,7 +70,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     public async Task ShipWithEmptyGuidFails()
     {
         // Act
-        var content = new StringContent(BuildOrder(), UTF8Encoding.UTF8, "application/json")
+        var content = new StringContent(BuildOrder(), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.Empty.ToString() } }
         };
@@ -84,7 +85,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     public async Task ShipNonExistentOrderFails()
     {
         // Act
-        var content = new StringContent(BuildOrder(), UTF8Encoding.UTF8, "application/json")
+        var content = new StringContent(BuildOrder(), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
         };
@@ -121,7 +122,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     public async Task AddNewEmptyOrder()
     {
         // Act
-        var content = new StringContent(JsonSerializer.Serialize(new Order()), UTF8Encoding.UTF8, "application/json")
+        var content = new StringContent(JsonSerializer.Serialize(new Order()), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.Empty.ToString() } }
         };
@@ -148,7 +149,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         };
         var cardExpirationDate = Convert.ToDateTime("2023-12-22T12:34:24.334Z");
         var OrderRequest = new CreateOrderRequest("1", "TestUser", null, null, null, null, null, "XXXXXXXXXXXX0005", "Test User", cardExpirationDate, "test buyer", 1, null, new List<BasketItem> { item });
-        var content = new StringContent(JsonSerializer.Serialize(OrderRequest), UTF8Encoding.UTF8, "application/json")
+        var content = new StringContent(JsonSerializer.Serialize(OrderRequest), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
         };
@@ -174,7 +175,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
             PictureUrl = null
         };
         var bodyContent = new CustomerBasket("1", new List<BasketItem> { item });
-        var content = new StringContent(JsonSerializer.Serialize(bodyContent), UTF8Encoding.UTF8, "application/json")
+        var content = new StringContent(JsonSerializer.Serialize(bodyContent), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
         };
@@ -189,7 +190,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     public async Task CreateOrderDraftSucceeds()
     {
         var payload = FakeOrderDraftCommand();
-        var content = new StringContent(JsonSerializer.Serialize(FakeOrderDraftCommand()), UTF8Encoding.UTF8, "application/json")
+        var content = new StringContent(JsonSerializer.Serialize(FakeOrderDraftCommand()), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
         };

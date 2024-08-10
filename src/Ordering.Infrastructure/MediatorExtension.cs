@@ -1,4 +1,6 @@
-﻿namespace eShop.Ordering.Infrastructure;
+﻿using eShop.Shared.Data;
+
+namespace eShop.Ordering.Infrastructure;
 
 static class MediatorExtension
 {
@@ -6,7 +8,7 @@ static class MediatorExtension
     {
         var domainEntities = ctx.ChangeTracker
             .Entries<Entity>()
-            .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any());
+            .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Count > 0);
 
         var domainEvents = domainEntities
             .SelectMany(x => x.Entity.DomainEvents)

@@ -44,6 +44,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\eShop.Shared\eShop.Shared.csproj" />
   </ItemGroup>
   
   <ItemGroup>

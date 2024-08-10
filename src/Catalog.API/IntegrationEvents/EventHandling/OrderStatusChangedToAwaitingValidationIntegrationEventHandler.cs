@@ -1,31 +1,33 @@
-﻿namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
+using eShop.Shared.Data;
+
+namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
 
 public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
-    CatalogContext catalogContext,
+    IRepository<CatalogItem> repository,
     ICatalogIntegrationEventService catalogIntegrationEventService,
     ILogger<OrderStatusChangedToAwaitingValidationIntegrationEventHandler> logger) :
     IIntegrationEventHandler<OrderStatusChangedToAwaitingValidationIntegrationEvent>
 {
-    public async Task Handle(OrderStatusChangedToAwaitingValidationIntegrationEvent @event)
+    public async Task Handle(OrderStatusChangedToAwaitingValidationIntegrationEvent @event, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var confirmedOrderStockItems = new List<ConfirmedOrderStockItem>();
+        List<ConfirmedOrderStockItem> confirmedOrderStockItems = [];
 
-        foreach (var orderStockItem in @event.OrderStockItems)
+        foreach (OrderStockItem orderStockItem in @event.OrderStockItems)
         {
-            var catalogItem = catalogContext.CatalogItems.Find(orderStockItem.ProductId);
-            var hasStock = catalogItem.AvailableStock >= orderStockItem.Units;
-            var confirmedOrderStockItem = new ConfirmedOrderStockItem(catalogItem.Id, hasStock);
+            CatalogItem? catalogItem = await repository.GetByIdAsync(orderStockItem.ProductId, cancellationToken);
+            bool hasStock = catalogItem!.AvailableStock >= orderStockItem.Units;
+            ConfirmedOrderStockItem confirmedOrderStockItem = new(catalogItem.Id, hasStock);
 
             confirmedOrderStockItems.Add(confirmedOrderStockItem);
         }
 
-        var confirmedIntegrationEvent = confirmedOrderStockItems.Any(c => !c.HasStock)
-            ? (IntegrationEvent)new OrderStockRejectedIntegrationEvent(@event.OrderId, confirmedOrderStockItems)
+        IntegrationEvent confirmedIntegrationEvent = confirmedOrderStockItems.Any(c => !c.HasStock)
+            ? new OrderStockRejectedIntegrationEvent(@event.OrderId, confirmedOrderStockItems)
             : new OrderStockConfirmedIntegrationEvent(@event.OrderId);
 
-        await catalogIntegrationEventService.SaveEventAndCatalogContextChangesAsync(confirmedIntegrationEvent);
-        await catalogIntegrationEventService.PublishThroughEventBusAsync(confirmedIntegrationEvent);
+        await catalogIntegrationEventService.SaveEventAndCatalogContextChangesAsync(confirmedIntegrationEvent, cancellationToken);
+        await catalogIntegrationEventService.PublishThroughEventBusAsync(confirmedIntegrationEvent, cancellationToken);
     }
 }

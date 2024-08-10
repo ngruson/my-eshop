@@ -1,15 +1,12 @@
-﻿namespace eShop.Basket.API.Model;
+using eShop.Shared.Data;
 
-public class CustomerBasket
+namespace eShop.Basket.API.Model;
+
+public class CustomerBasket : IAggregateRoot
 {
-    public string BuyerId { get; set; }
+    public required string BuyerId { get; set; }
 
     public List<BasketItem> Items { get; set; } = [];
 
     public CustomerBasket() { }
-
-    public CustomerBasket(string customerId)
-    {
-        BuyerId = customerId;
-    }
 }

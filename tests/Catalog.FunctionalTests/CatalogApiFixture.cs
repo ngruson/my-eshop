@@ -1,4 +1,3 @@
-﻿using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace eShop.Catalog.FunctionalTests;
@@ -8,16 +7,16 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
     private readonly IHost _app;
 
     public IResourceBuilder<PostgresServerResource> Postgres { get; private set; }
-    private string _postgresConnectionString;
+    private string _connectionString;
 
     public CatalogApiFixture()
     {
         var options = new DistributedApplicationOptions { AssemblyName = typeof(CatalogApiFixture).Assembly.FullName, DisableDashboard = true };
         var appBuilder = DistributedApplication.CreateBuilder(options);
-        Postgres = appBuilder.AddPostgres("CatalogDB")
+        this.Postgres = appBuilder.AddPostgres("CatalogDB")
             .WithImage("ankane/pgvector")
             .WithImageTag("latest");
-        _app = appBuilder.Build();
+        this._app = appBuilder.Build();
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
@@ -26,7 +25,7 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
         {
             config.AddInMemoryCollection(new Dictionary<string, string>
             {
-                { $"ConnectionStrings:{Postgres.Resource.Name}", _postgresConnectionString },
+                { $"ConnectionStrings:{this.Postgres.Resource.Name}", this._connectionString },
                 });
         });
         return base.CreateHost(builder);
@@ -35,20 +34,20 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
     public new async Task DisposeAsync()
     {
         await base.DisposeAsync();
-        await _app.StopAsync();
-        if (_app is IAsyncDisposable asyncDisposable)
+        await this._app.StopAsync();
+        if (this._app is IAsyncDisposable asyncDisposable)
         {
             await asyncDisposable.DisposeAsync().ConfigureAwait(false);
         }
         else
         {
-            _app.Dispose();
+            this._app.Dispose();
         }
     }
 
     public async Task InitializeAsync()
     {
-        await _app.StartAsync();
-        _postgresConnectionString = await Postgres.Resource.GetConnectionStringAsync();
+        await this._app.StartAsync();
+        this._connectionString = await this.Postgres.Resource.GetConnectionStringAsync();
     }
 }

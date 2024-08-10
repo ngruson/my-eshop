@@ -2,9 +2,9 @@
 
 public interface IIntegrationEventLogService
 {
-    Task<IEnumerable<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId);
-    Task SaveEventAsync(IntegrationEvent @event, IDbContextTransaction transaction);
-    Task MarkEventAsPublishedAsync(Guid eventId);
-    Task MarkEventAsInProgressAsync(Guid eventId);
-    Task MarkEventAsFailedAsync(Guid eventId);
+    Task<IEnumerable<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId, CancellationToken cancellationToken);
+    Task SaveEventAsync(IntegrationEvent @event, IDbContextTransaction transaction, CancellationToken cancellationToken);
+    Task MarkEventAsPublishedAsync(Guid eventId, CancellationToken cancellationToken);
+    Task MarkEventAsInProgressAsync(Guid eventId, CancellationToken cancellationToken);
+    Task MarkEventAsFailedAsync(Guid eventId, CancellationToken cancellationToken);
 }

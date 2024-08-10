@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -26,7 +26,7 @@ namespace Ordering.Infrastructure.Migrations
                 oldDefaultValue: 1);
 
             migrationBuilder.AlterColumn<int>(
-                name: "Id",
+                name: "Value",
                 schema: "ordering",
                 table: "cardtypes",
                 type: "integer",
@@ -55,7 +55,7 @@ namespace Ordering.Infrastructure.Migrations
                 oldType: "integer");
 
             migrationBuilder.AlterColumn<int>(
-                name: "Id",
+                name: "Value",
                 schema: "ordering",
                 table: "cardtypes",
                 type: "integer",

@@ -1,4 +1,4 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
+namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
 public class GracePeriodConfirmedIntegrationEventHandler(
     IMediator mediator,
@@ -12,7 +12,7 @@ public class GracePeriodConfirmedIntegrationEventHandler(
     /// <param name="event">       
     /// </param>
     /// <returns></returns>
-    public async Task Handle(GracePeriodConfirmedIntegrationEvent @event)
+    public async Task Handle(GracePeriodConfirmedIntegrationEvent @event, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
@@ -25,6 +25,6 @@ public class GracePeriodConfirmedIntegrationEventHandler(
             command.OrderNumber,
             command);
 
-        await mediator.Send(command);
+        await mediator.Send(command, cancellationToken);
     }
 }

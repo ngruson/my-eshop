@@ -16,7 +16,7 @@ public class IntegrationEventLogService<TContext> : IIntegrationEventLogService,
             .ToArray();
     }
 
-    public async Task<IEnumerable<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId)
+    public async Task<IEnumerable<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId, CancellationToken cancellationToken)
     {
         var result = await _context.Set<IntegrationEventLogEntry>()
             .Where(e => e.TransactionId == transactionId && e.State == EventStateEnum.NotPublished)
@@ -31,7 +31,7 @@ public class IntegrationEventLogService<TContext> : IIntegrationEventLogService,
         return [];
     }
 
-    public Task SaveEventAsync(IntegrationEvent @event, IDbContextTransaction transaction)
+    public Task SaveEventAsync(IntegrationEvent @event, IDbContextTransaction transaction, CancellationToken cancellationToken)
     {
         if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
@@ -40,20 +40,20 @@ public class IntegrationEventLogService<TContext> : IIntegrationEventLogService,
         _context.Database.UseTransaction(transaction.GetDbTransaction());
         _context.Set<IntegrationEventLogEntry>().Add(eventLogEntry);
 
-        return _context.SaveChangesAsync();
+        return _context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task MarkEventAsPublishedAsync(Guid eventId)
+    public Task MarkEventAsPublishedAsync(Guid eventId, CancellationToken cancellationToken)
     {
         return UpdateEventStatus(eventId, EventStateEnum.Published);
     }
 
-    public Task MarkEventAsInProgressAsync(Guid eventId)
+    public Task MarkEventAsInProgressAsync(Guid eventId, CancellationToken cancellationToken)
     {
         return UpdateEventStatus(eventId, EventStateEnum.InProgress);
     }
 
-    public Task MarkEventAsFailedAsync(Guid eventId)
+    public Task MarkEventAsFailedAsync(Guid eventId, CancellationToken cancellationToken)
     {
         return UpdateEventStatus(eventId, EventStateEnum.PublishedFailed);
     }

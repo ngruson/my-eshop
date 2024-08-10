@@ -1,4 +1,4 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
+namespace eShop.Ordering.API.Application.Commands;
 
 using eShop.Ordering.API.Extensions;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
@@ -22,7 +22,7 @@ public class CreateOrderDraftCommandHandler
 
 public record OrderDraftDTO
 {
-    public IEnumerable<OrderItemDTO> OrderItems { get; init; }
+    public required IEnumerable<OrderItemDTO> OrderItems { get; init; }
     public decimal Total { get; init; }
 
     public static OrderDraftDTO FromOrder(Order order)
@@ -47,7 +47,7 @@ public record OrderItemDTO
 {
     public int ProductId { get; init; }
 
-    public string ProductName { get; init; }
+    public required string ProductName { get; init; }
 
     public decimal UnitPrice { get; init; }
 
@@ -55,5 +55,5 @@ public record OrderItemDTO
 
     public int Units { get; init; }
 
-    public string PictureUrl { get; init; }
+    public required string PictureUrl { get; init; }
 }

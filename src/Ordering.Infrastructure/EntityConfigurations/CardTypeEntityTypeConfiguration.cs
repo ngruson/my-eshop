@@ -1,4 +1,4 @@
-﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations;
+namespace eShop.Ordering.Infrastructure.EntityConfigurations;
 
 class CardTypeEntityTypeConfiguration
     : IEntityTypeConfiguration<CardType>
@@ -7,7 +7,9 @@ class CardTypeEntityTypeConfiguration
     {
         cardTypesConfiguration.ToTable("cardtypes");
 
-        cardTypesConfiguration.Property(ct => ct.Id)
+        cardTypesConfiguration.HasKey(ct => ct.Value);
+
+        cardTypesConfiguration.Property(ct => ct.Value)
             .ValueGeneratedNever();
 
         cardTypesConfiguration.Property(ct => ct.Name)

@@ -1,15 +1,13 @@
-﻿namespace eShop.Ordering.UnitTests.Domain;
+namespace eShop.Ordering.UnitTests.Domain;
 
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
-using eShop.Ordering.UnitTests.Domain;
 
-[TestClass]
 public class OrderAggregateTest
 {
     public OrderAggregateTest()
     { }
 
-    [TestMethod]
+    [Fact]
     public void Create_order_item_success()
     {
         //Arrange    
@@ -24,10 +22,10 @@ public class OrderAggregateTest
         var fakeOrderItem = new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units);
 
         //Assert
-        Assert.IsNotNull(fakeOrderItem);
+        Assert.NotNull(fakeOrderItem);
     }
 
-    [TestMethod]
+    [Fact]
     public void Invalid_number_of_units()
     {
         //Arrange    
@@ -39,10 +37,10 @@ public class OrderAggregateTest
         var units = -1;
 
         //Act - Assert
-        Assert.ThrowsException<OrderingDomainException>(() => new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units));
+        Assert.Throws<OrderingDomainException>(() => new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units));
     }
 
-    [TestMethod]
+    [Fact]
     public void Invalid_total_of_order_item_lower_than_discount_applied()
     {
         //Arrange    
@@ -54,10 +52,10 @@ public class OrderAggregateTest
         var units = 1;
         
         //Act - Assert
-        Assert.ThrowsException<OrderingDomainException>(() => new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units));       
+        Assert.Throws<OrderingDomainException>(() => new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units));       
     }
 
-    [TestMethod]
+    [Fact]
     public void Invalid_discount_setting()
     {
         //Arrange    
@@ -72,10 +70,10 @@ public class OrderAggregateTest
         var fakeOrderItem = new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units);
 
         //Assert
-        Assert.ThrowsException<OrderingDomainException>(() => fakeOrderItem.SetNewDiscount(-1));
+        Assert.Throws<OrderingDomainException>(() => fakeOrderItem.SetNewDiscount(-1));
     }
 
-    [TestMethod]
+    [Fact]
     public void Invalid_units_setting()
     {
         //Arrange    
@@ -90,22 +88,29 @@ public class OrderAggregateTest
         var fakeOrderItem = new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units);
 
         //Assert
-        Assert.ThrowsException<OrderingDomainException>(() => fakeOrderItem.AddUnits(-1));
+        Assert.Throws<OrderingDomainException>(() => fakeOrderItem.AddUnits(-1));
     }
 
-    [TestMethod]
-    public void when_add_two_times_on_the_same_item_then_the_total_of_order_should_be_the_sum_of_the_two_items()
+    [Theory, AutoNSubstituteData]
+    public void when_add_two_times_on_the_same_item_then_the_total_of_order_should_be_the_sum_of_the_two_items(
+        Order order,
+        int productId,
+        string productName,
+        decimal unitPrice)
     {
-        var address = new AddressBuilder().Build();
-        var order = new OrderBuilder(address)
-            .AddOne(1, "cup", 10.0m, 0, string.Empty)
-            .AddOne(1, "cup", 10.0m, 0, string.Empty)
-            .Build();
+        // Arrange
 
-        Assert.AreEqual(20.0m, order.GetTotal());
+        // Act
+
+        order.AddOrderItem(productId, productName, unitPrice, 0, null, 1);
+        order.AddOrderItem(productId, productName, unitPrice, 0, null, 1);
+
+        // Assert
+
+        Assert.Equal(unitPrice * 2, order.GetTotal());
     }
 
-    [TestMethod]
+    [Fact]
     public void Add_new_Order_raises_new_event()
     {
         //Arrange
@@ -113,7 +118,7 @@ public class OrderAggregateTest
         var city = "FakeCity";
         var state = "fakeState";
         var country = "fakeCountry";
-        var zipcode = "FakeZipCode";
+        var zipCode = "FakeZipCode";
         var cardTypeId = 5;
         var cardNumber = "12";
         var cardSecurityNumber = "123";
@@ -122,13 +127,13 @@ public class OrderAggregateTest
         var expectedResult = 1;
 
         //Act 
-        var fakeOrder = new Order("1", "fakeName", new Address(street, city, state, country, zipcode), cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        var fakeOrder = new Order("1", "fakeName", new Address(street, city, state, country, zipCode), cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
 
         //Assert
-        Assert.AreEqual(fakeOrder.DomainEvents.Count, expectedResult);
+        Assert.Equal(fakeOrder.DomainEvents.Count, expectedResult);
     }
 
-    [TestMethod]
+    [Fact]
     public void Add_event_Order_explicitly_raises_new_event()
     {
         //Arrange   
@@ -136,7 +141,7 @@ public class OrderAggregateTest
         var city = "FakeCity";
         var state = "fakeState";
         var country = "fakeCountry";
-        var zipcode = "FakeZipCode";
+        var zipCode = "FakeZipCode";
         var cardTypeId = 5;
         var cardNumber = "12";
         var cardSecurityNumber = "123";
@@ -145,13 +150,13 @@ public class OrderAggregateTest
         var expectedResult = 2;
 
         //Act 
-        var fakeOrder = new Order("1", "fakeName", new Address(street, city, state, country, zipcode), cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        var fakeOrder = new Order("1", "fakeName", new Address(street, city, state, country, zipCode), cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
         fakeOrder.AddDomainEvent(new OrderStartedDomainEvent(fakeOrder, "fakeName", "1", cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration));
         //Assert
-        Assert.AreEqual(fakeOrder.DomainEvents.Count, expectedResult);
+        Assert.Equal(fakeOrder.DomainEvents.Count, expectedResult);
     }
 
-    [TestMethod]
+    [Fact]
     public void Remove_event_Order_explicitly()
     {
         //Arrange    
@@ -159,13 +164,13 @@ public class OrderAggregateTest
         var city = "FakeCity";
         var state = "fakeState";
         var country = "fakeCountry";
-        var zipcode = "FakeZipCode";
+        var zipCode = "FakeZipCode";
         var cardTypeId = 5;
         var cardNumber = "12";
         var cardSecurityNumber = "123";
         var cardHolderName = "FakeName";
         var cardExpiration = DateTime.UtcNow.AddYears(1);
-        var fakeOrder = new Order("1", "fakeName", new Address(street, city, state, country, zipcode), cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        var fakeOrder = new Order("1", "fakeName", new Address(street, city, state, country, zipCode), cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
         var @fakeEvent = new OrderStartedDomainEvent(fakeOrder, "1", "fakeName", cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
         var expectedResult = 1;
 
@@ -173,6 +178,6 @@ public class OrderAggregateTest
         fakeOrder.AddDomainEvent(@fakeEvent);
         fakeOrder.RemoveDomainEvent(@fakeEvent);
         //Assert
-        Assert.AreEqual(fakeOrder.DomainEvents.Count, expectedResult);
+        Assert.Equal(fakeOrder.DomainEvents.Count, expectedResult);
     }
 }

@@ -1,4 +1,4 @@
-﻿using eShop.Ordering.Domain.SeedWork;
+﻿using eShop.Shared.Data;
 
 namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
@@ -12,13 +12,13 @@ public class Address : ValueObject
 
     public Address() { }
 
-    public Address(string street, string city, string state, string country, string zipcode)
+    public Address(string street, string city, string state, string country, string zipCode)
     {
         Street = street;
         City = city;
         State = state;
         Country = country;
-        ZipCode = zipcode;
+        ZipCode = zipCode;
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
