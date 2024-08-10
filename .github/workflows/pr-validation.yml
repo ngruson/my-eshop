@@ -19,7 +19,7 @@ on:
       - '.github/workflows/pr-validation-maui.yml'
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
