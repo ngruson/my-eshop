@@ -1,0 +1,29 @@
+using eShop.Ordering.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+
+namespace Ordering.UnitTests.Infrastructure;
+
+public class OrderingContextUnitTests
+{
+    [Theory, AutoNSubstituteData]
+    public void OnModelCreating_ShouldApplyConfigurations(
+        DbContextOptionsBuilder<OrderingContext> optionsBuilder,
+        IMediator mediator)
+    {
+        // Arrange
+
+        optionsBuilder.UseInMemoryDatabase(databaseName: "testDatabase");
+
+        var context = new OrderingContext(optionsBuilder.Options, mediator);
+
+        context.Database.EnsureCreated();
+
+        // Act
+
+        // Assert
+
+        Assert.True(context.Model.GetEntityTypes().Any());
+
+    }
+
+}

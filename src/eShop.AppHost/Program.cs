@@ -19,51 +19,51 @@ var webhooksDb = postgres.AddDatabase("webhooksdb");
 var launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
 
 // Services
-var identityApi = builder.AddProject<Projects.Identity_API>("identity-api", launchProfileName)
+var identityApi = builder.AddProject<Projects.eShop_Identity_API>("identity-api", launchProfileName)
     .WithExternalHttpEndpoints()
     .WithReference(identityDb);
 
 var identityEndpoint = identityApi.GetEndpoint(launchProfileName);
 
-var basketApi = builder.AddProject<Projects.Basket_API>("basket-api")
+var basketApi = builder.AddProject<Projects.eShop_Basket_API>("basket-api")
     .WithReference(redis)
     .WithReference(rabbitMq)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
-var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
+var catalogApi = builder.AddProject<Projects.eShop_Catalog_API>("catalog-api")
     .WithReference(rabbitMq)
     .WithReference(catalogDb);
 
-var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
+var orderingApi = builder.AddProject<Projects.eShop_Ordering_API>("ordering-api")
     .WithReference(rabbitMq)
     .WithReference(orderDb)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
-builder.AddProject<Projects.OrderProcessor>("order-processor")
+builder.AddProject<Projects.eShop_OrderProcessor>("order-processor")
     .WithReference(rabbitMq)
     .WithReference(orderDb);
 
-builder.AddProject<Projects.PaymentProcessor>("payment-processor")
+builder.AddProject<Projects.eShop_PaymentProcessor>("payment-processor")
     .WithReference(rabbitMq);
 
-var webHooksApi = builder.AddProject<Projects.Webhooks_API>("webhooks-api")
+var webHooksApi = builder.AddProject<Projects.eShop_Webhooks_API>("webhooks-api")
     .WithReference(rabbitMq)
     .WithReference(webhooksDb)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
 // Reverse proxies
-builder.AddProject<Projects.Mobile_Bff_Shopping>("mobile-bff")
+builder.AddProject<Projects.eShop_Mobile_Bff_Shopping>("mobile-bff")
     .WithReference(catalogApi)
     .WithReference(orderingApi)
     .WithReference(basketApi)
     .WithReference(identityApi);
 
 // Apps
-var webhooksClient = builder.AddProject<Projects.WebhookClient>("webhooksclient", launchProfileName)
+var webhooksClient = builder.AddProject<Projects.eShop_WebhookClient>("webhooksclient", launchProfileName)
     .WithReference(webHooksApi)
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
-var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
+var webApp = builder.AddProject<Projects.eShop_WebApp>("webapp", launchProfileName)
     .WithExternalHttpEndpoints()
     .WithReference(basketApi)
     .WithReference(catalogApi)
@@ -122,7 +122,7 @@ identityApi.WithEnvironment("BasketApiClient", basketApi.GetEndpoint("http"))
            .WithEnvironment("WebhooksWebClient", webhooksClient.GetEndpoint(launchProfileName))
            .WithEnvironment("WebAppClient", webApp.GetEndpoint(launchProfileName));
 
-builder.AddProject<Projects.AdminApp>("adminapp");
+builder.AddProject<Projects.eShop_AdminApp>("adminapp");
 
 builder.Build().Run();
 

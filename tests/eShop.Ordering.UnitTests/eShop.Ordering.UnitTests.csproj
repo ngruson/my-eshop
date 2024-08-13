@@ -32,6 +32,7 @@
     <ProjectReference Include="..\..\src\eShop.Ordering.API\eShop.Ordering.API.csproj" />
     <ProjectReference Include="..\..\src\eShop.Ordering.Domain\eShop.Ordering.Domain.csproj" />
     <ProjectReference Include="..\..\src\eShop.Ordering.Infrastructure\eShop.Ordering.Infrastructure.csproj" />
+    <ProjectReference Include="..\eShop.Ordering.FunctionalTests\eShop.Ordering.FunctionalTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

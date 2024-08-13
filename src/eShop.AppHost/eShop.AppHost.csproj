@@ -18,17 +18,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AdminApp\AdminApp.csproj" />
-    <ProjectReference Include="..\Mobile.Bff.Shopping\Mobile.Bff.Shopping.csproj" />
-    <ProjectReference Include="..\Basket.API\Basket.API.csproj" />
-    <ProjectReference Include="..\Catalog.API\Catalog.API.csproj" />
-    <ProjectReference Include="..\Identity.API\Identity.API.csproj" />
-    <ProjectReference Include="..\Ordering.API\Ordering.API.csproj" />
-    <ProjectReference Include="..\OrderProcessor\OrderProcessor.csproj" />
-    <ProjectReference Include="..\PaymentProcessor\PaymentProcessor.csproj" />
-    <ProjectReference Include="..\Webhooks.API\Webhooks.API.csproj" />
-    <ProjectReference Include="..\WebApp\WebApp.csproj" />
-    <ProjectReference Include="..\WebhookClient\WebhookClient.csproj" />
+    <ProjectReference Include="..\AdminApp\eShop.AdminApp.csproj" />
+    <ProjectReference Include="..\eShop.Basket.API\eShop.Basket.API.csproj" />
+    <ProjectReference Include="..\eShop.Catalog.API\eShop.Catalog.API.csproj" />
+    <ProjectReference Include="..\eShop.Identity.API\eShop.Identity.API.csproj" />
+    <ProjectReference Include="..\eShop.Mobile.Bff.Shopping\eShop.Mobile.Bff.Shopping.csproj" />
+    <ProjectReference Include="..\eShop.Ordering.API\eShop.Ordering.API.csproj" />
+    <ProjectReference Include="..\eShop.OrderProcessor\eShop.OrderProcessor.csproj" />
+    <ProjectReference Include="..\eShop.PaymentProcessor\eShop.PaymentProcessor.csproj" />
+    <ProjectReference Include="..\eShop.WebApp\eShop.WebApp.csproj" />
+    <ProjectReference Include="..\eShop.WebhookClient\eShop.WebhookClient.csproj" />
+    <ProjectReference Include="..\eShop.Webhooks.API\eShop.Webhooks.API.csproj" />
   </ItemGroup>
 
 </Project>

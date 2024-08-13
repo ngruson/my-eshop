@@ -2,21 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <GenerateErrorForMissingTargetingPacks>false</GenerateErrorForMissingTargetingPacks>
-    <IsPublishable>false</IsPublishable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
     <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.msbuild">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="AutoFixture.AutoNSubstitute " />
     <PackageReference Include="AutoFixture.XUnit2" />
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="coverlet.msbuild" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp">
@@ -28,14 +26,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\eShop.IntegrationEventLogEF\eShop.IntegrationEventLogEF.csproj" />
-    <ProjectReference Include="..\..\src\eShop.Ordering.API\eShop.Ordering.API.csproj" />
-    <ProjectReference Include="..\..\src\eShop.Ordering.Domain\eShop.Ordering.Domain.csproj" />
-    <ProjectReference Include="..\..\src\eShop.Ordering.Infrastructure\eShop.Ordering.Infrastructure.csproj" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\shared\AutoNSubstituteDataAttribute.cs" Link="Includes\AutoNSubstituteDataAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\eShop.IntegrationEventLogEF\eShop.IntegrationEventLogEF.csproj" />
   </ItemGroup>
 
 </Project>
