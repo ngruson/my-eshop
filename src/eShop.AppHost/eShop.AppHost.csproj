@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AdminApp\eShop.AdminApp.csproj" />
+    <ProjectReference Include="..\eShop.AdminApp\eShop.AdminApp.csproj" />
     <ProjectReference Include="..\eShop.Basket.API\eShop.Basket.API.csproj" />
     <ProjectReference Include="..\eShop.Catalog.API\eShop.Catalog.API.csproj" />
     <ProjectReference Include="..\eShop.Identity.API\eShop.Identity.API.csproj" />
