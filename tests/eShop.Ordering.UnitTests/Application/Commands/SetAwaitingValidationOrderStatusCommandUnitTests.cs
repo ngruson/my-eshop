@@ -27,7 +27,7 @@ public class SetAwaitingValidationOrderStatusCommandUnitTests
 
         Assert.Equal(OrderStatus.AwaitingValidation, order.OrderStatus);
 
-        await orderRepository.Received().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.Received().SaveEntitiesAsync(default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -53,7 +53,7 @@ public class SetAwaitingValidationOrderStatusCommandUnitTests
 
         Assert.NotEqual(OrderStatus.AwaitingValidation, order.OrderStatus);
 
-        await orderRepository.Received().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.Received().SaveEntitiesAsync(default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -72,6 +72,6 @@ public class SetAwaitingValidationOrderStatusCommandUnitTests
 
         Assert.False(result);
 
-        await orderRepository.DidNotReceive().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
     }
 }

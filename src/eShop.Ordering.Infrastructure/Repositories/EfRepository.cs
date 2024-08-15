@@ -1,8 +1,8 @@
 using Ardalis.Specification.EntityFrameworkCore;
-using eShop.Ordering.Infrastructure;
+using eShop.IntegrationEventLogEF.Utilities;
 using eShop.Shared.Data;
 
-namespace Ordering.Infrastructure.Repositories;
+namespace eShop.Ordering.Infrastructure.Repositories;
 /// <summary>
 /// The repository implementation for Entity Framework Core.
 /// </summary>
@@ -11,7 +11,30 @@ namespace Ordering.Infrastructure.Repositories;
 public class EfRepository<T>(OrderingContext dbContext) : RepositoryBase<T>(dbContext), IReadRepository<T>, IRepository<T>
     where T : class, IAggregateRoot
 {
-    private readonly IUnitOfWork _unitOfWork = dbContext;
+    private readonly OrderingContext _dbContext = dbContext;
 
-    public IUnitOfWork UnitOfWork => this._unitOfWork;
+    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+    {
+        return await this._dbContext.SaveEntitiesAsync(cancellationToken);
+    }
+
+    public async Task BeginTransactionAsync()
+    {
+        await this._dbContext.BeginTransactionAsync();
+    }
+
+    public async Task CommitTransactionAsync()
+    {
+        IDbContextTransaction? transaction = this._dbContext.GetCurrentTransaction();
+
+        if (transaction != null)
+        {
+            await this._dbContext.CommitTransactionAsync(transaction);
+        }
+    }
+
+    public async Task ExecuteInTransactionAsync(Func<Guid, Task> func, CancellationToken cancellationToken = default)
+    {
+        await ResilientTransaction.New(this._dbContext).ExecuteAsync(func);
+    }
 }

@@ -2,9 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <GenerateErrorForMissingTargetingPacks>false</GenerateErrorForMissingTargetingPacks>
-    <IsPublishable>false</IsPublishable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
     <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,10 +30,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\eShop.IntegrationEventLogEF\eShop.IntegrationEventLogEF.csproj" />
-    <ProjectReference Include="..\..\src\eShop.Ordering.API\eShop.Ordering.API.csproj" />
-    <ProjectReference Include="..\..\src\eShop.Ordering.Domain\eShop.Ordering.Domain.csproj" />
-    <ProjectReference Include="..\..\src\eShop.Ordering.Infrastructure\eShop.Ordering.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\eShop.Catalog.API\eShop.Catalog.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>

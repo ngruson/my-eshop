@@ -44,7 +44,7 @@ public class OrderingIntegrationEventService(IEventBus eventBus,
         {
             this._logger.LogInformation("Enqueuing integration event {IntegrationEventId} to repository ({@IntegrationEvent})", evt.Id, evt);
 
-            await this._eventLogService.SaveEventAsync(evt, transaction, cancellationToken);
+            await this._eventLogService.SaveEventAsync(evt, transaction.TransactionId, cancellationToken);
         }
     }
 }

@@ -1,27 +1,23 @@
 using System.Diagnostics;
-using Microsoft.SemanticKernel.Embeddings;
 using Pgvector;
 
 namespace eShop.Catalog.API.Services;
 
-public sealed class CatalogAI(IWebHostEnvironment environment, ILogger<CatalogAI> logger, ITextEmbeddingGenerationService? embeddingGenerator = null) : ICatalogAI
+public sealed class CatalogAI(IWebHostEnvironment environment, ILogger<CatalogAI> logger, TextEmbeddingGenerationServiceWrapper textEmbeddingGenerationServiceWrapper) : ICatalogAI
 {
     private const int EmbeddingDimensions = 384;
-    private readonly ITextEmbeddingGenerationService? _embeddingGenerator = embeddingGenerator;
+    private readonly TextEmbeddingGenerationServiceWrapper _wrapper = textEmbeddingGenerationServiceWrapper;
 
     /// <summary>The web host environment.</summary>
     private readonly IWebHostEnvironment _environment = environment;
     /// <summary>Logger for use in AI operations.</summary>
     private readonly ILogger _logger = logger;
 
-    /// <inheritdoc/>
-    public bool IsEnabled => this._embeddingGenerator is not null;
+    public bool IsEnabled => this._wrapper.IsEnabled;
 
     /// <inheritdoc/>
     public ValueTask<Vector?> GetEmbeddingAsync(CatalogItem item) =>
-        this.IsEnabled ?
-            this.GetEmbeddingAsync(CatalogItemToString(item)) :
-            ValueTask.FromResult<Vector?>(null);
+        this.GetEmbeddingAsync(CatalogItemToString(item));
 
     /// <inheritdoc/>
     public async ValueTask<IReadOnlyList<Vector>?> GetEmbeddingsAsync(IEnumerable<CatalogItem> items)
@@ -30,7 +26,9 @@ public sealed class CatalogAI(IWebHostEnvironment environment, ILogger<CatalogAI
         {
             long timestamp = Stopwatch.GetTimestamp();
 
-            IList<ReadOnlyMemory<float>> embeddings = await this._embeddingGenerator!.GenerateEmbeddingsAsync(items.Select(CatalogItemToString).ToList());
+            IList<ReadOnlyMemory<float>> embeddings =
+                await this._wrapper!.GenerateEmbeddingsAsync(items.Select(CatalogItemToString).ToList());
+
             var results = embeddings.Select(m => new Vector(m[0..EmbeddingDimensions])).ToList();
 
             if (this._logger.IsEnabled(LogLevel.Trace))
@@ -51,7 +49,7 @@ public sealed class CatalogAI(IWebHostEnvironment environment, ILogger<CatalogAI
         {
             long timestamp = Stopwatch.GetTimestamp();
 
-            ReadOnlyMemory<float> embedding = await this._embeddingGenerator!.GenerateEmbeddingAsync(text);
+            ReadOnlyMemory<float> embedding = await this._wrapper!.GenerateEmbeddingAsync(text);
             embedding = embedding[0..EmbeddingDimensions];
 
             if (this._logger.IsEnabled(LogLevel.Trace))

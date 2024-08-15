@@ -3,7 +3,7 @@ using AutoFixture.Xunit2;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 
-namespace Ordering.UnitTests.Application.Commands;
+namespace eShop.Ordering.UnitTests.Application.Commands;
 public class CancelOrderCommandUnitTests
 {
     [Theory, AutoNSubstituteData]
@@ -27,7 +27,7 @@ public class CancelOrderCommandUnitTests
 
         Assert.Equal(OrderStatus.Cancelled, order.OrderStatus);
 
-        await orderRepository.Received().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.Received().SaveEntitiesAsync(default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -55,7 +55,7 @@ public class CancelOrderCommandUnitTests
 
         await Assert.ThrowsAsync<OrderingDomainException>(func);
 
-        await orderRepository.DidNotReceive().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -84,7 +84,7 @@ public class CancelOrderCommandUnitTests
 
         await Assert.ThrowsAsync<OrderingDomainException>(func);
 
-        await orderRepository.DidNotReceive().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -104,6 +104,6 @@ public class CancelOrderCommandUnitTests
 
         Assert.False(result);
 
-        await orderRepository.DidNotReceive().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
     }
 }

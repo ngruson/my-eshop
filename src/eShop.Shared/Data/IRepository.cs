@@ -1,4 +1,4 @@
-﻿using Ardalis.Specification;
+using Ardalis.Specification;
 
 namespace eShop.Shared.Data;
 
@@ -9,5 +9,9 @@ namespace eShop.Shared.Data;
 public interface IRepository<T> : IRepositoryBase<T>
     where T : class, IAggregateRoot
 {
-    IUnitOfWork UnitOfWork { get; }
+    //IUnitOfWork UnitOfWork { get; }
+
+    Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default);
+
+    Task ExecuteInTransactionAsync(Func<Guid, Task> func, CancellationToken cancellationToken = default);
 }

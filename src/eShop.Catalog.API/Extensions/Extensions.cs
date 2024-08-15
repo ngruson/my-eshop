@@ -1,4 +1,3 @@
-using Catalog.API.Infrastructure;
 using eShop.Catalog.API.Services;
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;
@@ -19,8 +18,8 @@ public static class Extensions
         });
 
         // REVIEW: This is done for development ease but shouldn't be here in production
-        builder.Services.AddMigration<CatalogContext>(typeof(CatalogContextSeed));
-        builder.Services.AddScoped<CatalogContextSeed>();
+        builder.Services.AddMigration<CatalogContext>(typeof(CatalogSeed));
+        builder.Services.AddScoped<CatalogSeed>();
 
         builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 
@@ -57,6 +56,7 @@ public static class Extensions
             builder.Services.AddOpenAITextEmbeddingGeneration(builder.Configuration["AIOptions:OpenAI:EmbeddingName"] ?? "text-embedding-3-small");
         }
 
+        builder.Services.AddSingleton<TextEmbeddingGenerationServiceWrapper>();
         builder.Services.AddSingleton<ICatalogAI, CatalogAI>();
     }
 }

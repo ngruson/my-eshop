@@ -4,7 +4,6 @@ using eShop.EventBus.Events;
 using eShop.IntegrationEventLogEF.Services;
 using eShop.IntegrationEventLogEF.Specifications;
 using eShop.Shared.Data;
-using Microsoft.EntityFrameworkCore.Storage;
 using NSubstitute;
 
 namespace eShop.IntegrationEventLogEF.UnitTests;
@@ -66,13 +65,13 @@ public class IntegrationEventLogServiceUnitTests
         [Substitute, Frozen] IRepository<IntegrationEventLogEntry> repository,
         IntegrationEventLogService sut,
         IntegrationEvent evt,
-        IDbContextTransaction transaction)
+        Guid transactionId)
     {
         // Arrange
 
         // Act
 
-        await sut.SaveEventAsync(evt, transaction, default);
+        await sut.SaveEventAsync(evt, transactionId, default);
 
         // Assert
 

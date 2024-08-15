@@ -5,7 +5,7 @@ using SmartEnum.EFCore;
 using System.Data;
 
 namespace eShop.Shared.Data.EntityFramework;
-public class eShopDbContext : DbContext, IUnitOfWork
+public class eShopDbContext : DbContext, IUnitOfWork<IDbContextTransaction>
 {
     private readonly IMediator _mediator;
     private IDbContextTransaction? _currentTransaction;
@@ -20,7 +20,7 @@ public class eShopDbContext : DbContext, IUnitOfWork
     {
         this._mediator = mediator;
 
-        System.Diagnostics.Debug.WriteLine("OrderingContext::ctor ->" + this.GetHashCode());
+        System.Diagnostics.Debug.WriteLine("eShopDbContext::ctor ->" + this.GetHashCode());
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -56,13 +56,14 @@ public class eShopDbContext : DbContext, IUnitOfWork
 
     public async Task CommitTransactionAsync(IDbContextTransaction transaction)
     {
-        if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-        if (transaction != this._currentTransaction) throw new InvalidOperationException($"Transaction {transaction.TransactionId} is not current");
+        ArgumentNullException.ThrowIfNull(transaction);
+        if (transaction != this._currentTransaction)
+            throw new InvalidOperationException($"Transaction {transaction.TransactionId} is not current");
 
         try
         {
             await this.SaveChangesAsync();
-            await transaction.CommitAsync();
+            await this._currentTransaction.CommitAsync();
         }
         catch
         {

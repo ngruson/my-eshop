@@ -1,7 +1,10 @@
-﻿namespace eShop.Shared.Data;
+namespace eShop.Shared.Data;
 
-public interface IUnitOfWork : IDisposable
+public interface IUnitOfWork<T> : IDisposable
 {
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default);
+
+    Task<T?> BeginTransactionAsync();
+    Task CommitTransactionAsync(T transaction);
 }

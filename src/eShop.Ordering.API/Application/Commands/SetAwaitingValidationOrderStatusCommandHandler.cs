@@ -4,8 +4,9 @@ using eShop.Shared.Data;
 namespace eShop.Ordering.API.Application.Commands;
 
 // Regular CommandHandler
-public class SetAwaitingValidationOrderStatusCommandHandler(IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository) 
-    : IRequestHandler<SetAwaitingValidationOrderStatusCommand, bool>
+public class SetAwaitingValidationOrderStatusCommandHandler(
+    IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository) 
+        : IRequestHandler<SetAwaitingValidationOrderStatusCommand, bool>
 {
     private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
 
@@ -28,7 +29,7 @@ public class SetAwaitingValidationOrderStatusCommandHandler(IRepository<Domain.A
 
         orderToUpdate.SetAwaitingValidationStatus();
 
-        return await this._orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        return await this._orderRepository.SaveEntitiesAsync(cancellationToken);
     }
 }
 

@@ -3,7 +3,7 @@ using AutoFixture.Xunit2;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 
-namespace Ordering.UnitTests.Application.Commands;
+namespace eShop.Ordering.UnitTests.Application.Commands;
 public class CreateOrderCommandUnitTests
 {
     [Theory, AutoNSubstituteData]
@@ -20,6 +20,6 @@ public class CreateOrderCommandUnitTests
 
         //Assert
 
-        await orderRepositoryMock.Received().UnitOfWork.SaveChangesAsync(default);
+        await orderRepositoryMock.Received().AddAsync(Arg.Any<Order>(), default);
     }
 }

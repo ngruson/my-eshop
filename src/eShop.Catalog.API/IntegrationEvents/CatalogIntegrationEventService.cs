@@ -1,10 +1,12 @@
+using eShop.Shared.Data;
+
 namespace eShop.Catalog.API.IntegrationEvents;
 
 public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEventService> logger,
     IEventBus eventBus,
-    CatalogContext catalogContext,
+    //CatalogContext catalogContext,
     IIntegrationEventLogService integrationEventLogService)
-    : ICatalogIntegrationEventService
+        : ICatalogIntegrationEventService
 {
     public async Task PublishThroughEventBusAsync(IntegrationEvent evt, CancellationToken cancellationToken)
     {
@@ -23,17 +25,19 @@ public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEve
         }
     }
 
-    public async Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent evt, CancellationToken cancellationToken)
+    public async Task SaveEventAndDbChangesAsync(IRepository<CatalogItem> repository, IntegrationEvent evt, Func<Task>? func, CancellationToken cancellationToken)
     {
         logger.LogInformation("CatalogIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", evt.Id);
 
-        //Use of an EF Core resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
-        //See: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency            
-        await ResilientTransaction.New(catalogContext).ExecuteAsync(async () =>
-        {
-            // Achieving atomicity between original catalog database operation and the IntegrationEventLog thanks to a local transaction
-            await catalogContext.SaveChangesAsync();
-            await integrationEventLogService.SaveEventAsync(evt, catalogContext.Database.CurrentTransaction!, cancellationToken);
-        });
+        await repository.ExecuteInTransactionAsync(async (Guid transactionId) =>
+            {
+                // Achieving atomicity between original catalog database operation and the IntegrationEventLog thanks to a local transaction
+                if (func is not null)
+                {
+                    await func();
+                }
+                await integrationEventLogService.SaveEventAsync(evt, transactionId, cancellationToken);
+            },
+            cancellationToken);
     }
 }

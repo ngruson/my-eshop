@@ -23,7 +23,7 @@ public class CancelOrderCommandHandler(IRepository<Domain.AggregatesModel.OrderA
         }
 
         orderToUpdate.SetCancelledStatus();
-        return await this._orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        return await this._orderRepository.SaveEntitiesAsync(cancellationToken);
     }
 }
 

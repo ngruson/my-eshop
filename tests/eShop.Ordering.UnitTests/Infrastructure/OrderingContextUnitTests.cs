@@ -1,7 +1,7 @@
 using eShop.Ordering.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
-namespace Ordering.UnitTests.Infrastructure;
+namespace eShop.Ordering.UnitTests.Infrastructure;
 
 public class OrderingContextUnitTests
 {
@@ -23,7 +23,5 @@ public class OrderingContextUnitTests
         // Assert
 
         Assert.True(context.Model.GetEntityTypes().Any());
-
     }
-
 }

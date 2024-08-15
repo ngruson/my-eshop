@@ -5,8 +5,8 @@ namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
 public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
     IRepository<CatalogItem> repository,
     ICatalogIntegrationEventService catalogIntegrationEventService,
-    ILogger<OrderStatusChangedToAwaitingValidationIntegrationEventHandler> logger) :
-    IIntegrationEventHandler<OrderStatusChangedToAwaitingValidationIntegrationEvent>
+    ILogger<OrderStatusChangedToAwaitingValidationIntegrationEventHandler> logger)
+        : IIntegrationEventHandler<OrderStatusChangedToAwaitingValidationIntegrationEvent>
 {
     public async Task Handle(OrderStatusChangedToAwaitingValidationIntegrationEvent @event, CancellationToken cancellationToken)
     {
@@ -27,7 +27,7 @@ public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
             ? new OrderStockRejectedIntegrationEvent(@event.OrderId, confirmedOrderStockItems)
             : new OrderStockConfirmedIntegrationEvent(@event.OrderId);
 
-        await catalogIntegrationEventService.SaveEventAndCatalogContextChangesAsync(confirmedIntegrationEvent, cancellationToken);
+        await catalogIntegrationEventService.SaveEventAndDbChangesAsync(repository, confirmedIntegrationEvent, null, cancellationToken);
         await catalogIntegrationEventService.PublishThroughEventBusAsync(confirmedIntegrationEvent, cancellationToken);
     }
 }

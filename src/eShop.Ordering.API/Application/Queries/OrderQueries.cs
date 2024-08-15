@@ -1,5 +1,6 @@
-﻿using eShop.Ordering.API.Application.Specifications;
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
+using Microsoft.EntityFrameworkCore.Storage;
 using BuyerAggregate = eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 using OrderAggregate = eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
@@ -22,8 +23,8 @@ public class OrderQueries(
         {
             OrderNumber = order.Id,
             Date = order.OrderDate,
-            Description = order.Description,
-            City = order.Address.City,
+            Description = order.Description!,
+            City = order.Address!.City,
             Country = order.Address.Country,
             State = order.Address.State,
             Street = order.Address.Street,
@@ -32,10 +33,10 @@ public class OrderQueries(
             Total = order.GetTotal(),
             OrderItems = order.OrderItems.Select(oi => new OrderItem
             {
-                ProductName = oi.ProductName,
+                ProductName = oi.ProductName!,
                 Units = oi.Units,
                 UnitPrice = (double)oi.UnitPrice,
-                PictureUrl = oi.PictureUrl
+                PictureUrl = oi.PictureUrl!
             }).ToList()
         };
     }

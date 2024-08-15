@@ -5,7 +5,6 @@ using eShop.EventBus.Events;
 using eShop.IntegrationEventLogEF;
 using eShop.IntegrationEventLogEF.Services;
 using eShop.Ordering.API.Application.IntegrationEvents;
-using Microsoft.EntityFrameworkCore.Storage;
 using NSubstitute.ExceptionExtensions;
 
 namespace Ordering.UnitTests.Application.IntegrationEvents;
@@ -83,7 +82,7 @@ public class OrderingIntegrationEventServiceUnitTests
 
             //Assert
 
-            await eventLogService.SaveEventAsync(evt, Arg.Any<IDbContextTransaction>(), default);
+            await eventLogService.SaveEventAsync(evt, Arg.Any<Guid>(), default);
         }
     }
 }

@@ -1,5 +1,6 @@
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace eShop.Ordering.API.Application.DomainEventHandlers;
 

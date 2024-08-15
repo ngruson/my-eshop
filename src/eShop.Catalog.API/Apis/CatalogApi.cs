@@ -1,8 +1,10 @@
 using Ardalis.Specification;
 using Catalog.API.Specifications;
+using eShop.Catalog.API.Extensions;
 using eShop.Shared.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Pgvector;
 using Pgvector.EntityFrameworkCore;
 
 namespace eShop.Catalog.API.APIs;
@@ -34,19 +36,19 @@ public static class CatalogApi
         api.MapPost("/items", CreateItem);
         api.MapDelete("/items/{id:int}", DeleteItemById);
 
-        return app;
+        return api;
     }
 
     public static async Task<Results<Ok<PaginatedItems<CatalogItem>>, BadRequest<string>>> GetAllItems(
         [AsParameters] PaginationRequest paginationRequest,
         [FromServices] IRepository<CatalogItem> repository)
     {
-        var pageSize = paginationRequest.PageSize;
-        var pageIndex = paginationRequest.PageIndex;
+        int pageSize = paginationRequest.PageSize;
+        int pageIndex = paginationRequest.PageIndex;
 
-        var totalItems = await repository.CountAsync();
+        int totalItems = await repository.CountAsync();
 
-        var itemsOnPage = await repository.ListAsync(new GetCatalogItemsForPageSpecification(pageSize, pageIndex));
+        List<CatalogItem> itemsOnPage = await repository.ListAsync(new GetCatalogItemsForPageSpecification(pageSize, pageIndex));
 
         return TypedResults.Ok(new PaginatedItems<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage));
     }
@@ -55,7 +57,7 @@ public static class CatalogApi
         [FromServices] IRepository<CatalogItem> repository,
         int[] ids)
     {
-        var items = await repository.ListAsync(new GetCatalogItemsByIdsSpecification(ids));
+        List<CatalogItem> items = await repository.ListAsync(new GetCatalogItemsByIdsSpecification(ids));
         return TypedResults.Ok(items);
     }
 
@@ -68,7 +70,7 @@ public static class CatalogApi
             return TypedResults.BadRequest("Id is not valid.");
         }
 
-        var item = await repository.SingleOrDefaultAsync(new GetCatalogItemByIdSpecification(id));
+        CatalogItem? item = await repository.SingleOrDefaultAsync(new GetCatalogItemByIdSpecification(id));
 
         if (item == null)
         {
@@ -83,30 +85,31 @@ public static class CatalogApi
         [FromServices] IRepository<CatalogItem> repository,
         string name)
     {
-        var pageSize = paginationRequest.PageSize;
-        var pageIndex = paginationRequest.PageIndex;
+        int pageSize = paginationRequest.PageSize;
+        int pageIndex = paginationRequest.PageIndex;
 
-        var totalItems = await repository.CountAsync(new GetCatalogItemsStartingWithNameSpecification(name));
+        int totalItems = await repository.CountAsync(new GetCatalogItemsStartingWithNameSpecification(name));
 
-        var itemsOnPage = await repository.ListAsync(new GetCatalogItemsForPageStartingWithNameSpecification(pageSize, pageIndex, name));
+        List<CatalogItem> itemsOnPage = await repository.ListAsync(new GetCatalogItemsForPageStartingWithNameSpecification(pageSize, pageIndex, name));
 
         return TypedResults.Ok(new PaginatedItems<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage));
     }
 
-    public static async Task<Results<NotFound, PhysicalFileHttpResult>> GetItemPictureById(IRepository<CatalogItem> repository, IWebHostEnvironment environment, int catalogItemId)
+    public static async Task<Results<NotFound, PhysicalFileHttpResult>> GetItemPictureById(
+        IRepository<CatalogItem> repository, IWebHostEnvironment environment, int catalogItemId)
     {
-        var item = await repository.GetByIdAsync(catalogItemId);
+        CatalogItem? item = await repository.GetByIdAsync(catalogItemId);
 
         if (item is null)
         {
             return TypedResults.NotFound();
         }
 
-        var path = GetFullPath(environment.ContentRootPath, item.PictureFileName);
+        string path = GetFullPath(environment.ContentRootPath, item.PictureFileName!);
 
-        var imageFileExtension = Path.GetExtension(item.PictureFileName);
-        var mimeType = GetImageMimeTypeFromImageFileExtension(imageFileExtension);
-        var lastModified = File.GetLastWriteTimeUtc(path);
+        string? imageFileExtension = Path.GetExtension(item.PictureFileName);
+        string mimeType = GetImageMimeTypeFromImageFileExtension(imageFileExtension!);
+        DateTime lastModified = File.GetLastWriteTimeUtc(path);
 
         return TypedResults.PhysicalFile(path, mimeType, lastModified: lastModified);
     }
@@ -117,8 +120,8 @@ public static class CatalogApi
         [FromServices] IRepository<CatalogItem> repository,
         string text)
     {
-        var pageSize = paginationRequest.PageSize;
-        var pageIndex = paginationRequest.PageIndex;
+        int pageSize = paginationRequest.PageSize;
+        int pageIndex = paginationRequest.PageIndex;
 
         if (!services.CatalogAI.IsEnabled)
         {
@@ -126,28 +129,28 @@ public static class CatalogApi
         }
 
         // Create an embedding for the input search
-        var vector = await services.CatalogAI.GetEmbeddingAsync(text);
+        Vector? vector = await services.CatalogAI.GetEmbeddingAsync(text);
 
         // Get the total number of items
-        var totalItems = await repository.CountAsync();
+        int totalItems = await repository.CountAsync();
 
         // Get the next page of items, ordered by most similar (smallest distance) to the input search
         List<CatalogItem> itemsOnPage;
         if (services.Logger.IsEnabled(LogLevel.Debug))
         {
             var itemsWithDistance = (await repository.ListAsync())
-                .OrderBy(c => c.Embedding.CosineDistance(vector))
+                .OrderBy(c => c.Embedding!.CosineDistance(vector!))
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize);
 
-            services.Logger.LogDebug("Results from {text}: {results}", text, string.Join(", ", itemsWithDistance.Select(c => $"{c.Name} => {c.Embedding.CosineDistance(vector)}")));
+            services.Logger.LogDebug("Results from {text}: {results}", text, string.Join(", ", itemsWithDistance.Select(c => $"{c.Name} => {c.Embedding!.CosineDistance(vector!)}")));
 
-            itemsOnPage = itemsWithDistance.ToList();
+            itemsOnPage = [.. itemsWithDistance];
         }
         else
         {
             itemsOnPage = (await repository.ListAsync())
-                .OrderBy(c => c.Embedding.CosineDistance(vector))
+                .OrderBy(c => c.Embedding!.CosineDistance(vector!))
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
                 .ToList();
@@ -162,14 +165,13 @@ public static class CatalogApi
         int typeId,
         int? brandId)
     {
-        var pageSize = paginationRequest.PageSize;
-        var pageIndex = paginationRequest.PageIndex;
+        int pageSize = paginationRequest.PageSize;
+        int pageIndex = paginationRequest.PageIndex;
 
-        Specification<CatalogItem> specification = new GetCatalogItemsByBrandAndTypeSpecification(typeId, brandId);
+        int totalItems = await repository.CountAsync(
+            new GetCatalogItemsByBrandAndTypeSpecification(typeId, brandId));
 
-        var totalItems = await repository.CountAsync(specification);
-
-        var itemsOnPage = await repository
+        List<CatalogItem> itemsOnPage = await repository
             .ListAsync(new GetCatalogItemsForPageByBrandAndTypeSpecification(typeId, brandId, pageSize, pageIndex));
 
         return TypedResults.Ok(new PaginatedItems<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage));
@@ -180,12 +182,12 @@ public static class CatalogApi
         [FromServices] IRepository<CatalogItem> repository,
         int? brandId)
     {
-        var pageSize = paginationRequest.PageSize;
-        var pageIndex = paginationRequest.PageIndex;
+        int pageSize = paginationRequest.PageSize;
+        int pageIndex = paginationRequest.PageIndex;
 
-        var totalItems = await repository.CountAsync(new GetCatalogItemsByBrandIdSpecification(brandId));
+        int totalItems = await repository.CountAsync(new GetCatalogItemsByBrandIdSpecification(brandId));
 
-        var itemsOnPage = await repository
+        List<CatalogItem> itemsOnPage = await repository
             .ListAsync(new GetCatalogItemsForPageByBrandIdSpecification(brandId, pageSize, pageIndex));
 
         return TypedResults.Ok(new PaginatedItems<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage));
@@ -196,7 +198,7 @@ public static class CatalogApi
         [AsParameters] CatalogServices services,
         CatalogItem productToUpdate)
     {
-        var catalogItem = await repository.GetByIdAsync(productToUpdate.Id);
+        CatalogItem? catalogItem = await repository.GetByIdAsync(productToUpdate.Id);
 
         if (catalogItem == null)
         {
@@ -204,27 +206,30 @@ public static class CatalogApi
         }
 
         // Update current product
-        var catalogEntry = services.Context.Entry(catalogItem);
-        catalogEntry.CurrentValues.SetValues(productToUpdate);
+        bool priceModified = catalogItem.Price != productToUpdate.Price;
+        decimal priceOriginalValue = catalogItem.Price;
 
+        catalogItem.Map(productToUpdate);
         catalogItem.Embedding = await services.CatalogAI.GetEmbeddingAsync(catalogItem);
 
-        var priceEntry = catalogEntry.Property(i => i.Price);
-
-        if (priceEntry.IsModified) // Save product's data and publish integration event through the Event Bus if price has changed
+        if (priceModified) // Save product's data and publish integration event through the Event Bus if price has changed
         {
             //Create Integration Event to be published through the Event Bus
-            var priceChangedEvent = new ProductPriceChangedIntegrationEvent(catalogItem.Id, productToUpdate.Price, priceEntry.OriginalValue);
+            var priceChangedEvent = new ProductPriceChangedIntegrationEvent(catalogItem.Id, productToUpdate.Price, priceOriginalValue);
 
             // Achieving atomicity between original Catalog database operation and the IntegrationEventLog thanks to a local transaction
-            await services.EventService.SaveEventAndCatalogContextChangesAsync(priceChangedEvent, default);
+            await services.EventService.SaveEventAndDbChangesAsync(
+                repository,
+                priceChangedEvent,
+                async () => await repository.UpdateAsync(catalogItem),
+                default);
 
             // Publish through the Event Bus and mark the saved event as published
             await services.EventService.PublishThroughEventBusAsync(priceChangedEvent, default);
         }
         else // Just save the updated product because the Product's Price hasn't changed.
         {
-            await services.Context.SaveChangesAsync();
+            await repository.UpdateAsync(catalogItem);
         }
         return TypedResults.Created($"/api/catalog/items/{productToUpdate.Id}");
     }
@@ -258,7 +263,7 @@ public static class CatalogApi
         [FromServices] IRepository<CatalogItem> repository,
         int id)
     {
-        var item = await repository.GetByIdAsync(id);
+        CatalogItem? item = await repository.GetByIdAsync(id);
 
         if (item is null)
         {

@@ -1,7 +1,7 @@
 using Ardalis.Specification.EntityFrameworkCore;
 using eShop.Shared.Data;
 
-namespace Catalog.API.Infrastructure;
+namespace eShop.Catalog.API.Infrastructure;
 
 /// <summary>
 /// The repository implementation for Entity Framework Core.
@@ -11,7 +11,17 @@ namespace Catalog.API.Infrastructure;
 public class EfRepository<T>(CatalogContext dbContext) : RepositoryBase<T>(dbContext), IReadRepository<T>, IRepository<T>
     where T : class, IAggregateRoot
 {
-    private readonly IUnitOfWork _unitOfWork = dbContext;
+    private readonly CatalogContext _dbContext = dbContext;
 
-    public IUnitOfWork UnitOfWork => this._unitOfWork;
+    public CatalogContext DbContext => this._dbContext;
+
+    public async Task ExecuteInTransactionAsync(Func<Guid, Task> func, CancellationToken cancellationToken = default)
+    {
+        await ResilientTransaction.New(this._dbContext).ExecuteAsync(func);
+    }
+
+    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+    {
+        return await this._dbContext.SaveEntitiesAsync(cancellationToken);
+    }
 }

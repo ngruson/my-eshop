@@ -1,9 +1,12 @@
 using eShop.Shared.Data;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace eShop.Ordering.API.Application.Commands;
 
 // Regular CommandHandler
-public class SetStockConfirmedOrderStatusCommandHandler(IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository) : IRequestHandler<SetStockConfirmedOrderStatusCommand, bool>
+public class SetStockConfirmedOrderStatusCommandHandler(
+    IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository)
+        : IRequestHandler<SetStockConfirmedOrderStatusCommand, bool>
 {
     private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
 
@@ -25,7 +28,7 @@ public class SetStockConfirmedOrderStatusCommandHandler(IRepository<Domain.Aggre
         }
 
         orderToUpdate.SetStockConfirmedStatus();
-        return await this._orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        return await this._orderRepository.SaveEntitiesAsync(cancellationToken);
     }
 }
 

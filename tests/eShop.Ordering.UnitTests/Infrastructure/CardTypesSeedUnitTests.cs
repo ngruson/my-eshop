@@ -4,15 +4,14 @@ using eShop.Ordering.API.Infrastructure;
 using eShop.Shared.Data;
 using eShop.Shared.DI;
 
-namespace Ordering.UnitTests.Infrastructure;
+namespace eShop.Ordering.UnitTests.Infrastructure;
 public class CardTypesSeedUnitTests
 {
     [Theory, AutoNSubstituteData]
     internal async Task when_no_existing_data_seed_data(
-    CardTypesSeed sut,
         [Substitute, Frozen] ServiceProviderWrapper services,
-        [Substitute, Frozen] IRepository<CardType> cardTypeRepository
-    )
+        [Substitute, Frozen] IRepository<CardType> cardTypeRepository,
+        CardTypesSeed sut)
     {
         // Arrange
 
@@ -30,10 +29,9 @@ public class CardTypesSeedUnitTests
 
     [Theory, AutoNSubstituteData]
     internal async Task when_existing_data_no_seed(
-    CardTypesSeed sut,
         [Substitute, Frozen] ServiceProviderWrapper services,
-        [Substitute, Frozen] IRepository<CardType> cardTypeRepository
-    )
+        [Substitute, Frozen] IRepository<CardType> cardTypeRepository,
+        CardTypesSeed sut)
     {
         // Arrange
 

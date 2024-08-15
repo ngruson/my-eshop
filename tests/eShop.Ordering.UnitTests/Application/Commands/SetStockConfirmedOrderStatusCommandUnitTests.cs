@@ -28,7 +28,7 @@ public class SetStockConfirmedOrderStatusCommandUnitTests
 
         Assert.Equal(OrderStatus.StockConfirmed, order.OrderStatus);
 
-        await orderRepository.Received().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.Received().SaveEntitiesAsync(default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -51,7 +51,7 @@ public class SetStockConfirmedOrderStatusCommandUnitTests
 
         Assert.NotEqual(OrderStatus.StockConfirmed, order.OrderStatus);
 
-        await orderRepository.Received().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.Received().SaveEntitiesAsync(default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -70,6 +70,6 @@ public class SetStockConfirmedOrderStatusCommandUnitTests
 
         Assert.False(result);
 
-        await orderRepository.DidNotReceive().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
     }
 }

@@ -38,6 +38,8 @@ jobs:
           dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.Basket.UnitTests/eShop.Basket.UnitTests.csproj
           dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.Catalog.UnitTests/eShop.Catalog.UnitTests.csproj
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.ServiceDefaults.UnitTests/eShop.ServiceDefaults.UnitTests.csproj
           dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.IntegrationEventLogEF.UnitTests/eShop.IntegrationEventLogEF.UnitTests.csproj

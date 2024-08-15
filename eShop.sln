@@ -81,6 +81,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShop.Ordering.UnitTests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShop.Basket.UnitTests", "tests\eShop.Basket.UnitTests\eShop.Basket.UnitTests.csproj", "{5AF6F3D9-E2C9-4BC1-A70D-2D40C8264651}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.Catalog.UnitTests", "tests\eShop.Catalog.UnitTests\eShop.Catalog.UnitTests.csproj", "{F5927412-7615-4615-9B26-1B8BC4693318}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -211,6 +213,10 @@ Global
 		{5AF6F3D9-E2C9-4BC1-A70D-2D40C8264651}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AF6F3D9-E2C9-4BC1-A70D-2D40C8264651}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AF6F3D9-E2C9-4BC1-A70D-2D40C8264651}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5927412-7615-4615-9B26-1B8BC4693318}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5927412-7615-4615-9B26-1B8BC4693318}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5927412-7615-4615-9B26-1B8BC4693318}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5927412-7615-4615-9B26-1B8BC4693318}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -247,6 +253,7 @@ Global
 		{B95EC9DB-08A3-4758-90CF-812B353F28CF} = {A857AD10-40FF-4303-BEC2-FF1C58D5735E}
 		{6F00F87B-B1EA-4EF9-B3A5-C73E6BCFA6DB} = {A857AD10-40FF-4303-BEC2-FF1C58D5735E}
 		{5AF6F3D9-E2C9-4BC1-A70D-2D40C8264651} = {A857AD10-40FF-4303-BEC2-FF1C58D5735E}
+		{F5927412-7615-4615-9B26-1B8BC4693318} = {A857AD10-40FF-4303-BEC2-FF1C58D5735E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25728519-5F0F-4973-8A64-0A81EB4EA8D9}

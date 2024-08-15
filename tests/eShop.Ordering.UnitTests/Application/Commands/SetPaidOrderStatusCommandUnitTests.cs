@@ -30,7 +30,7 @@ public class SetPaidOrderStatusCommandUnitTests
 
         Assert.Equal(OrderStatus.Paid, order.OrderStatus);
 
-        await orderRepository.Received().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.Received().SaveEntitiesAsync(default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -53,7 +53,7 @@ public class SetPaidOrderStatusCommandUnitTests
 
         Assert.NotEqual(OrderStatus.Paid, order.OrderStatus);
 
-        await orderRepository.Received().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.Received().SaveEntitiesAsync(default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -72,6 +72,6 @@ public class SetPaidOrderStatusCommandUnitTests
 
         Assert.False(result);
 
-        await orderRepository.DidNotReceive().UnitOfWork.SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
     }
 }

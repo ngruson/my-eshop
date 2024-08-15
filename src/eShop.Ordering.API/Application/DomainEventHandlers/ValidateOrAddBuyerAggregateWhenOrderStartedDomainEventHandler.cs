@@ -1,6 +1,7 @@
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace eShop.Ordering.API.Application.DomainEventHandlers;
 
@@ -45,7 +46,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler(
             await this._buyerRepository.AddAsync(buyer, cancellationToken);
         }
 
-        await this._buyerRepository.UnitOfWork
+        await this._buyerRepository
             .SaveEntitiesAsync(cancellationToken);
 
         var integrationEvent = new OrderStatusChangedToSubmittedIntegrationEvent(domainEvent.Order.Id, domainEvent.Order.OrderStatus, buyer.Name!, buyer.IdentityGuid!);

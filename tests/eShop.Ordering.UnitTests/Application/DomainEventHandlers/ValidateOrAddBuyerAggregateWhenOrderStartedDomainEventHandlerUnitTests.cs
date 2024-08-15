@@ -33,7 +33,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandlerUnitTe
 
         //Assert
 
-        await buyerRepository.Received().UnitOfWork.SaveEntitiesAsync(default);
+        await buyerRepository.Received().SaveEntitiesAsync(default);
         await integrationEventService.AddAndSaveEventAsync(Arg.Any<OrderStatusChangedToSubmittedIntegrationEvent>(), default);
 
         await buyerRepository.DidNotReceive().AddAsync(buyer, default);
@@ -65,7 +65,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandlerUnitTe
         //Assert
 
         await buyerRepository.Received().AddAsync(Arg.Any<Buyer>(), default);
-        await buyerRepository.Received().UnitOfWork.SaveEntitiesAsync(default);
+        await buyerRepository.Received().SaveEntitiesAsync(default);
         await integrationEventService.AddAndSaveEventAsync(Arg.Any<OrderStatusChangedToSubmittedIntegrationEvent>(), default);
     }
 }

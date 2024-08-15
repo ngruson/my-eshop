@@ -1,8 +1,8 @@
+using eShop.Ordering.Infrastructure.Repositories;
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;
 using eShop.Shared.Data.EntityFramework;
 using eShop.Shared.IntegrationEvents;
-using Ordering.Infrastructure.Repositories;
 
 internal static class Extensions
 {

@@ -8,7 +8,7 @@ public class ResilientTransaction
 
     public static ResilientTransaction New(DbContext context) => new(context);
 
-    public async Task ExecuteAsync(Func<Task> action)
+    public async Task ExecuteAsync(Func<Guid, Task> func)
     {
         //Use of an EF Core resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
         //See: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
@@ -16,7 +16,7 @@ public class ResilientTransaction
         await strategy.ExecuteAsync(async () =>
         {
             await using var transaction = await this._context.Database.BeginTransactionAsync();
-            await action();
+            await func(transaction.TransactionId);
             await transaction.CommitAsync();
         });
     }

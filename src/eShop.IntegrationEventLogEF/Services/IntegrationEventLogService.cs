@@ -37,11 +37,14 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         return [];
     }
 
-    public async Task SaveEventAsync(IntegrationEvent @event, IDbContextTransaction transaction, CancellationToken cancellationToken)
+    public async Task SaveEventAsync(IntegrationEvent @event, Guid transactionId, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(transaction);
+        if (transactionId == Guid.Empty)
+        {
+            throw new ArgumentNullException(nameof(transactionId));
+        }
 
-        var eventLogEntry = new IntegrationEventLogEntry(@event, transaction.TransactionId);
+        var eventLogEntry = new IntegrationEventLogEntry(@event, transactionId);
 
         await this._repository.AddAsync(eventLogEntry, cancellationToken);
     }

@@ -4,8 +4,9 @@ using eShop.Shared.Data;
 namespace eShop.Ordering.API.Application.Commands;
 
 // Regular CommandHandler
-public class SetPaidOrderStatusCommandHandler(IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository) 
-    : IRequestHandler<SetPaidOrderStatusCommand, bool>
+public class SetPaidOrderStatusCommandHandler(
+    IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository) 
+        : IRequestHandler<SetPaidOrderStatusCommand, bool>
 {
     private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
 
@@ -30,7 +31,7 @@ public class SetPaidOrderStatusCommandHandler(IRepository<Domain.AggregatesModel
         }
 
         orderToUpdate.SetPaidStatus();
-        return await this._orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        return await this._orderRepository.SaveEntitiesAsync(cancellationToken);
     }
 }
 
