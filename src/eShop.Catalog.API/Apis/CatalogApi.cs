@@ -28,8 +28,8 @@ public static class CatalogApi
         // Routes for resolving catalog items by type and brand.
         api.MapGet("/items/type/{typeId}/brand/{brandId?}", GetItemsByBrandAndTypeId);
         api.MapGet("/items/type/all/brand/{brandId:int?}", GetItemsByBrandId);
-        api.MapGet("/catalogtypes", async ([FromServices] IRepository<CatalogType> repository) => await repository.ListAsync(new GetAllCatalogTypesSpecification()));
-        api.MapGet("/catalogbrands", async ([FromServices] IRepository<CatalogBrand> repository) => await repository.ListAsync(new GetAllCatalogBrandsSpecification()));
+        api.MapGet("/catalogtypes", GetAllCatalogTypes);
+        api.MapGet("/catalogbrands", GetAllCatalogBrands);
 
         // Routes for modifying catalog items.
         api.MapPut("/items", UpdateItem);
@@ -191,6 +191,20 @@ public static class CatalogApi
             .ListAsync(new GetCatalogItemsForPageByBrandIdSpecification(brandId, pageSize, pageIndex));
 
         return TypedResults.Ok(new PaginatedItems<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage));
+    }
+
+    public static async Task<List<CatalogType>> GetAllCatalogTypes(
+        [FromServices] IRepository<CatalogType> repository
+    )
+    {
+        return await repository.ListAsync(new GetAllCatalogTypesSpecification());
+    }
+
+    public static async Task<List<CatalogBrand>> GetAllCatalogBrands(
+        [FromServices] IRepository<CatalogBrand> repository
+    )
+    {
+        return await repository.ListAsync(new GetAllCatalogBrandsSpecification());
     }
 
     public static async Task<Results<Created, NotFound<string>>> UpdateItem(

@@ -318,7 +318,7 @@ public class CatalogApiUnitTests
     public class GetItemsByBrandAndTypeId
     {
         [Theory, AutoNSubstituteData]
-        internal async Task return_catalog_items(
+        internal async Task with_brand_and_type_return_catalog_items(
             PaginationRequest paginationRequest,
             [Substitute, Frozen] IRepository<CatalogItem> repository,
             List<CatalogItem> catalogItems,
@@ -338,6 +338,32 @@ public class CatalogApiUnitTests
             // Act
 
             Ok<PaginatedItems<CatalogItem>> result = await CatalogApi.GetItemsByBrandAndTypeId(paginationRequest, repository, typeId, brandId);
+
+            // Assert
+
+            Assert.IsType<Ok<PaginatedItems<CatalogItem>>>(result);
+        }
+
+        [Theory, AutoNSubstituteData]
+        internal async Task with_type_without_brand_return_catalog_items(
+            PaginationRequest paginationRequest,
+            [Substitute, Frozen] IRepository<CatalogItem> repository,
+            List<CatalogItem> catalogItems,
+            int typeId
+        )
+        {
+            // Arrange
+
+            repository.CountAsync(Arg.Any<GetCatalogItemsByBrandAndTypeSpecification>())
+                .Returns(catalogItems.Count);
+
+
+            repository.ListAsync(Arg.Any<GetCatalogItemsForPageByBrandAndTypeSpecification>())
+                .Returns(catalogItems);
+
+            // Act
+
+            Ok<PaginatedItems<CatalogItem>> result = await CatalogApi.GetItemsByBrandAndTypeId(paginationRequest, repository, typeId, null);
 
             // Assert
 
@@ -371,6 +397,52 @@ public class CatalogApiUnitTests
             // Assert
 
             Assert.IsType<Ok<PaginatedItems<CatalogItem>>>(result);
+        }
+    }
+
+    public class GetAllCatalogTypes
+    {
+        [Theory, AutoNSubstituteData]
+        internal async Task return_catalog_types(
+            [Substitute, Frozen] IRepository<CatalogType> repository,
+            List<CatalogType> catalogTypes
+        )
+        {
+            // Arrange
+
+            repository.ListAsync(Arg.Any<GetAllCatalogTypesSpecification>())
+                .Returns(catalogTypes);
+
+            // Act
+
+            List<CatalogType> result = await CatalogApi.GetAllCatalogTypes(repository);
+
+            // Assert
+
+            Assert.Equal(catalogTypes, result);
+        }
+    }
+
+    public class GetAllCatalogBrands
+    {
+        [Theory, AutoNSubstituteData]
+        internal async Task return_catalog_brands(
+            [Substitute, Frozen] IRepository<CatalogBrand> repository,
+            List<CatalogBrand> catalogBrands
+        )
+        {
+            // Arrange
+
+            repository.ListAsync(Arg.Any<GetAllCatalogBrandsSpecification>())
+                .Returns(catalogBrands);
+
+            // Act
+
+            List<CatalogBrand> result = await CatalogApi.GetAllCatalogBrands(repository);
+
+            // Assert
+
+            Assert.Equal(catalogBrands, result);
         }
     }
 

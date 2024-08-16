@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Pgvector;
 
-namespace eShop.Catalog.API.UnitTests;
+namespace eShop.Catalog.UnitTests.Services;
 public class CatalogAIUnitTests
 {
     public class GetEmbedding
