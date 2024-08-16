@@ -4,8 +4,8 @@ namespace eShop.Catalog.UnitTests;
 
 public class ProgramUnitTests
 {
-    [Theory, AutoNSubstituteData]
-    public async Task start_program(CatalogApiFixture fixture)
+    [Fact]
+    public async Task start_program()
     {
         // Arrange
 
@@ -14,6 +14,40 @@ public class ProgramUnitTests
         // Act
         try
         {
+            CatalogApiFixture fixture = new();
+            await fixture.InitializeAsync();
+            result = true;
+        }
+        catch
+        {
+            result = false;
+        }
+
+        // Assert
+
+        Assert.True(result);
+    }
+
+    [Theory, AutoNSubstituteData]
+    public async Task start_program_with_ai_onnx(
+        string embeddingModelPath,
+        string embeddingVocalPath)
+    {
+        // Arrange
+
+        bool result;
+
+        // Act
+        try
+        {
+            Dictionary<string, string> config = new()
+            {
+                { "AI:Onnx:EmbeddingModelPath", embeddingModelPath },
+                { "AI:Onnx:EmbeddingVocabPath", embeddingVocalPath }
+            };
+
+            CatalogApiFixture fixture = new(config);
+
             await fixture.InitializeAsync();
             result = true;
         }
