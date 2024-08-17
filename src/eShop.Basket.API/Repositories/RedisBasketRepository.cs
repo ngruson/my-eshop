@@ -22,13 +22,13 @@ public class RedisBasketRepository(ILogger<RedisBasketRepository> logger, IConne
 
     public async Task<CustomerBasket?> GetBasketAsync(string customerId)
     {
-        using var data = await this._database.StringGetLeaseAsync(GetBasketKey(customerId));
+        RedisValue data = await this._database.StringGetAsync(GetBasketKey(customerId));
 
-        if (data is null || data.Length == 0)
+        if (data == RedisValue.Null)
         {
             return null;
         }
-        return JsonSerializer.Deserialize(data.Span, BasketSerializationContext.Default.CustomerBasket);
+        return JsonSerializer.Deserialize(data!, BasketSerializationContext.Default.CustomerBasket);
     }
 
     public async Task<CustomerBasket?> UpdateBasketAsync(CustomerBasket basket)

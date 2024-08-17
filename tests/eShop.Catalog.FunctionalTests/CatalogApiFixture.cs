@@ -9,23 +9,11 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
     public IResourceBuilder<PostgresServerResource> Postgres { get; private set; }
     private string _connectionString;
 
-    private readonly Dictionary<string, string> _configuration;
-
-    public CatalogApiFixture(Dictionary<string, string> configuration)
-    {
-        this._configuration = configuration;
-
-        var options = new DistributedApplicationOptions { AssemblyName = typeof(CatalogApiFixture).Assembly.FullName, DisableDashboard = true };
-        var appBuilder = DistributedApplication.CreateBuilder(options);
-        this.Postgres = appBuilder.AddPostgres("CatalogDB")
-            .WithImage("ankane/pgvector")
-            .WithImageTag("latest");
-        this._app = appBuilder.Build();
-    }
+    private readonly Dictionary<string, string> _configuration = [];
+    public Dictionary<string, string> Configuration => this._configuration;
 
     public CatalogApiFixture()
     {
-        this._connectionString = "Host=localhost;Port=12345;Username=postgres";
         var options = new DistributedApplicationOptions { AssemblyName = typeof(CatalogApiFixture).Assembly.FullName, DisableDashboard = true };
         var appBuilder = DistributedApplication.CreateBuilder(options);
         this.Postgres = appBuilder.AddPostgres("CatalogDB")
@@ -49,6 +37,22 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
             }
         });
         return base.CreateHost(builder);
+    }
+
+    protected override TestServer CreateServer(IWebHostBuilder builder)
+    {
+        builder.ConfigureAppConfiguration(config =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { $"ConnectionStrings:{this.Postgres.Resource.Name.ToLower()}", this._connectionString },
+                });
+            if (this._configuration is not null)
+            {
+                config.AddInMemoryCollection(this._configuration);
+            }
+        });
+        return base.CreateServer(builder);
     }
 
     public new async Task DisposeAsync()
