@@ -29,7 +29,8 @@
       "tests\\eShop.IntegrationEventLogEF.UnitTests\\eShop.IntegrationEventLogEF.UnitTests.csproj",
       "tests\\eShop.Ordering.FunctionalTests\\eShop.Ordering.FunctionalTests.csproj",
       "tests\\eShop.Ordering.UnitTests\\eShop.Ordering.UnitTests.csproj",
-      "tests\\eShop.ServiceDefaults.UnitTests\\eShop.ServiceDefaults.UnitTests.csproj"
+      "tests\\eShop.ServiceDefaults.UnitTests\\eShop.ServiceDefaults.UnitTests.csproj",
+      "tests\\eShop.Shared.UnitTests\\eShop.Shared.UnitTests.csproj"
     ]
   }
 }

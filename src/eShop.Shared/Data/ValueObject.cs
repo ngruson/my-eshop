@@ -1,4 +1,4 @@
-﻿namespace eShop.Shared.Data;
+namespace eShop.Shared.Data;
 
 public abstract class ValueObject
 {
@@ -32,13 +32,13 @@ public abstract class ValueObject
 
     public override int GetHashCode()
     {
-        return GetEqualityComponents()
+        return this.GetEqualityComponents()
             .Select(x => x != null ? x.GetHashCode() : 0)
             .Aggregate((x, y) => x ^ y);
     }
 
     public ValueObject? GetCopy()
     {
-        return MemberwiseClone() as ValueObject;
+        return this.MemberwiseClone() as ValueObject;
     }
 }
