@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
@@ -67,7 +67,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\WebAppComponents\WebAppComponents.csproj" />
+        <ProjectReference Include="..\..\src\eShop.WebAppComponents\eShop.WebAppComponents.csproj" />
     </ItemGroup>
 
     <!-- Build Properties must be defined within these property groups to ensure successful publishing
