@@ -4,20 +4,9 @@ on:
   pull_request:
     paths-ignore:
       - '**.md'
-      - 'src/ClientApp/**'
-      - 'tests/ClientApp.UnitTests/**'
+      - 'src/eShop.ClientApp/**'
+      - 'tests/eShop.ClientApp.UnitTests/**'
       - '.github/workflows/pr-validation-maui.yml'
-  push:
-    branches:
-      - main
-      - dev
-      - 4-add-code-coverage
-    paths-ignore:
-      - '**.md'
-      - 'src/ClientApp/**'
-      - 'tests/ClientApp.UnitTests/**'
-      - '.github/workflows/pr-validation-maui.yml'
-
 jobs:
   build:
     runs-on: ubuntu-latest
