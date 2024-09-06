@@ -40,4 +40,4 @@ jobs:
         run: dotnet build src/eShop.ClientApp/eShop.ClientApp.csproj
         
       - name: Test
-        run: dotnet test tests/ClientApp.UnitTests/ClientApp.UnitTests.csproj
+        run: dotnet test tests/eShop.ClientApp.UnitTests/eShop.ClientApp.UnitTests.csproj
