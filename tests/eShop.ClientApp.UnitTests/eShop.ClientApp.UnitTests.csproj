@@ -28,6 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ClientApp\ClientApp.csproj" />
+    <ProjectReference Include="..\..\src\eShop.ClientApp\eShop.ClientApp.csproj" />
   </ItemGroup>
 </Project>

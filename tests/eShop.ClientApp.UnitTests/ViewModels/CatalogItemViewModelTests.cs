@@ -1,4 +1,4 @@
-﻿using ClientApp.UnitTests.Mocks;
+using eShop.ClientApp.UnitTests.Mocks;
 using CommunityToolkit.Mvvm.Messaging;
 using eShop.ClientApp.Messages;
 using eShop.ClientApp.Models.Catalog;

@@ -1,14 +1,14 @@
-﻿using ClientApp.UnitTests.Mocks;
+using eShop.ClientApp.UnitTests.Mocks;
 using eShop.ClientApp.Services.Identity;
 
-namespace ClientApp.UnitTests.ViewModels;
+namespace eShop.ClientApp.UnitTests.ViewModels;
 
 [TestClass]
 public class OrderViewModelTests
 {
     private readonly INavigationService _navigationService;
     private readonly ISettingsService _settingsService;
-    private readonly IAppEnvironmentService _appEnvironmentService;
+    private readonly AppEnvironmentService _appEnvironmentService;
 
     public OrderViewModelTests()
     {

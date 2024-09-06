@@ -1,17 +1,8 @@
-﻿using ClientApp.UnitTests.Mocks;
-
-namespace ClientApp.UnitTests.Services;
+namespace eShop.ClientApp.UnitTests.Services;
 
 [TestClass]
 public class OrdersServiceTests
 {
-    private readonly ISettingsService _settingsService;
-
-    public OrdersServiceTests()
-    {
-        _settingsService = new MockSettingsService();
-    }
-    
     [TestMethod]
     public async Task GetFakeOrderTest()
     {

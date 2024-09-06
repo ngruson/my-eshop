@@ -1,6 +1,6 @@
-﻿using eShop.ClientApp.Models.Token;
+using eShop.ClientApp.Models.Token;
 
-namespace ClientApp.UnitTests.Mocks;
+namespace eShop.ClientApp.UnitTests.Mocks;
 
 public class MockSettingsService : ISettingsService
 {
@@ -14,7 +14,7 @@ public class MockSettingsService : ISettingsService
     private const string IdLatitude = "latitude";
     private const string IdLongitude = "longitude";
     private const string IdAllowGpsLocation = "allow_gps_location";
-    
+
     private const string AccessTokenDefault = "default_access_token";
     private const string IdTokenDefault = "";
     private const bool UseMocksDefault = true;
@@ -25,20 +25,20 @@ public class MockSettingsService : ISettingsService
     private const string UrlIdentityDefault = "https://13.88.8.119";
     private const string UrlGatewayMarketingDefault = "https://13.88.8.119";
     private const string UrlGatewayShoppingDefault = "https://13.88.8.119";
-    
+
     private readonly IDictionary<string, object> _settings = new Dictionary<string, object>();
     private UserToken? _userToken;
 
     public string AuthAccessToken
     {
-        get => GetValueOrDefault(AccessToken, AccessTokenDefault);
-        set => AddOrUpdateValue(AccessToken, value);
+        get => this.GetValueOrDefault(AccessToken, AccessTokenDefault);
+        set => this.AddOrUpdateValue(AccessToken, value);
     }
 
     public string AuthIdToken
     {
-        get => GetValueOrDefault(IdToken, IdTokenDefault);
-        set => AddOrUpdateValue(IdToken, value);
+        get => this.GetValueOrDefault(IdToken, IdTokenDefault);
+        set => this.AddOrUpdateValue(IdToken, value);
     }
 
     public Task<UserToken?> GetUserTokenAsync()
@@ -64,37 +64,37 @@ public class MockSettingsService : ISettingsService
         get => GetValueOrDefault(nameof(DefaultEndpoint), string.Empty);
         set => AddOrUpdateValue(nameof(DefaultEndpoint), value);
     }
-    
+
     public string RegistrationEndpoint
     {
         get => GetValueOrDefault(nameof(RegistrationEndpoint), string.Empty);
         set => AddOrUpdateValue(nameof(RegistrationEndpoint), value);
     }
-    
+
     public string AuthorizeEndpoint
     {
         get => GetValueOrDefault(nameof(AuthorizeEndpoint), string.Empty);
         set => AddOrUpdateValue(nameof(AuthorizeEndpoint), value);
     }
-    
+
     public string UserInfoEndpoint
     {
         get => GetValueOrDefault(nameof(UserInfoEndpoint), string.Empty);
         set => AddOrUpdateValue(nameof(UserInfoEndpoint), value);
     }
-    
+
     public string ClientId
     {
         get => GetValueOrDefault(nameof(ClientId), string.Empty);
         set => AddOrUpdateValue(nameof(ClientId), value);
     }
-    
+
     public string ClientSecret
     {
         get => GetValueOrDefault(nameof(ClientSecret), string.Empty);
         set => AddOrUpdateValue(nameof(ClientSecret), value);
     }
-    
+
     public string CallbackUri
     {
         get => GetValueOrDefault(nameof(CallbackUri), string.Empty);
@@ -112,13 +112,13 @@ public class MockSettingsService : ISettingsService
         get => GetValueOrDefault(nameof(GatewayCatalogEndpointBase), string.Empty);
         set => AddOrUpdateValue(nameof(GatewayCatalogEndpointBase), value);
     }
-    
+
     public string GatewayOrdersEndpointBase
     {
         get => GetValueOrDefault(nameof(GatewayOrdersEndpointBase), string.Empty);
         set => AddOrUpdateValue(nameof(GatewayOrdersEndpointBase), value);
     }
-    
+
     public string GatewayBasketEndpointBase
     {
         get => GetValueOrDefault(nameof(GatewayBasketEndpointBase), string.Empty);

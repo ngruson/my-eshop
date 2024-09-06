@@ -1,6 +1,6 @@
-﻿using ClientApp.UnitTests.Mocks;
+using eShop.ClientApp.UnitTests.Mocks;
 
-namespace ClientApp.UnitTests.ViewModels;
+namespace eShop.ClientApp.UnitTests.ViewModels;
 
 [TestClass]
 public class MainViewModelTests

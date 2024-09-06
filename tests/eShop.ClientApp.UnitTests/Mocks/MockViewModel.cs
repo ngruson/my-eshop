@@ -1,7 +1,7 @@
-﻿using eShop.ClientApp.Validations;
+using eShop.ClientApp.Validations;
 using eShop.ClientApp.ViewModels.Base;
 
-namespace ClientApp.UnitTests.Mocks;
+namespace eShop.ClientApp.UnitTests.Mocks;
 
 public class MockViewModel : ViewModelBase
 {
@@ -12,17 +12,17 @@ public class MockViewModel : ViewModelBase
     public MockViewModel(INavigationService navigationService)
         : base(navigationService)
     {
-        Forename = new ValidatableObject<string>();
-        Surname = new ValidatableObject<string>();
+        this.Forename = new ValidatableObject<string>();
+        this.Surname = new ValidatableObject<string>();
 
-        Forename.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Forename is required." });
-        Surname.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Surname name is required." });
+        this.Forename.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Forename is required." });
+        this.Surname.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Surname name is required." });
     }
 
     public bool Validate()
     {
-        bool isValidForename = Forename.Validate();
-        bool isValidSurname = Surname.Validate();
+        bool isValidForename = this.Forename.Validate();
+        bool isValidSurname = this.Surname.Validate();
         return isValidForename && isValidSurname;
     }
 }
