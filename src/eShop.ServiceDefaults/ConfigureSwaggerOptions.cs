@@ -10,16 +10,10 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace eShop.ServiceDefaults;
 
-internal sealed class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
+internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider, IConfiguration configuration) : IConfigureOptions<SwaggerGenOptions>
 {
-    private readonly IApiVersionDescriptionProvider _provider;
-    private readonly IConfiguration _configuration;
-
-    public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider, IConfiguration configuration)
-    {
-        _provider = provider;
-        _configuration = configuration;
-    }
+    private readonly IApiVersionDescriptionProvider _provider = provider;
+    private readonly IConfiguration _configuration = configuration;
 
     public void Configure(SwaggerGenOptions options)
     {
@@ -180,13 +174,13 @@ internal sealed class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOpti
                 Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
             };
 
-            operation.Security = new List<OpenApiSecurityRequirement>
-            {
+            operation.Security =
+            [
                 new()
                 {
                     [ oAuthScheme ] = scopes
                 }
-            };
+            ];
         }
     }
 }

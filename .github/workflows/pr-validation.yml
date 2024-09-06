@@ -8,8 +8,8 @@ on:
       - 'tests/eShop.ClientApp.UnitTests/**'
       - '.github/workflows/pr-validation-maui.yml'
 jobs:
-  test:
-    runs-on: ubuntu-latest    
+  build:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET (global.json)
@@ -20,7 +20,21 @@ jobs:
         run: dotnet workload install aspire
       - name: Build
         env:
-          DOTNET_NUGET_SIGNATURE_VERIFICATION: false  
+          DOTNET_NUGET_SIGNATURE_VERIFICATION: false
         run: dotnet build eShop.Web.slnf
       - name: Test
-        run: dotnet test eShop.Web.slnf
+        run: |
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.Basket.UnitTests/eShop.Basket.UnitTests.csproj
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.Catalog.UnitTests/eShop.Catalog.UnitTests.csproj
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.ServiceDefaults.UnitTests/eShop.ServiceDefaults.UnitTests.csproj
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.IntegrationEventLogEF.UnitTests/eShop.IntegrationEventLogEF.UnitTests.csproj
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.Ordering.UnitTests/eShop.Ordering.UnitTests.csproj
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
