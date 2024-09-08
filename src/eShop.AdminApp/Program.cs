@@ -1,16 +1,30 @@
 using eShop.AdminApp.Components;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.FluentUI.AspNetCore.Components;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services
     .AddHttpClient()
-    .AddFluentUIComponents()    
-    .AddRazorComponents()
+    .AddFluentUIComponents(options => options.ValidateClassNames = false)
+    .AddRazorComponents()    
     .AddInteractiveServerComponents();
 
 builder.Services.AddServerSideBlazor();
+
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+
+builder.Services.AddRazorPages()
+    .AddMicrosoftIdentityUI();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = options.DefaultPolicy;
+});
 
 var app = builder.Build();
 
@@ -29,5 +43,10 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapRazorPages();
 
 app.Run();
