@@ -1,17 +1,23 @@
+@using IdentityModel
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
 @inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="flex">
+<div class="tw-flex">
     <div>
         <NavMenu/>
     </div>
-    <div class="w-full">
-        <div class="flex justify-between py-2.5 px-6">
-            <FluentAnchor Href="" Class="border-0">
+    <div class="tw-w-full">
+        <div class="tw-flex tw-justify-between tw-py-2.5 px-6">
+            <FluentAnchor Href="" Class="tw-border-0">
                 <FluentIcon Value="@(new Icons.Regular.Size20.ArrowCircleLeft())" />
             </FluentAnchor>
-            <ul class="flex text-blue-300">
+            <ul class="tw-flex tw-text-blue-300 tw-mr-3">
                 <li>
-                    <FluentPersona Name="Homer Simpson" ImageSize="50px" Initials="HS" />
+                    <FluentPersona
+                        ImageSize="50px"
+                        Image="@(new Icons.Regular.Size48.Person().ToDataUri(size: "25px", color: "white"))" />
                 </li>
                 <li>
                     @* <FluentIcon Value="@(new Icons.Regular.Size20.Home())" OnClick="@(() => open = !open)" /> *@
@@ -44,3 +50,31 @@
 <FluentDialogProvider />
 <FluentTooltipProvider />
 <FluentMessageBarProvider /> *@
+
+@code {
+    private ClaimsPrincipal? user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+    }
+
+    private string GetCurrentUserInitials()
+    {
+        string name = user!.FindFirst(c => c.Type == JwtClaimTypes.Name)!.Value;
+        return GetInitials(name);
+    }
+
+    private string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+            return string.Empty;
+
+        var initials = fullName.Split(' ')
+                               .Where(name => !string.IsNullOrWhiteSpace(name) && char.IsLetter(name[0]))
+                               .Select(name => char.ToUpper(name[0]));
+
+        return string.Concat(initials);
+    }
+}

@@ -5,9 +5,10 @@ module.exports = {
         "./Components/**/*.{html,razor}",
         "./wwwroot/**/*.{html,htm}",
     ],
-  theme: {
+    theme: {
       extend: {
       },
-  },
-  plugins: [],
+    },
+    plugins: [],
+    prefix: 'tw-'
 }
