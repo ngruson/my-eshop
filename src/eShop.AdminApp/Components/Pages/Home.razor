@@ -1,0 +1,32 @@
+@page "/"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<PageTitle>Home</PageTitle>
+
+<div class="tw-bg-indigo-600 tw-pt-16 tw-pb-36" />
+<div class="tw-container tw--mt-40 tw-px-8">
+    <div>
+        <div>
+            <div class="tw-justify-between tw-content-center">
+                <div class="tw-mb-2">
+                    <h3 class="tw-mb-0 tw-text-white">Dashboard</h3>
+                </div>
+            </div>
+        </div>
+        <div class="tw-columns-2 tw-mt-8 tw-flex tw-flex-col">
+            <div class="tw-border-0 tw-rounded-lg tw-shadow tw-bg-white">
+                <div class="tw-p-6">
+                    <div class="tw-mb-4">
+                        <div>
+                            <h4>Orders</h4>
+                        </div>
+                        <div>
+                            <h1 class="tw-font-bold">18</h1>
+                        </div>
+                    </div>                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

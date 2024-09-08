@@ -1,0 +1,40 @@
+name: eShop Pull Request Validation
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'src/eShop.ClientApp/**'
+      - 'tests/eShop.ClientApp.UnitTests/**'
+      - '.github/workflows/pr-validation-maui.yml'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET (global.json)
+        uses: actions/setup-dotnet@v3
+      - name: Update Workloads
+        run: dotnet workload update
+      - name: Install Workloads
+        run: dotnet workload install aspire
+      - name: Build
+        env:
+          DOTNET_NUGET_SIGNATURE_VERIFICATION: false
+        run: dotnet build eShop.Web.slnf
+      - name: Test
+        run: |
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.Basket.UnitTests/eShop.Basket.UnitTests.csproj
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.Catalog.UnitTests/eShop.Catalog.UnitTests.csproj
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.ServiceDefaults.UnitTests/eShop.ServiceDefaults.UnitTests.csproj
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.IntegrationEventLogEF.UnitTests/eShop.IntegrationEventLogEF.UnitTests.csproj
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.Ordering.UnitTests/eShop.Ordering.UnitTests.csproj
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

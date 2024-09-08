@@ -1,0 +1,13 @@
+<Project>
+    <PropertyGroup>
+        <LangVersion>latest</LangVersion>
+        <RepoRoot>$([System.IO.Directory]::GetParent($(MSBuildThisFileDirectory)).Parent.FullName)</RepoRoot>
+        <DefineConstants>$(DefineConstants);SIGNED</DefineConstants>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <MSBuildTreatWarningsAsErrors>false</MSBuildTreatWarningsAsErrors>
+    </PropertyGroup>
+</Project>
