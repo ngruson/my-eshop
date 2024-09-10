@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
@@ -36,6 +39,20 @@ builder.Services.AddIdentityServer(options =>
 // TODO: Not recommended for production - you need to store your key material somewhere secure
 .AddDeveloperSigningCredential();
 
+builder.Services.AddAuthentication()
+    .AddOpenIdConnect("Microsoft", "Employee Login", options =>
+    {
+        options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+        options.Authority = $"https://login.microsoftonline.com/{builder.Configuration["Entra:TenantId"]}/v2.0";
+        options.ClientId = builder.Configuration["Entra:ClientId"];
+        options.ClientSecret = builder.Configuration["Entra:ClientSecret"];
+        options.ResponseType = "code";
+        options.SaveTokens = true;
+        options.Scope.Add("openid");
+        options.Scope.Add("profile");
+        options.Scope.Add("email");
+    });
+
 builder.Services.AddTransient<IProfileService, ProfileService>();
 builder.Services.AddTransient<ILoginService<ApplicationUser>, EFLoginService>();
 builder.Services.AddTransient<IRedirectService, RedirectService>();
@@ -47,9 +64,10 @@ app.MapDefaultEndpoints();
 app.UseStaticFiles();
 
 // This cookie policy fixes login issues with Chrome 80+ using HTTP
-app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+app.UseCookiePolicy(new CookiePolicyOptions { Secure = CookieSecurePolicy.Always, MinimumSameSitePolicy = SameSiteMode.None });
 app.UseRouting();
 app.UseIdentityServer();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapDefaultControllerRoute();

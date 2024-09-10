@@ -1,6 +1,7 @@
 using eShop.EventBus.Abstractions;
+using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
 
-namespace eShop.WebApp.Services.OrderStatus.IntegrationEvents;
+namespace eShop.WebApp.Services.OrderStatus.IntegrationEvents.EventHandling;
 
 public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
     OrderStatusNotificationService orderStatusNotificationService,
@@ -10,6 +11,9 @@ public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
     public async Task Handle(OrderStatusChangedToAwaitingValidationIntegrationEvent @event, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
-        await orderStatusNotificationService.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
+        if (@event.BuyerIdentityGuid is not null)
+        {
+            await orderStatusNotificationService.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid!);
+        }
     }
 }

@@ -1,10 +1,10 @@
 using eShop.AdminApp.Components;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using eShop.AdminApp.Extensions;
+using eShop.ServiceDefaults;
 using Microsoft.FluentUI.AspNetCore.Components;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddServiceDefaults();
 
 // Add services to the container.
 builder.Services
@@ -15,16 +15,7 @@ builder.Services
 
 builder.Services.AddServerSideBlazor();
 
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
-
-builder.Services.AddRazorPages()
-    .AddMicrosoftIdentityUI();
-
-builder.Services.AddAuthorization(options =>
-{
-    options.FallbackPolicy = options.DefaultPolicy;
-});
+builder.AddApplicationServices();
 
 var app = builder.Build();
 

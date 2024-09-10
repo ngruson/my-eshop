@@ -1,6 +1,7 @@
 using Ardalis.GuardClauses;
 using Ardalis.Result;
-using eShop.Ordering.API.Core;
+using eShop.Ordering.API.Application.Specifications;
+using eShop.Ordering.Contracts.GetOrders;
 using eShop.Shared.Data;
 
 namespace eShop.Ordering.API.Application.Queries.GetOrders;
@@ -18,7 +19,7 @@ internal class GetOrdersQueryHandler(
         try
         {
             List<Domain.AggregatesModel.OrderAggregate.Order> orders =
-                await this.orderRepository.ListAsync(cancellationToken);
+                await this.orderRepository.ListAsync(new GetOrdersSpecification(), cancellationToken);
 
             var foundResult = Guard.Against.OrdersNullOrEmpty(orders, this.logger);
             if (!foundResult.IsSuccess)

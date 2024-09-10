@@ -1,7 +1,8 @@
 using Ardalis.Result;
+using eShop.Ordering.Contracts.GetOrders;
 
 namespace eShop.Ordering.API.Application.Queries.GetOrders;
 
-public class GetOrdersQuery : IRequest<Result<List<OrderDto>>>
+internal class GetOrdersQuery : IRequest<Result<List<OrderDto>>>
 {
 }

@@ -27,7 +27,7 @@ public class CancelOrderCommandUnitTests
 
         Assert.Equal(OrderStatus.Cancelled, order.OrderStatus);
 
-        await orderRepository.Received().SaveEntitiesAsync(default);
+        await orderRepository.Received().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -55,7 +55,7 @@ public class CancelOrderCommandUnitTests
 
         await Assert.ThrowsAsync<OrderingDomainException>(func);
 
-        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -84,7 +84,7 @@ public class CancelOrderCommandUnitTests
 
         await Assert.ThrowsAsync<OrderingDomainException>(func);
 
-        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -104,6 +104,6 @@ public class CancelOrderCommandUnitTests
 
         Assert.False(result);
 
-        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().UpdateAsync(Arg.Any<Order>(), default);
     }
 }

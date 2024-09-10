@@ -13,11 +13,6 @@ public class EfRepository<T>(OrderingContext dbContext) : RepositoryBase<T>(dbCo
 {
     private readonly OrderingContext _dbContext = dbContext;
 
-    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
-    {
-        return await this._dbContext.SaveEntitiesAsync(cancellationToken);
-    }
-
     public async Task BeginTransactionAsync()
     {
         await this._dbContext.BeginTransactionAsync();

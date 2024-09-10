@@ -30,7 +30,7 @@ public class SetStockRejectedOrderStatusCommandUnitTests
         //Assert
 
         Assert.Equal(OrderStatus.Cancelled, order.OrderStatus);
-        await orderRepository.Received().SaveEntitiesAsync(default);
+        await orderRepository.Received().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -54,7 +54,7 @@ public class SetStockRejectedOrderStatusCommandUnitTests
 
         Assert.NotEqual(OrderStatus.Cancelled, order.OrderStatus);
 
-        await orderRepository.Received().SaveEntitiesAsync(default);
+        await orderRepository.Received().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -74,7 +74,7 @@ public class SetStockRejectedOrderStatusCommandUnitTests
 
         Assert.False(result);
 
-        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().UpdateAsync(Arg.Any<Order>(), default);
     }
 
     [Theory, AutoNSubstituteData]

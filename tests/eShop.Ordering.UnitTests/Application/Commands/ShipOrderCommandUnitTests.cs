@@ -30,7 +30,7 @@ public class ShipOrderCommandUnitTests
 
         Assert.Equal(OrderStatus.Shipped, order.OrderStatus);
 
-        await orderRepository.Received().SaveEntitiesAsync(default);
+        await orderRepository.Received().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -70,6 +70,6 @@ public class ShipOrderCommandUnitTests
 
         Assert.False(result);
 
-        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().UpdateAsync(Arg.Any<Order>(), default);
     }
 }

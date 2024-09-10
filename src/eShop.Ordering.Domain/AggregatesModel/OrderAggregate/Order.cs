@@ -121,7 +121,7 @@ public class Order
     {
         if (this.OrderStatus == OrderStatus.StockConfirmed)
         {
-            this.AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(Id, OrderItems));
+            this.AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(this.Id, this.OrderItems));
 
             this.OrderStatus = OrderStatus.Paid;
             this.Description = "The payment was performed at a simulated \"American Bank checking bank account ending on XX35071\"";

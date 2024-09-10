@@ -1,6 +1,5 @@
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace eShop.Ordering.API.Application.DomainEventHandlers;
 
@@ -20,13 +19,17 @@ public class OrderStatusChangedToAwaitingValidationDomainEventHandler(
     {
         OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.OrderId, OrderStatus.AwaitingValidation);
 
-        var order = await this._orderRepository.GetByIdAsync(domainEvent.OrderId, cancellationToken);
-        var buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
+       var order = await this._orderRepository.GetByIdAsync(domainEvent.OrderId, cancellationToken);
+        Buyer? buyer = null;
+        if (order!.BuyerId.HasValue)
+        {
+            buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
+        }
 
         var orderStockList = domainEvent.OrderItems
             .Select(orderItem => new OrderStockItem(orderItem.ProductId, orderItem.Units));
 
-        var integrationEvent = new OrderStatusChangedToAwaitingValidationIntegrationEvent(order.Id, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!, orderStockList);
+        var integrationEvent = new OrderStatusChangedToAwaitingValidationIntegrationEvent(order.Id, order.OrderStatus, buyer?.Name, buyer?.IdentityGuid, orderStockList);
         await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
     }
 }

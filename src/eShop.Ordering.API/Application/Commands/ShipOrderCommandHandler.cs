@@ -22,7 +22,8 @@ public class ShipOrderCommandHandler(IRepository<Domain.AggregatesModel.OrderAgg
         }
 
         orderToUpdate.SetShippedStatus();
-        return await this._orderRepository.SaveEntitiesAsync(cancellationToken);
+        await this._orderRepository.UpdateAsync(orderToUpdate, cancellationToken);
+        return true;
     }
 }
 

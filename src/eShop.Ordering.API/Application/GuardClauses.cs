@@ -1,8 +1,8 @@
 using Ardalis.GuardClauses;
 using Ardalis.Result;
-using eShop.Ordering.API.Core.Exceptions;
+using eShop.Ordering.API.Application.Exceptions;
 
-namespace eShop.Ordering.API.Core;
+namespace eShop.Ordering.API.Application;
 
 internal static class GuardClauses
 {

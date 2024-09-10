@@ -23,7 +23,7 @@ public abstract class Entity
 
     public void AddDomainEvent(INotification eventItem)
     {
-        this._domainEvents = this._domainEvents ?? [];
+        this._domainEvents ??= [];
         this._domainEvents.Add(eventItem);
     }
 

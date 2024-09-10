@@ -2,6 +2,8 @@ using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Ordering.API.Application.Queries.GetOrders;
+using eShop.Ordering.API.Application.Specifications;
+using eShop.Ordering.Contracts.GetOrders;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 using NSubstitute.ExceptionExtensions;
@@ -26,7 +28,7 @@ public class GetOrdersQueryUnitTests
             orders[i].SetBuyer(buyers[i]);
         }
 
-        orderRepository.ListAsync(default)
+        orderRepository.ListAsync(Arg.Any<GetOrdersSpecification>(), default)
             .Returns(orders);
 
         // Act
@@ -66,7 +68,7 @@ public class GetOrdersQueryUnitTests
     {
         // Arrange
 
-        orderRepository.ListAsync(default)
+        orderRepository.ListAsync(Arg.Any<GetOrdersSpecification>(), default)
             .ThrowsAsync<Exception>();
 
         // Act

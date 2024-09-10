@@ -1,0 +1,31 @@
+@page "/orders"
+@using MediatR
+@using eShop.AdminApp.Application.Queries.GetOrders
+@inject IMediator Mediator
+
+<PageTitle>Orders</PageTitle>
+
+<div class="tw-container tw-p-8">
+    <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
+        <h3 class="tw-text-2xl tw-font-medium">Orders</h3>
+    </div>
+    <div class="tw-mt-8 tw-mx-32">
+        <FluentDataGrid Items="@orders" ShowHover="true">
+            <PropertyColumn Property="@(p => p.OrderNumber)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.OrderDate)" Format="yyyy-MM-dd" Sortable="true" />
+            <PropertyColumn Property="@(p => p.BuyerName)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.OrderStatus)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.Total)" Sortable="true" />
+        </FluentDataGrid>
+    </div>
+</div>
+
+@code {
+    private IQueryable<OrderViewModel>? orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.orders = (await Mediator.Send(new GetOrdersQuery()))
+            .Value.AsQueryable();
+    }
+}

@@ -1,4 +1,4 @@
-namespace eShop.Ordering.API.Core.Exceptions;
+namespace eShop.Ordering.API.Application.Exceptions;
 
 [Serializable]
 internal class OrdersNotFoundException : Exception

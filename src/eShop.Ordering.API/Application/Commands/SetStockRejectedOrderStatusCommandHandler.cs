@@ -27,7 +27,8 @@ public class SetStockRejectedOrderStatusCommandHandler(IRepository<Domain.Aggreg
 
         orderToUpdate.SetCancelledStatusWhenStockIsRejected(command.OrderStockItems);
 
-        return await this._orderRepository.SaveEntitiesAsync(cancellationToken);
+        await this._orderRepository.UpdateAsync(orderToUpdate, cancellationToken);
+        return true;
     }
 }
 
