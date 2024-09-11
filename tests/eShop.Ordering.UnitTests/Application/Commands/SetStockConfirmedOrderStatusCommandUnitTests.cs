@@ -3,7 +3,7 @@ using AutoFixture.Xunit2;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 
-namespace Ordering.UnitTests.Application.Commands;
+namespace eShop.Ordering.UnitTests.Application.Commands;
 public class SetStockConfirmedOrderStatusCommandUnitTests
 {
     [Theory, AutoNSubstituteData]
@@ -28,7 +28,7 @@ public class SetStockConfirmedOrderStatusCommandUnitTests
 
         Assert.Equal(OrderStatus.StockConfirmed, order.OrderStatus);
 
-        await orderRepository.Received().SaveEntitiesAsync(default);
+        await orderRepository.Received().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -51,7 +51,7 @@ public class SetStockConfirmedOrderStatusCommandUnitTests
 
         Assert.NotEqual(OrderStatus.StockConfirmed, order.OrderStatus);
 
-        await orderRepository.Received().SaveEntitiesAsync(default);
+        await orderRepository.Received().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -70,6 +70,6 @@ public class SetStockConfirmedOrderStatusCommandUnitTests
 
         Assert.False(result);
 
-        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().UpdateAsync(Arg.Any<Order>(), default);
     }
 }

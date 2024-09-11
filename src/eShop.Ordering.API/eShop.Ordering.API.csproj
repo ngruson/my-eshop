@@ -12,12 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="eShop.Ordering.UnitTests" />
     <InternalsVisibleTo Include="Ordering.FunctionalTests" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\eShop.EventBusRabbitMQ\eShop.EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\eShop.IntegrationEventLogEF\eShop.IntegrationEventLogEF.csproj" />
+    <ProjectReference Include="..\eShop.Ordering.Contracts\eShop.Ordering.Contracts.csproj" />
     <ProjectReference Include="..\eShop.Ordering.Domain\eShop.Ordering.Domain.csproj" />
     <ProjectReference Include="..\eShop.Ordering.Infrastructure\eShop.Ordering.Infrastructure.csproj" />
     <ProjectReference Include="..\eShop.Shared\eShop.Shared.csproj" />
@@ -25,6 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses" />
+    <PackageReference Include="Ardalis.Result.AspNetCore" />
     <PackageReference Include="Asp.Versioning.Http" />
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Dapper" />

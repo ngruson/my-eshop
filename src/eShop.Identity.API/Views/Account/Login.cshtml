@@ -37,6 +37,11 @@
                                 <p>The default users are alice/bob, password: Pass123$</p>
                             </div>
                             <button class="btn btn-primary" name="button" value="login">Login</button>
+                            <a class="btn btn-primary"
+                                asp-action="Challenge"
+                                asp-controller="External"
+                                asp-route-scheme="Microsoft"
+                                asp-route-returnUrl="@Model.ReturnUrl">Employee Login</a>
                         </div>
                     </form>
                 </div>

@@ -12,8 +12,7 @@
     <ApiVersioningVersion>8.1.0</ApiVersioningVersion>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Version together with Aspire -->
-    <PackageVersion Include="Ardalis.SmartEnum.EFCore" Version="8.0.0" />
+    <!-- Version together with Aspire -->    
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Azure.CognitiveServices" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
@@ -96,8 +95,11 @@
     <PackageVersion Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.65.0" />
     <PackageVersion Include="Grpc.Tools" Version="2.65.0" PrivateAssets="All" />
     <!-- Miscellaneous -->
-    <PackageVersion Include="Ardalis.Result" Version="9.1.0" />
+    <PackageVersion Include="Ardalis.GuardClauses" Version="4.6.0" />
+    <PackageVersion Include="Ardalis.Result" Version="9.1.0" /> 
+    <PackageVersion Include="Ardalis.Result.AspNetCore" Version="9.1.0" />
     <PackageVersion Include="Ardalis.SmartEnum" Version="8.0.0" />
+    <PackageVersion Include="Ardalis.SmartEnum.EFCore" Version="8.0.0" />
     <PackageVersion Include="Ardalis.Specification" Version="8.0.0" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0" />
     <PackageVersion Include="Automapper" Version="13.0.1" />

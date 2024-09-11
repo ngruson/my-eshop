@@ -4,12 +4,12 @@ public record OrderStatusChangedToAwaitingValidationIntegrationEvent : Integrati
 {
     public int OrderId { get; }
     public OrderStatus OrderStatus { get; }
-    public string BuyerName { get; }
-    public string BuyerIdentityGuid { get; }
+    public string? BuyerName { get; }
+    public string? BuyerIdentityGuid { get; }
     public IEnumerable<OrderStockItem> OrderStockItems { get; }
 
     public OrderStatusChangedToAwaitingValidationIntegrationEvent(
-        int orderId, OrderStatus orderStatus, string buyerName, string buyerIdentityGuid,
+        int orderId, OrderStatus orderStatus, string? buyerName, string? buyerIdentityGuid,
         IEnumerable<OrderStockItem> orderStockItems)
     {
         this.OrderId = orderId;

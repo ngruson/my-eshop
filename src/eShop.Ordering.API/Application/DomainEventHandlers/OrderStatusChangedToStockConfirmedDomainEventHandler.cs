@@ -20,9 +20,13 @@ public class OrderStatusChangedToStockConfirmedDomainEventHandler(
         OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.OrderId, OrderStatus.StockConfirmed);
 
         var order = await this._orderRepository.GetByIdAsync(domainEvent.OrderId, cancellationToken);
-        var buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
+        Buyer? buyer = null;
+        if (order!.BuyerId.HasValue)
+        {
+            buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
+        }
 
-        var integrationEvent = new OrderStatusChangedToStockConfirmedIntegrationEvent(order.Id, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!);
+        var integrationEvent = new OrderStatusChangedToStockConfirmedIntegrationEvent(order.Id, order.OrderStatus, buyer?.Name, buyer?.IdentityGuid);
         await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
     }
 }

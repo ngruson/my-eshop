@@ -1,4 +1,4 @@
-﻿namespace eShop.Identity.API.Configuration
+namespace eShop.Identity.API.Configuration
 {
     public class Config
     {
@@ -185,7 +185,41 @@
                     {
                         "webhooks"
                     }
-                }
+                },
+                new Client
+                {
+                    ClientId = "adminapp",
+                    ClientName = "Admin Client",
+                    ClientSecrets =
+                    [
+                        new Secret("secret".Sha256())
+                    ],
+                    ClientUri = $"{configuration["AdminAppClient"]}",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowAccessTokensViaBrowser = false,
+                    RequireConsent = false,
+                    AllowOfflineAccess = true,
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    RequirePkce = false,
+                    RedirectUris =
+                    [
+                        $"{configuration["AdminAppClient"]}/signin-oidc"
+                    ],
+                    PostLogoutRedirectUris =
+                    [
+                        $"{configuration["AdminAppClient"]}/signout-callback-oidc"
+                    ],
+                    AllowedScopes = new List<string>
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.OfflineAccess,
+                        "orders",
+                        "basket"
+                    },
+                    AccessTokenLifetime = 60*60*2, // 2 hours
+                    IdentityTokenLifetime= 60*60*2 // 2 hours
+                },
             };
         }
     }

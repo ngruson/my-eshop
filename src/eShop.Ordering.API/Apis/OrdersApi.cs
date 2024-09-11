@@ -1,3 +1,5 @@
+using Ardalis.Result.AspNetCore;
+using eShop.Ordering.API.Application.Queries.GetOrders;
 using Microsoft.AspNetCore.Http.HttpResults;
 using CardType = eShop.Ordering.API.Application.Queries.CardType;
 using Order = eShop.Ordering.API.Application.Queries.Order;
@@ -12,6 +14,11 @@ public static class OrdersApi
 
         api.MapPut("/cancel", CancelOrderAsync);
         api.MapPut("/ship", ShipOrderAsync);
+
+        api.MapGet("/all", async ([FromServices] IMediator mediator) =>
+            (await mediator.Send(new GetOrdersQuery()))
+                .ToMinimalApiResult());
+
         api.MapGet("{orderId:int}", GetOrderAsync);
         api.MapGet("/", GetOrdersByUserAsync);
         api.MapGet("/cardTypes", GetCardTypesAsync);

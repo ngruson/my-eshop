@@ -19,9 +19,4 @@ public class EfRepository<T>(CatalogContext dbContext) : RepositoryBase<T>(dbCon
     {
         await ResilientTransaction.New(this._dbContext).ExecuteAsync(func);
     }
-
-    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
-    {
-        return await this._dbContext.SaveEntitiesAsync(cancellationToken);
-    }
 }

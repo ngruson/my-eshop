@@ -29,7 +29,8 @@ public class SetAwaitingValidationOrderStatusCommandHandler(
 
         orderToUpdate.SetAwaitingValidationStatus();
 
-        return await this._orderRepository.SaveEntitiesAsync(cancellationToken);
+        await this._orderRepository.UpdateAsync(orderToUpdate, cancellationToken);
+        return true;
     }
 }
 

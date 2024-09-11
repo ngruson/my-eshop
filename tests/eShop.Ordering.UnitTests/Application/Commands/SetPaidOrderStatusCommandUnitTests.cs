@@ -4,7 +4,7 @@ using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 
-namespace Ordering.UnitTests.Application.Commands;
+namespace eShop.Ordering.UnitTests.Application.Commands;
 public class SetPaidOrderStatusCommandUnitTests
 {
     [Theory, AutoNSubstituteData]
@@ -30,7 +30,7 @@ public class SetPaidOrderStatusCommandUnitTests
 
         Assert.Equal(OrderStatus.Paid, order.OrderStatus);
 
-        await orderRepository.Received().SaveEntitiesAsync(default);
+        await orderRepository.Received().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -53,7 +53,7 @@ public class SetPaidOrderStatusCommandUnitTests
 
         Assert.NotEqual(OrderStatus.Paid, order.OrderStatus);
 
-        await orderRepository.Received().SaveEntitiesAsync(default);
+        await orderRepository.Received().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -72,6 +72,6 @@ public class SetPaidOrderStatusCommandUnitTests
 
         Assert.False(result);
 
-        await orderRepository.DidNotReceive().SaveEntitiesAsync(default);
+        await orderRepository.DidNotReceive().UpdateAsync(Arg.Any<Order>(), default);
     }
 }

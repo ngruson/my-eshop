@@ -111,18 +111,23 @@ if (useOpenAI)
         .WithEnvironment("AI__OPENAI__CHATMODEL", chatModelName); ;
 }
 
+var adminApp = builder.AddProject<Projects.eShop_AdminApp>("adminapp")
+    .WithExternalHttpEndpoints()
+    .WithReference(orderingApi)
+    .WithEnvironment("IdentityUrl", identityEndpoint);
+
 // Wire up the callback urls (self referencing)
 webApp.WithEnvironment("CallBackUrl", webApp.GetEndpoint(launchProfileName));
 webhooksClient.WithEnvironment("CallBackUrl", webhooksClient.GetEndpoint(launchProfileName));
+adminApp.WithEnvironment("CallBackUrl", adminApp.GetEndpoint(launchProfileName));
 
 // Identity has a reference to all of the apps for callback urls, this is a cyclic reference
 identityApi.WithEnvironment("BasketApiClient", basketApi.GetEndpoint("http"))
            .WithEnvironment("OrderingApiClient", orderingApi.GetEndpoint("http"))
            .WithEnvironment("WebhooksApiClient", webHooksApi.GetEndpoint("http"))
            .WithEnvironment("WebhooksWebClient", webhooksClient.GetEndpoint(launchProfileName))
-           .WithEnvironment("WebAppClient", webApp.GetEndpoint(launchProfileName));
-
-builder.AddProject<Projects.eShop_AdminApp>("adminapp");
+           .WithEnvironment("WebAppClient", webApp.GetEndpoint(launchProfileName))
+           .WithEnvironment("AdminAppClient", adminApp.GetEndpoint(launchProfileName));
 
 builder.Build().Run();
 

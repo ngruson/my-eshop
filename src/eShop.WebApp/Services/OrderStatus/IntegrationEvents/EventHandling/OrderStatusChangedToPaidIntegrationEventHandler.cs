@@ -10,6 +10,9 @@ public class OrderStatusChangedToPaidIntegrationEventHandler(
     public async Task Handle(OrderStatusChangedToPaidIntegrationEvent @event, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
-        await orderStatusNotificationService.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
+        if (@event.BuyerIdentityGuid is not null)
+        {
+            await orderStatusNotificationService.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid!);
+        }
     }
 }

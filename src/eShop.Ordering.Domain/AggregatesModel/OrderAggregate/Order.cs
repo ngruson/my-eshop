@@ -14,7 +14,7 @@ public class Order
 
     public int? BuyerId { get; private set; }
 
-    public Buyer? Buyer { get; }
+    public Buyer? Buyer { get; private set; }
 
     public OrderStatus OrderStatus { get; private set; }
     
@@ -121,7 +121,7 @@ public class Order
     {
         if (this.OrderStatus == OrderStatus.StockConfirmed)
         {
-            this.AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(Id, OrderItems));
+            this.AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(this.Id, this.OrderItems));
 
             this.OrderStatus = OrderStatus.Paid;
             this.Description = "The payment was performed at a simulated \"American Bank checking bank account ending on XX35071\"";
@@ -184,4 +184,10 @@ public class Order
     }
 
     public decimal GetTotal() => this._orderItems.Sum(o => o.Units * o.UnitPrice);
+
+    // Used in unit tests
+    public void SetBuyer(Buyer buyer)
+    {
+        this.Buyer = buyer;
+    }
 }

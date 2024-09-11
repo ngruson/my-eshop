@@ -6,7 +6,7 @@ using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
 
-namespace Ordering.UnitTests.Application.DomainEventHandlers;
+namespace eShop.Ordering.UnitTests.Application.DomainEventHandlers;
 public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandlerUnitTests
 {
     [Theory, AutoNSubstituteData]
@@ -33,7 +33,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandlerUnitTe
 
         //Assert
 
-        await buyerRepository.Received().SaveEntitiesAsync(default);
+        await buyerRepository.Received().UpdateAsync(buyer, default);
         await integrationEventService.AddAndSaveEventAsync(Arg.Any<OrderStatusChangedToSubmittedIntegrationEvent>(), default);
 
         await buyerRepository.DidNotReceive().AddAsync(buyer, default);
@@ -65,7 +65,6 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandlerUnitTe
         //Assert
 
         await buyerRepository.Received().AddAsync(Arg.Any<Buyer>(), default);
-        await buyerRepository.Received().SaveEntitiesAsync(default);
         await integrationEventService.AddAndSaveEventAsync(Arg.Any<OrderStatusChangedToSubmittedIntegrationEvent>(), default);
     }
 }
