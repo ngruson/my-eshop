@@ -1,4 +1,4 @@
-name: eShop Pull Request Validation
+name: eShop Feature Branch Build
 
 on:
   push:
