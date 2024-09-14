@@ -3,6 +3,7 @@ namespace eShop.Ordering.API.Infrastructure;
 using System.Reflection;
 using eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 using eShop.Shared.Data;
+using eShop.Shared.Data.Seed;
 using eShop.Shared.DI;
 
 public class CardTypesSeed: IDbSeeder

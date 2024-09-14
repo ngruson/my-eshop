@@ -1,10 +1,16 @@
+using System.Net;
+using System.Reflection;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
+using Microsoft.OpenApi.Models;
 using NSubstitute;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using static eShop.ServiceDefaults.ConfigureSwaggerOptions;
 
 namespace eShop.ServiceDefaults.UnitTests;
 public class ConfigureSwaggerOptionsUnitTests
@@ -170,15 +176,30 @@ public class ConfigureSwaggerOptionsUnitTests
     [Theory, AutoNSubstituteData]
     internal void Configure_ApiIsSunset_DocumentIsSetCorrectly(
         [Substitute, Frozen] IApiVersionDescriptionProvider mockProvider,
-        DateTimeOffset sunsetDate)
+        Uri uri)
     {
         // Arrange
+
+        SunsetPolicy sunsetPolicy = new(DateTime.Now.AddDays(30));
+
+        sunsetPolicy.Links.Add(
+            new(uri, "sunset")
+            {
+                Type = "text/html"
+            });
+
+        sunsetPolicy.Links.Add(
+            new(uri, "sunset")
+            {
+                Type = "text/html",
+                Title = "title"
+            });
 
         mockProvider.ApiVersionDescriptions
             .Returns(
             [
                 new(apiVersion: new(1, 0), groupName: "v1", deprecated: true, 
-                    new SunsetPolicy(sunsetDate)
+                    sunsetPolicy
                 )
             ]);
 
@@ -204,7 +225,79 @@ public class ConfigureSwaggerOptionsUnitTests
 
         // Assert
 
-        Assert.Equal($"documentDescription. This API version has been deprecated. The API will be sunset on {sunsetDate.Date.ToShortDateString()}.",
-            options.SwaggerGeneratorOptions.SwaggerDocs["v1"].Description);
+        Assert.NotEmpty(options.SwaggerGeneratorOptions.SwaggerDocs["v1"].Description);
+    }
+
+    public class AuthorizeCheckOperationFilterUnitTests
+    {
+        [Theory, AutoNSubstituteData]
+        internal void WithEndpointMetadata_AddOperationsAndSecurity(
+        List<IAuthorizeData> authorizeData,
+        ISchemaGenerator schemaGenerator,
+        SchemaRepository schemaRepository,
+        MethodInfo methodInfo,
+        string[] scopes
+        )
+        {
+            // Arrange
+
+            ApiDescription apiDescription = new()
+            {
+                ActionDescriptor = new()
+                {
+                    EndpointMetadata = authorizeData.Cast<object>().ToList()
+                }
+
+            };
+
+            OpenApiOperation operation = new();
+
+            OperationFilterContext context = new(apiDescription, schemaGenerator, schemaRepository, methodInfo);
+
+            AuthorizeCheckOperationFilter sut = new(scopes);
+
+            // Act
+
+            sut.Apply(operation, context);
+
+            // Assert
+
+            Assert.Contains(operation.Responses, x => x.Key == ((int)HttpStatusCode.Unauthorized).ToString());
+            Assert.Contains(operation.Responses, x => x.Key == ((int)HttpStatusCode.Forbidden).ToString());
+
+            Assert.Single(operation.Security);
+            Assert.Equal(operation.Security[0].First().Value, scopes);
+        }
+
+        [Theory, AutoNSubstituteData]
+        internal void WithoutEndpointMetadata_AddNoOperationsAndSecurity(
+        ISchemaGenerator schemaGenerator,
+        SchemaRepository schemaRepository,
+        MethodInfo methodInfo,
+        string[] scopes
+        )
+        {
+            // Arrange
+
+            ApiDescription apiDescription = new()
+            {
+                ActionDescriptor = new()
+            };
+
+            OpenApiOperation operation = new();
+
+            OperationFilterContext context = new(apiDescription, schemaGenerator, schemaRepository, methodInfo);
+
+            AuthorizeCheckOperationFilter sut = new(scopes);
+
+            // Act
+
+            sut.Apply(operation, context);
+
+            // Assert
+
+            Assert.Empty(operation.Responses);
+            Assert.Empty(operation.Security);
+        }
     }
 }

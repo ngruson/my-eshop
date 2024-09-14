@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using eShop.Shared.Data.Seed;
 using eShop.Shared.DI;
 
 namespace Microsoft.AspNetCore.Hosting;
@@ -106,8 +107,4 @@ internal static class MigrateDbContextExtensions
             return Task.CompletedTask;
         }
     }
-}
-public interface IDbSeeder
-{
-    Task SeedAsync(ServiceProviderWrapper serviceProviderWrapper);
 }

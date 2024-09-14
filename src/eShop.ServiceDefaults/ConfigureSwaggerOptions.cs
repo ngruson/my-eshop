@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
@@ -17,12 +17,12 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
 
     public void Configure(SwaggerGenOptions options)
     {
-        foreach (var description in _provider.ApiVersionDescriptions)
+        foreach (var description in this._provider.ApiVersionDescriptions)
         {
-            options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
+            options.SwaggerDoc(description.GroupName, this.CreateInfoForApiVersion(description));
         }
 
-        ConfigureAuthorization(options);
+        this.ConfigureAuthorization(options);
     }
 
     private OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
@@ -36,7 +36,7 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
         ///     }
         ///   }
         /// }
-        var openApi = _configuration.GetSection("OpenApi");
+        var openApi = this._configuration.GetSection("OpenApi");
         var document = openApi.GetRequiredSection("Document");
         var info = new OpenApiInfo()
         {
@@ -117,7 +117,7 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
 
     private void ConfigureAuthorization(SwaggerGenOptions options)
     {
-        var identitySection = _configuration.GetSection("Identity");
+        var identitySection = this._configuration.GetSection("Identity");
 
         if (!identitySection.Exists())
         {
@@ -155,7 +155,7 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
         options.OperationFilter<AuthorizeCheckOperationFilter>([scopes.Keys.ToArray()]);
     }
 
-    private sealed class AuthorizeCheckOperationFilter(string[] scopes) : IOperationFilter
+    internal sealed class AuthorizeCheckOperationFilter(string[] scopes) : IOperationFilter
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {

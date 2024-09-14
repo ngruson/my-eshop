@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui;
 using eShop.ClientApp.Services;
 using eShop.ClientApp.Services.AppEnvironment;
 using eShop.ClientApp.Services.Basket;
@@ -12,8 +12,6 @@ using eShop.ClientApp.Services.RequestProvider;
 using eShop.ClientApp.Services.Settings;
 using eShop.ClientApp.Services.Theme;
 using eShop.ClientApp.Views;
-using IdentityModel.OidcClient;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using IBrowser = IdentityModel.OidcClient.Browser.IBrowser;
 
@@ -64,7 +62,7 @@ public static class MauiProgram
         mauiAppBuilder.Services.AddSingleton<IRequestProvider>(
             sp =>
             {
-                var debugHttpHandler = sp.GetKeyedService<HttpMessageHandler>("DebugHttpMessageHandler");
+                HttpMessageHandler? debugHttpHandler = sp.GetKeyedService<HttpMessageHandler>("DebugHttpMessageHandler");
                 return new RequestProvider(debugHttpHandler);
             });
         mauiAppBuilder.Services.AddSingleton<IIdentityService, IdentityService>(
@@ -72,7 +70,7 @@ public static class MauiProgram
             {
                 var browser = sp.GetRequiredService<IBrowser>();
                 var settingsService = sp.GetRequiredService<ISettingsService>();
-                var debugHttpHandler = sp.GetKeyedService<HttpMessageHandler>("DebugHttpMessageHandler");
+                HttpMessageHandler? debugHttpHandler = sp.GetKeyedService<HttpMessageHandler>("DebugHttpMessageHandler");
                 return new IdentityService(browser, settingsService, debugHttpHandler);
             });
         mauiAppBuilder.Services.AddSingleton<IFixUriService, FixUriService>();
@@ -107,15 +105,17 @@ public static class MauiProgram
             (sp, key) =>
             {
 #if ANDROID
-                var handler = new Xamarin.Android.Net.AndroidMessageHandler();
-                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
+                Xamarin.Android.Net.AndroidMessageHandler handler = new()
+                {
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
                 {
                     if (cert != null && cert.Issuer.Equals("CN=localhost", StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
-                    
+
                     return errors == System.Net.Security.SslPolicyErrors.None;
+                }
                 };
                 return handler;
 #elif IOS || MACCATALYST

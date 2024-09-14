@@ -24,7 +24,7 @@ public class OrderingIntegrationEventService(IEventBus eventBus,
             try
             {
                 await this._eventLogService.MarkEventAsInProgressAsync(logEvt.EventId, cancellationToken);
-                await this._eventBus.PublishAsync(logEvt.IntegrationEvent, cancellationToken);
+                await this._eventBus.PublishAsync(logEvt.IntegrationEvent!, cancellationToken);
                 await this._eventLogService.MarkEventAsPublishedAsync(logEvt.EventId, cancellationToken);
             }
             catch (Exception ex)

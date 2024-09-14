@@ -196,21 +196,21 @@ public sealed class RabbitMQEventBus(
         }
 
         // Deserialize the event
-        var integrationEvent = this.DeserializeMessage(message, eventType);
+        IntegrationEvent? integrationEvent = this.DeserializeMessage(message, eventType);
         
         // REVIEW: This could be done in parallel
 
         // Get all the handlers using the event type as the key
         foreach (var handler in scope.ServiceProvider.GetKeyedServices<IIntegrationEventHandler>(eventType))
         {
-            await handler.Handle(integrationEvent, default);
+            await handler.Handle(integrationEvent!, default);
         }
     }
 
     [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
         Justification = "The 'JsonSerializer.IsReflectionEnabledByDefault' feature switch, which is set to false by default for trimmed .NET apps, ensures the JsonSerializer doesn't use Reflection.")]
     [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "See above.")]
-    private IntegrationEvent DeserializeMessage(string message, Type eventType)
+    private IntegrationEvent? DeserializeMessage(string message, Type eventType)
     {
 
         return JsonSerializer.Deserialize(message, eventType, _subscriptionInfo.JsonSerializerOptions) as IntegrationEvent;

@@ -1,7 +1,7 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using System.Reflection;
 
-namespace eShop.ClientApp;
+namespace eShop.ClientApp.Extensions;
 
 public static class VisualElementExtensions
 {
@@ -18,7 +18,7 @@ public static class VisualElementExtensions
     /// <param name="easing">The easing function to use to transition in, out, or in and out of the animation.</param>
     /// <typeparam name="TElement">The 1st type parameter.</typeparam>
     public static Task<bool> ColorTo<TElement>(this TElement element, Expression<Func<TElement, Color>> start,
-        Color end, uint rate = 16, uint length = 250, Easing easing = null)
+        Color end, uint rate = 16, uint length = 250, Easing? easing = null)
         where TElement : IAnimatable
     {
         if (element is null)
@@ -29,16 +29,16 @@ public static class VisualElementExtensions
         easing ??= Easing.Linear;
 
         var member = (MemberExpression)start.Body;
-        var property = member.Member as PropertyInfo;
+        PropertyInfo? property = member.Member as PropertyInfo;
 
-        var animationName = $"color_to_{property.Name}_{element.GetHashCode()}";
+        string? animationName = $"color_to_{property?.Name}_{element.GetHashCode()}";
 
         var tcs = new TaskCompletionSource<bool>();
 
-        var elementStartingColor = (Color)property.GetValue(element);
+        Color? elementStartingColor = (Color?)property?.GetValue(element);
 
-        var transitionAnimation =
-            new Animation(d => property.SetValue(element, elementStartingColor.Lerp(end, (float)d)), 0d, 1d, easing);
+        Animation? transitionAnimation =
+            new(d => property?.SetValue(element, elementStartingColor?.Lerp(end, (float)d)), 0d, 1d, easing);
 
         try
         {
@@ -65,7 +65,7 @@ public static class VisualElementExtensions
     /// <param name="easing">The easing function to use to transition in, out, or in and out of the animation.</param>
     /// <typeparam name="TElement">The 1st type parameter.</typeparam>
     public static Task<bool> TransitionTo<TElement>(this TElement element, Expression<Func<TElement, double>> start,
-        double end, uint rate = 16, uint length = 250, Easing easing = null)
+        double end, uint rate = 16, uint length = 250, Easing? easing = null)
         where TElement : IAnimatable
     {
         if (element is null)
@@ -75,17 +75,17 @@ public static class VisualElementExtensions
 
         easing ??= Easing.Linear;
 
-        var member = (MemberExpression)start.Body;
-        var property = member.Member as PropertyInfo;
+        MemberExpression member = (MemberExpression)start.Body;
+        PropertyInfo? property = member.Member as PropertyInfo;
 
-        var animationName = $"transition_to_{property.Name}_{element.GetHashCode()}";
+        string animationName = $"transition_to_{property?.Name}_{element.GetHashCode()}";
 
-        var tcs = new TaskCompletionSource<bool>();
+        TaskCompletionSource<bool> tcs = new();
 
-        var elementStartingPosition = (double)property.GetValue(element);
+        double? elementStartingPosition = (double?)property?.GetValue(element);
 
-        var transitionAnimation =
-            new Animation(d => property.SetValue(element, d), elementStartingPosition, end, easing);
+        Animation transitionAnimation =
+            new(d => property?.SetValue(element, d), elementStartingPosition!.Value, end, easing);
 
         try
         {
@@ -112,7 +112,7 @@ public static class VisualElementExtensions
     /// <param name="easing">The easing function to use to transition in, out, or in and out of the animation.</param>
     /// <typeparam name="TElement">The 1st type parameter.</typeparam>
     public static Task<bool> TransitionTo<TElement>(this TElement element, Expression<Func<TElement, float>> start,
-        float end, uint rate = 16, uint length = 250, Easing easing = null)
+        float end, uint rate = 16, uint length = 250, Easing? easing = null)
         where TElement : IAnimatable
     {
         if (element is null)
@@ -122,17 +122,17 @@ public static class VisualElementExtensions
 
         easing ??= Easing.Linear;
 
-        var member = (MemberExpression)start.Body;
-        var property = member.Member as PropertyInfo;
+        MemberExpression member = (MemberExpression)start.Body;
+        PropertyInfo? property = member.Member as PropertyInfo;
 
-        var animationName = $"transition_to_{property.Name}_{element.GetHashCode()}";
+        string? animationName = $"transition_to_{property?.Name}_{element.GetHashCode()}";
 
-        var tcs = new TaskCompletionSource<bool>();
+        TaskCompletionSource<bool> tcs = new();
 
-        var elementStartingPosition = (float)property.GetValue(element);
+        float? elementStartingPosition = (float?)property?.GetValue(element);
 
         var transitionAnimation =
-            new Animation(d => property.SetValue(element, d), elementStartingPosition, end, easing);
+            new Animation(d => property?.SetValue(element, d), elementStartingPosition!.Value, end, easing);
 
         try
         {
@@ -159,7 +159,7 @@ public static class VisualElementExtensions
     /// <param name="easing">The easing function to use to transition in, out, or in and out of the animation.</param>
     /// <typeparam name="TElement">The 1st type parameter.</typeparam>
     public static Task<bool> TransitionTo<TElement>(this TElement element, Expression<Func<TElement, int>> start,
-        int end, uint rate = 16, uint length = 250, Easing easing = null)
+        int end, uint rate = 16, uint length = 250, Easing? easing = null)
         where TElement : IAnimatable
     {
         if (element is null)
@@ -169,17 +169,17 @@ public static class VisualElementExtensions
 
         easing ??= Easing.Linear;
 
-        var member = (MemberExpression)start.Body;
-        var property = member.Member as PropertyInfo;
+        MemberExpression member = (MemberExpression)start.Body;
+        PropertyInfo? property = member.Member as PropertyInfo;
 
-        var animationName = $"transition_to_{property.Name}_{element.GetHashCode()}";
+        string animationName = $"transition_to_{property?.Name}_{element.GetHashCode()}";
 
-        var tcs = new TaskCompletionSource<bool>();
+        TaskCompletionSource<bool> tcs = new();
 
-        var elementStartingPosition = (int)property.GetValue(element);
+        int? elementStartingPosition = (int?)property?.GetValue(element);
 
-        var transitionAnimation =
-            new Animation(d => property.SetValue(element, (int)d), elementStartingPosition, end, easing);
+        Animation transitionAnimation =
+            new(d => property?.SetValue(element, (int)d), elementStartingPosition!.Value, end, easing);
 
         try
         {
@@ -195,7 +195,7 @@ public static class VisualElementExtensions
     }
 
     public static Task<bool> TransitionTo<TElement>(this TElement element, Expression<Func<TElement, uint>> start,
-        uint end, uint rate = 16, uint length = 250, Easing easing = null)
+        uint end, uint rate = 16, uint length = 250, Easing? easing = null)
         where TElement : IAnimatable
     {
         if (element is null)
@@ -205,17 +205,17 @@ public static class VisualElementExtensions
 
         easing ??= Easing.Linear;
 
-        var member = (MemberExpression)start.Body;
-        var property = member.Member as PropertyInfo;
+        MemberExpression member = (MemberExpression)start.Body;
+        PropertyInfo? property = member.Member as PropertyInfo;
 
-        var animationName = $"transition_to_{property.Name}_{element.GetHashCode()}";
+        string animationName = $"transition_to_{property?.Name}_{element.GetHashCode()}";
 
-        var tcs = new TaskCompletionSource<bool>();
+        TaskCompletionSource<bool> tcs = new();
 
-        var elementStartingPosition = (uint)property.GetValue(element);
+        uint? elementStartingPosition = (uint?)property?.GetValue(element);
 
-        var transitionAnimation =
-            new Animation(d => property.SetValue(element, (uint)d), elementStartingPosition, end, easing);
+        Animation transitionAnimation =
+            new(d => property?.SetValue(element, (uint)d), elementStartingPosition!.Value, end, easing);
 
         try
         {
@@ -232,7 +232,7 @@ public static class VisualElementExtensions
 
     public static Task<bool> TransitionTo<TElement>(this TElement element, string animationName,
         Action<double> callback, Func<double> start, double end, uint rate = 16, uint length = 250,
-        Easing easing = null)
+        Easing? easing = null)
         where TElement : IAnimatable
     {
         if (element is null)
@@ -242,9 +242,9 @@ public static class VisualElementExtensions
 
         easing ??= Easing.Linear;
 
-        var tcs = new TaskCompletionSource<bool>();
+        TaskCompletionSource<bool> tcs = new();
 
-        var transitionAnimation = new Animation(callback, start?.Invoke() ?? default(double), end, easing);
+        var transitionAnimation = new Animation(callback, start?.Invoke() ?? default, end, easing);
 
         try
         {
@@ -260,7 +260,7 @@ public static class VisualElementExtensions
     }
 
     public static Task<bool> TransitionTo<TElement>(this TElement element, string animationName, Action<float> callback,
-        Func<float> start, float end, uint rate = 16, uint length = 250, Easing easing = null)
+        Func<float> start, float end, uint rate = 16, uint length = 250, Easing? easing = null)
         where TElement : IAnimatable
     {
         if (element is null)
@@ -270,10 +270,10 @@ public static class VisualElementExtensions
 
         easing ??= Easing.Linear;
 
-        var tcs = new TaskCompletionSource<bool>();
+        TaskCompletionSource<bool> tcs = new();
 
-        var transitionAnimation =
-            new Animation(x => callback((float)x), start?.Invoke() ?? default(float), end, easing);
+        Animation transitionAnimation =
+            new(x => callback((float)x), start?.Invoke() ?? default, end, easing);
 
         try
         {
@@ -289,7 +289,7 @@ public static class VisualElementExtensions
     }
 
     public static Task<bool> TransitionTo<TElement>(this TElement element, string animationName,
-        Action<double> callback, double start, double end, uint rate = 16, uint length = 250, Easing easing = null)
+        Action<double> callback, double start, double end, uint rate = 16, uint length = 250, Easing? easing = null)
         where TElement : IAnimatable
     {
         if (element is null)
@@ -299,9 +299,9 @@ public static class VisualElementExtensions
 
         easing ??= Easing.Linear;
 
-        var tcs = new TaskCompletionSource<bool>();
+        TaskCompletionSource<bool> tcs = new();
 
-        var transitionAnimation = new Animation(callback, start, end, easing);
+        Animation transitionAnimation = new(callback, start, end, easing);
 
         try
         {
@@ -317,7 +317,7 @@ public static class VisualElementExtensions
     }
 
     public static Task<bool> TransitionTo<TElement>(this TElement element, string animationName, Action<int> callback,
-        Func<int> start, int end, uint rate = 16, uint length = 250, Easing easing = null)
+        Func<int> start, int end, uint rate = 16, uint length = 250, Easing? easing = null)
         where TElement : IAnimatable
     {
         if (element is null)
@@ -327,9 +327,9 @@ public static class VisualElementExtensions
 
         easing ??= Easing.Linear;
 
-        var tcs = new TaskCompletionSource<bool>();
+        TaskCompletionSource<bool> tcs = new();
 
-        var transitionAnimation = new Animation(x => callback((int)x), start?.Invoke() ?? default(int), end, easing);
+        Animation transitionAnimation = new(x => callback((int)x), start?.Invoke() ?? default, end, easing);
 
         try
         {

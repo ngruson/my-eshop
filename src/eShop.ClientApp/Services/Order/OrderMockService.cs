@@ -75,8 +75,8 @@ public class OrderMockService : IOrderService
         Street = "FakeStreet"
     };
 
-    private readonly List<Models.Orders.Order> MockOrders = new()
-    {
+    private readonly List<Models.Orders.Order> MockOrders =
+    [
         new Models.Orders.Order
         {
             OrderNumber = 1,
@@ -149,7 +149,7 @@ public class OrderMockService : IOrderService
             ShippingStreet = MockAdress.Street,
             Total = 36.46M
         }
-    };
+    ];
 
     public async Task<IEnumerable<Models.Orders.Order>> GetOrdersAsync()
     {

@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using CommunityToolkit.Maui.Converters;
 
 namespace eShop.ClientApp.Converters;
@@ -7,8 +7,8 @@ public class FirstValidationErrorConverter : BaseConverterOneWay<IEnumerable<str
 {
     public override string DefaultConvertReturnValue { get; set; } = string.Empty;
 
-    public override string ConvertFrom(IEnumerable<string> value, CultureInfo culture)
+    public override string ConvertFrom(IEnumerable<string> value, CultureInfo? culture)
     {
-        return value?.FirstOrDefault() ?? DefaultConvertReturnValue;
+        return value?.FirstOrDefault() ?? this.DefaultConvertReturnValue;
     }
 }

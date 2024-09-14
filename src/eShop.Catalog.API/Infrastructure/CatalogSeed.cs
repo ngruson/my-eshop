@@ -1,6 +1,7 @@
 using System.Text.Json;
 using eShop.Catalog.API.Services;
 using eShop.Shared.Data;
+using eShop.Shared.Data.Seed;
 using eShop.Shared.DI;
 using Pgvector;
 
