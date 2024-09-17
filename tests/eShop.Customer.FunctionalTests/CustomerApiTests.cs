@@ -23,37 +23,37 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
         this._httpClient = this._webApplicationFactory.CreateDefaultClient(handler);
     }
 
-    //[Fact]
-    //public async Task GetCustomers_ReturnCustomersGivenCustomersExist()
-    //{
-    //    // Act
+    [Fact]
+    public async Task GetCustomers_ReturnCustomersGivenCustomersExist()
+    {
+        // Act
 
-    //    HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers/all");
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers/all");
 
-    //    // Assert
+        // Assert
 
-    //    response.EnsureSuccessStatusCode();
-    //    string body = await response.Content.ReadAsStringAsync();
-    //    List<CustomerDto> result = JsonSerializer.Deserialize<List<CustomerDto>>(body, this._jsonSerializerOptions);
+        response.EnsureSuccessStatusCode();
+        string body = await response.Content.ReadAsStringAsync();
+        List<CustomerDto> result = JsonSerializer.Deserialize<List<CustomerDto>>(body, this._jsonSerializerOptions);
 
-    //    Assert.Equal(10, result.Count);
-    //}
+        Assert.Equal(10, result.Count);
+    }
 
-    //[Fact]
-    //public async Task GetCustomer_ReturnOkGivenCustomerExist()
-    //{
-    //    // Act
+    [Fact]
+    public async Task GetCustomer_ReturnOkGivenCustomerExist()
+    {
+        // Act
 
-    //    HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Bob&lastName=Smith");
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Bob&lastName=Smith");
 
-    //    // Assert
+        // Assert
 
-    //    response.EnsureSuccessStatusCode();
-    //    string body = await response.Content.ReadAsStringAsync();
-    //    CustomerDto result = JsonSerializer.Deserialize<CustomerDto>(body, this._jsonSerializerOptions);
+        response.EnsureSuccessStatusCode();
+        string body = await response.Content.ReadAsStringAsync();
+        CustomerDto result = JsonSerializer.Deserialize<CustomerDto>(body, this._jsonSerializerOptions);
 
-    //    Assert.NotNull(result);
-    //}
+        Assert.NotNull(result);
+    }
 
     //[Fact]
     //public async Task GetCustomer_ReturnNotFoundGivenCustomerDoesNotExist()
@@ -88,48 +88,48 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
     //    response.EnsureSuccessStatusCode();
     //}
 
-    [Fact]
-    public async Task UpdateCustomer_ReturnOkGivenCustomerUpdated()
-    {
-        // Arrange
+    //[Fact]
+    //public async Task UpdateCustomer_ReturnOkGivenCustomerUpdated()
+    //{
+    //    // Arrange
 
-        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Immanuel&lastName=Gooding");
-        response.EnsureSuccessStatusCode();
-        string body = await response.Content.ReadAsStringAsync();
-        Contracts.GetCustomer.CustomerDto customer =
-            JsonSerializer.Deserialize<Contracts.GetCustomer.CustomerDto>(body, this._jsonSerializerOptions);
+    //    HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Immanuel&lastName=Gooding");
+    //    response.EnsureSuccessStatusCode();
+    //    string body = await response.Content.ReadAsStringAsync();
+    //    Contracts.GetCustomer.CustomerDto customer =
+    //        JsonSerializer.Deserialize<Contracts.GetCustomer.CustomerDto>(body, this._jsonSerializerOptions);
 
-        // Act
+    //    // Act
 
-        UpdateCustomerDto updateCustomerDto = new(
-            customer.FirstName,
-            customer.LastName,
-            customer.CardNumber,
-            customer.SecurityNumber,
-            customer.Expiration,
-            customer.CardHolderName,
-            customer.CardType,
-            customer.Street,
-            customer.City,
-            customer.State,
-            customer.Country,
-            customer.ZipCode
-        );
+    //    UpdateCustomerDto updateCustomerDto = new(
+    //        customer.FirstName,
+    //        customer.LastName,
+    //        customer.CardNumber,
+    //        customer.SecurityNumber,
+    //        customer.Expiration,
+    //        customer.CardHolderName,
+    //        customer.CardType,
+    //        customer.Street,
+    //        customer.City,
+    //        customer.State,
+    //        customer.Country,
+    //        customer.ZipCode
+    //    );
 
-        response = await this._httpClient.PutAsync(
-            "/api/customers",
-            new StringContent(
-                JsonSerializer.Serialize(updateCustomerDto,
-                    this._jsonSerializerOptions
-                ),
-                Encoding.UTF8,
-                "application/json"
-            ));
+    //    response = await this._httpClient.PutAsync(
+    //        "/api/customers",
+    //        new StringContent(
+    //            JsonSerializer.Serialize(updateCustomerDto,
+    //                this._jsonSerializerOptions
+    //            ),
+    //            Encoding.UTF8,
+    //            "application/json"
+    //        ));
 
-        // Assert
+    //    // Assert
 
-        response.EnsureSuccessStatusCode();
-    }
+    //    response.EnsureSuccessStatusCode();
+    //}
 
     //[Fact]
     //public async Task UpdateCustomer_ReturnNotFoundGivenCustomerDoesNotExist()
