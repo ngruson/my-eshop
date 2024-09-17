@@ -93,7 +93,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
     {
         // Arrange
 
-        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Bob&lastName=Smith");
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Immanuel&lastName=Gooding");
         response.EnsureSuccessStatusCode();
         string body = await response.Content.ReadAsStringAsync();
         Contracts.GetCustomer.CustomerDto customer =
