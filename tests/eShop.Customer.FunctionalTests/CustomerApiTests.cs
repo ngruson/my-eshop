@@ -116,6 +116,9 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
             customer.ZipCode
         );
 
+        // Log the updateCustomerDto to the console
+        Console.WriteLine(JsonSerializer.Serialize(updateCustomerDto, this._jsonSerializerOptions));
+
         response = await this._httpClient.PutAsync(
             "/api/customers",
             new StringContent(

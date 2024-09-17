@@ -1,6 +1,5 @@
 using Ardalis.GuardClauses;
 using Ardalis.Result;
-using eShop.Customer.API.Application.Commands.CreateCustomer;
 using eShop.Customer.API.Application.GuardClauses;
 using eShop.Customer.API.Application.Specifications;
 using eShop.Shared.Data;
@@ -8,10 +7,10 @@ using eShop.Shared.Data;
 namespace eShop.Customer.API.Application.Commands.UpdateCustomer;
 
 internal class UpdateCustomerCommandHandler(
-    ILogger<CreateCustomerCommandHandler> logger,
+    ILogger<UpdateCustomerCommandHandler> logger,
     IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> repository) : IRequestHandler<UpdateCustomerCommand, Result>
 {
-    private readonly ILogger<CreateCustomerCommandHandler> logger = logger;
+    private readonly ILogger<UpdateCustomerCommandHandler> logger = logger;
     private readonly IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> customerRepository = repository;
 
     public async Task<Result> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
