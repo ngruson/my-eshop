@@ -101,7 +101,20 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
 
         // Act
 
-        UpdateCustomerDto updateCustomerDto = MapToUpdateCustomerDto(customer);
+        UpdateCustomerDto updateCustomerDto = new(
+            customer.FirstName,
+            customer.LastName,
+            customer.CardNumber,
+            customer.SecurityNumber,
+            customer.Expiration,
+            customer.CardHolderName,
+            customer.CardType,
+            customer.Street,
+            customer.City,
+            customer.State,
+            customer.Country,
+            customer.ZipCode
+        );
 
         response = await this._httpClient.PutAsync(
             "/api/customers",
