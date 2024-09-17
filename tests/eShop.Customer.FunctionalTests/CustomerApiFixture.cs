@@ -43,18 +43,6 @@ public sealed class CustomerApiFixture : WebApplicationFactory<Program>, IAsyncL
         return base.CreateHost(builder);
     }
 
-    protected override TestServer CreateServer(IWebHostBuilder builder)
-    {
-        builder.ConfigureAppConfiguration(config =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { $"ConnectionStrings:{this.Postgres.Resource.Name.ToLower()}", this._connectionString },
-                });
-        });
-        return base.CreateServer(builder);
-    }
-
     public new async Task DisposeAsync()
     {
         await base.DisposeAsync();
