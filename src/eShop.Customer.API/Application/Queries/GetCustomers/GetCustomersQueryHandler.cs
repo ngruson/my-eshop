@@ -2,7 +2,6 @@ using Ardalis.Result;
 using eShop.Customer.API.Application.GuardClauses;
 using eShop.Customer.Contracts.GetCustomers;
 using eShop.Shared.Data;
-using MediatR;
 using Ardalis.GuardClauses;
 
 namespace eShop.Customer.API.Application.Queries.GetCustomers;

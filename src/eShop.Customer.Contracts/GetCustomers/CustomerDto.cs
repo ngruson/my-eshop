@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace eShop.Customer.Contracts.GetCustomers;
 
 public record CustomerDto(

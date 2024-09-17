@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="eShop.Ordering.UnitTests" />
-    <InternalsVisibleTo Include="Ordering.FunctionalTests" />
+    <InternalsVisibleTo Include="eShop.Ordering.FunctionalTests" />
   </ItemGroup>
 
   <ItemGroup>

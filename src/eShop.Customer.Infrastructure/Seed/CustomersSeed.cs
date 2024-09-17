@@ -3,6 +3,8 @@ using Duende.AccessTokenManagement;
 using eShop.Identity.Contracts;
 using eShop.Identity.Contracts.CreateUser;
 using eShop.Shared.Data;
+using eShop.Shared.Data.Seed;
+using eShop.Shared.DI;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 
@@ -12,19 +14,19 @@ public class CustomersSeed(
     IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> customerRepository,
     IIdentityApi identityApi,
     IClientCredentialsTokenManagementService clientCredentialsTokenManagement,
-    IConfiguration configuration)
+    IConfiguration configuration) : IDbSeeder
 {
     private readonly IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> customerRepository = customerRepository;
     private readonly IIdentityApi identityApi = identityApi;
     private readonly IClientCredentialsTokenManagementService clientCredentialsTokenManagement = clientCredentialsTokenManagement;
 
-    public async Task SeedAsync()
+    public async Task SeedAsync(ServiceProviderWrapper serviceProviderWrapper)
     {
         if (!await this.customerRepository.AnyAsync())
         {
             using StreamReader reader = new("seed\\customers.csv");
             using CsvReader csv = new(reader, CultureInfo.InvariantCulture);
-            List<CustomerCsv> records = csv.GetRecords<CustomerCsv>().Take(100).ToList();
+            List<CustomerCsv> records = csv.GetRecords<CustomerCsv>().Take(10).ToList();
 
             List<Domain.AggregatesModel.CustomerAggregate.Customer> customers =
             records.Select(r => new Domain.AggregatesModel.CustomerAggregate.Customer(

@@ -31,6 +31,12 @@ jobs:
             tests/eShop.Catalog.UnitTests/eShop.Catalog.UnitTests.csproj
 
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.Customer.FunctionalTests/eShop.Customer.FunctionalTests.csproj
+
+            dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.Customer.UnitTests/eShop.Customer.UnitTests.csproj
+
+            dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.ServiceDefaults.UnitTests/eShop.ServiceDefaults.UnitTests.csproj
 
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \

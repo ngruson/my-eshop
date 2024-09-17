@@ -17,4 +17,16 @@ internal static class GuardClauses
 
         return Result.Success();
     }
+
+    internal static Result CustomerNull(this IGuardClause guardClause, Domain.AggregatesModel.CustomerAggregate.Customer? input, ILogger logger)
+    {
+        if (input is null)
+        {
+            var ex = new CustomerNotFoundException();
+            logger.LogError(ex, "Exception: {Message}", ex.Message);
+            return Result.NotFound();
+        }
+
+        return Result.Success();
+    }
 }

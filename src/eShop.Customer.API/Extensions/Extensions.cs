@@ -23,10 +23,13 @@ internal static class Extensions
 
         services.AddDbContext<CustomerDbContext>(options =>
         {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("customerDb"));
+            options.UseNpgsql(
+                builder.Configuration.GetConnectionString("customerDb"));
         });
         services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<CustomerDbContext>());
         builder.EnrichNpgsqlDbContext<CustomerDbContext>();
+
+        services.AddMigration<CustomerDbContext>(typeof(CustomersSeed));
 
         services.AddHttpContextAccessor();
 

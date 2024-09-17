@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace eShop.Customer.Infrastructure.EFCore.Configurations;
 
-class CustomerConfiguration : IEntityTypeConfiguration<Domain.AggregatesModel.CustomerAggregate.Customer>
+internal class CustomerConfiguration : IEntityTypeConfiguration<Domain.AggregatesModel.CustomerAggregate.Customer>
 {
     public void Configure(EntityTypeBuilder<Domain.AggregatesModel.CustomerAggregate.Customer> entityTypeBuilder)
     {
