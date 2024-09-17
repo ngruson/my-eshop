@@ -53,7 +53,8 @@ internal static class Extensions
                 {
                     client.TokenEndpoint = $"{builder.Configuration["Identity:Url"]}/connect/token";
                     client.ClientId = builder.Configuration["Identity:ClientCredentials:ClientId"]!;
-                    client.ClientSecret = builder.Configuration["Identity:ClientCredentials:ClientSecret"]!;
+                    client.ClientSecret = builder.Configuration["Identity:ClientCredentials:ClientSecret"] ??
+                        Environment.GetEnvironmentVariable("CustomerApi_Identity_ClientCredentials_ClientSecret");
                     client.Scope = builder.Configuration["IdentityServer:ClientCredentials:Scope"]!;
                 });
     }
