@@ -24,7 +24,7 @@ public class CustomersSeed(
     {
         if (!await this.customerRepository.AnyAsync())
         {
-            using StreamReader reader = new("seed\\customers.csv");
+            using StreamReader reader = new("seed//customers.csv");
             using CsvReader csv = new(reader, CultureInfo.InvariantCulture);
             List<CustomerCsv> records = csv.GetRecords<CustomerCsv>().Take(10).ToList();
 
