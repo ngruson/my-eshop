@@ -4,6 +4,7 @@ using eShop.Identity.Contracts;
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;
 using eShop.Shared.Data.EntityFramework;
+using Polly;
 using Refit;
 
 namespace eShop.Customer.API.Extensions;
@@ -17,9 +18,14 @@ internal static class Extensions
         // Add the authentication services to DI
         builder.AddDefaultAuthentication();
 
+        var retryPolicy = Policy
+            .Handle<HttpRequestException>()
+            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
         builder.Services
             .AddRefitClient<IIdentityApi>()
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri($"{builder.Configuration["Identity:Url"]}"));
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri($"{builder.Configuration["Identity:Url"]}"))
+            .AddPolicyHandler((request) => retryPolicy.AsAsyncPolicy<HttpResponseMessage>());
 
         services.AddDbContext<CustomerDbContext>(options =>
         {
