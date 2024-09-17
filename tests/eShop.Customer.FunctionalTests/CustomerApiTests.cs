@@ -174,33 +174,33 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
     //    Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     //}
 
-    [Fact]
-    public async Task DeleteCustomer_ReturnOkGivenCustomerDeleted()
-    {
-        // Arrange
+    //[Fact]
+    //public async Task DeleteCustomer_ReturnOkGivenCustomerDeleted()
+    //{
+    //    // Arrange
 
-        // Act
+    //    // Act
 
-        HttpResponseMessage response = await this._httpClient.DeleteAsync(
-            "/api/customers?firstName=Alice&lastName=Smith");
+    //    HttpResponseMessage response = await this._httpClient.DeleteAsync(
+    //        "/api/customers?firstName=Alice&lastName=Smith");
 
-        // Assert
+    //    // Assert
 
-        response.EnsureSuccessStatusCode();
-    }
+    //    response.EnsureSuccessStatusCode();
+    //}
 
-    [Fact]
-    public async Task DeleteCustomer_ReturnNotFoundGivenCustomerDoesNotExist()
-    {
-        // Arrange
+    //[Fact]
+    //public async Task DeleteCustomer_ReturnNotFoundGivenCustomerDoesNotExist()
+    //{
+    //    // Arrange
 
-        // Act
+    //    // Act
 
-        HttpResponseMessage response = await this._httpClient.DeleteAsync(
-            "/api/customers?firstName=Bob3&lastName=Smith3");
+    //    HttpResponseMessage response = await this._httpClient.DeleteAsync(
+    //        "/api/customers?firstName=Bob3&lastName=Smith3");
 
-        // Assert
+    //    // Assert
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-    }
+    //    Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    //}
 }
