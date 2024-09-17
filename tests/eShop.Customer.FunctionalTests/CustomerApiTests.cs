@@ -136,7 +136,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
     {
         // Arrange
 
-        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Bob&lastName=Smith");
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Sunny&lastName=Swinnerton");
         response.EnsureSuccessStatusCode();
         string body = await response.Content.ReadAsStringAsync();
         Contracts.GetCustomer.CustomerDto customer =
@@ -145,8 +145,8 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
         // Act
 
         UpdateCustomerDto updateCustomerDto = new(
-            "Bob2",
-            "Smith2",
+            "Sunny2",
+            "Swinnerton2",
             customer.CardNumber,
             customer.SecurityNumber,
             customer.Expiration,
@@ -197,28 +197,10 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
         // Act
 
         HttpResponseMessage response = await this._httpClient.DeleteAsync(
-            "/api/customers?firstName=Bob2&lastName=Smith2");
+            "/api/customers?firstName=Bob3&lastName=Smith3");
 
         // Assert
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-    }
-
-    private static UpdateCustomerDto MapToUpdateCustomerDto(Contracts.GetCustomer.CustomerDto customer)
-    {
-        return new UpdateCustomerDto(
-            customer.FirstName,
-            customer.LastName,
-            customer.CardNumber,
-            customer.SecurityNumber,
-            customer.Expiration,
-            customer.CardHolderName,
-            customer.CardType,
-            customer.Street,
-            customer.City,
-            customer.State,
-            customer.Country,
-            customer.ZipCode
-        );
     }
 }
