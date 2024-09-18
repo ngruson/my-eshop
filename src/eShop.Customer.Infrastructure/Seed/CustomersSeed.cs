@@ -1,24 +1,14 @@
 using CsvHelper;
-using Duende.AccessTokenManagement;
-using eShop.Identity.Contracts;
-using eShop.Identity.Contracts.CreateUser;
 using eShop.Shared.Data;
 using eShop.Shared.Data.Seed;
 using eShop.Shared.DI;
-using Microsoft.Extensions.Configuration;
 using System.Globalization;
 
 namespace eShop.Customer.Infrastructure.Seed;
 
-public class CustomersSeed(
-    IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> customerRepository,
-    IIdentityApi identityApi,
-    IClientCredentialsTokenManagementService clientCredentialsTokenManagement,
-    IConfiguration configuration) : IDbSeeder
+public class CustomersSeed(IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> customerRepository) : IDbSeeder
 {
-    private readonly IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> customerRepository = customerRepository;
-    private readonly IIdentityApi identityApi = identityApi;
-    private readonly IClientCredentialsTokenManagementService clientCredentialsTokenManagement = clientCredentialsTokenManagement;
+    private readonly IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> customerRepository = customerRepository;    
 
     public async Task SeedAsync(ServiceProviderWrapper serviceProviderWrapper)
     {
@@ -45,19 +35,6 @@ public class CustomersSeed(
             )).ToList();
 
             await this.customerRepository.AddRangeAsync(customers);
-
-            ClientCredentialsToken clientCredentialsToken = await this.clientCredentialsTokenManagement.GetAccessTokenAsync(
-                configuration["Identity:ClientCredentials:ClientId"]!);
-
-            foreach (var customer in records)
-            {
-                CreateUserDto createUserDto = new(
-                    customer.UserName!,
-                    customer.Email!,
-                    customer.PhoneNumber!
-                );
-                await this.identityApi.CreateUser(clientCredentialsToken.AccessToken!, createUserDto);
-            }
         }
     }
 }

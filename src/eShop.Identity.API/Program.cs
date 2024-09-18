@@ -1,3 +1,5 @@
+using eShop.Identity.API.Seed;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
@@ -10,7 +12,7 @@ builder.EnrichNpgsqlDbContext<ApplicationDbContext>();
 // Apply database migration automatically. Note that this approach is not
 // recommended for production scenarios. Consider generating SQL scripts from
 // migrations instead.
-builder.Services.AddMigration<ApplicationDbContext>();
+builder.Services.AddMigration<ApplicationDbContext>(typeof(CustomersSeed));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>()

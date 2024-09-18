@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Ardalis.Result.AspNetCore" />
     <PackageReference Include="Automapper" />
+    <PackageReference Include="CsvHelper" />
     <PackageReference Include="Duende.IdentityServer.AspNetIdentity" />
     <PackageReference Include="Duende.IdentityServer.EntityFramework" />
     <PackageReference Include="Duende.IdentityServer.Storage" />
@@ -61,5 +62,8 @@
   <ItemGroup>
     <Compile Include="..\Shared\MigrateDbContextExtensions.cs" Link="Extensions\MigrateDbContextExtensions.cs" />
     <Compile Include="..\Shared\ActivityExtensions.cs" Link="Extensions\ActivityExtensions.cs" />
+    <None Include="..\..\seed\customers.csv" Link="seed\customers.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
