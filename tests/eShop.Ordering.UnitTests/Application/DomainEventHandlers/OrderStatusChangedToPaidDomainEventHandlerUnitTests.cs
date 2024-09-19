@@ -6,7 +6,7 @@ using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
 
-namespace Ordering.UnitTests.Application.DomainEventHandlers;
+namespace eShop.Ordering.UnitTests.Application.DomainEventHandlers;
 public class OrderStatusChangedToPaidDomainEventHandlerUnitTests
 {
     [Theory, AutoNSubstituteData]
@@ -15,11 +15,21 @@ public class OrderStatusChangedToPaidDomainEventHandlerUnitTests
         [Substitute, Frozen] IRepository<Buyer> buyerRepository,
         [Substitute, Frozen] IIntegrationEventService integrationEventService,
         OrderStatusChangedToPaidDomainEventHandler sut,
-        OrderStatusChangedToPaidDomainEvent evt,
         Order order,
         Buyer buyer)
     {
         // Arrange
+
+        List<OrderItem> orderItems =
+        [
+            new OrderItem(1, "Product 1", 25, 0, null),
+            new OrderItem(1, "Product 2", 30, 0, null),
+        ];
+
+
+        OrderStatusChangedToPaidDomainEvent evt = new(
+            order.Id,
+            orderItems);
 
         orderRepository.GetByIdAsync(evt.OrderId, default)
             .Returns(order);
