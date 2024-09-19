@@ -44,18 +44,5 @@ internal static class Extensions
        
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped<CustomersSeed>();
-
-        services
-            .AddOpenIdConnectAccessTokenManagement()
-            .AddDistributedMemoryCache()
-            .AddClientCredentialsTokenManagement()
-                .AddClient(builder.Configuration["Identity:ClientCredentials:ClientId"]!, client =>
-                {
-                    client.TokenEndpoint = $"{builder.Configuration["Identity:Url"]}/connect/token";
-                    client.ClientId = builder.Configuration["Identity:ClientCredentials:ClientId"]!;
-                    client.ClientSecret = builder.Configuration["Identity:ClientCredentials:ClientSecret"] ??
-                        Environment.GetEnvironmentVariable("CustomerApi_Identity_ClientCredentials_ClientSecret");
-                    client.Scope = builder.Configuration["IdentityServer:ClientCredentials:Scope"]!;
-                });
     }
 }

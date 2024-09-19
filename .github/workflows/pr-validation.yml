@@ -23,8 +23,6 @@ jobs:
           DOTNET_NUGET_SIGNATURE_VERIFICATION: false
         run: dotnet build eShop.Web.slnf
       - name: Test
-        env:
-          CustomerApi_Identity_ClientCredentials_ClientSecret: ${{ secrets.CUSTOMERAPI_IDENTITY_CLIENTCREDENTIALS_CLIENTSECRET }}
         run: |
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.Basket.UnitTests/eShop.Basket.UnitTests.csproj
