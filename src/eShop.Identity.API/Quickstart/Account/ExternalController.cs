@@ -1,4 +1,6 @@
-namespace IdentityServerHost.Quickstart.UI;
+using IdentityServerHost.Quickstart.UI;
+
+namespace eShop.Identity.API.Quickstart.Account;
 
 [SecurityHeaders]
 [AllowAnonymous]
@@ -193,8 +195,6 @@ public class ExternalController(
         var user = new ApplicationUser
         {
             UserName = Guid.NewGuid().ToString(),
-            Name = name,
-            LastName = last,
             Email = email,
             EmailConfirmed = true
         };

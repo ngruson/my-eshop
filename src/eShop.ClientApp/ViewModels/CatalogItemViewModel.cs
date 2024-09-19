@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using eShop.ClientApp.Extensions;
 using eShop.ClientApp.Messages;
 using eShop.ClientApp.Models.Basket;
 using eShop.ClientApp.Models.Catalog;

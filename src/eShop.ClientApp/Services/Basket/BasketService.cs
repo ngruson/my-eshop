@@ -10,30 +10,23 @@ using BasketItem = eShop.ClientApp.Models.Basket.BasketItem;
 
 namespace eShop.ClientApp.Services.Basket;
 
-public class BasketService : IBasketService, IDisposable
+public class BasketService(IIdentityService identityService, ISettingsService settingsService,
+    IFixUriService fixUriService) : IBasketService, IDisposable
 {
-    private readonly IFixUriService _fixUriService;
-    private readonly IIdentityService _identityService;
-    private readonly ISettingsService _settingsService;
-    private BasketGrpcClient.Basket.BasketClient _basketClient;
+    private readonly IFixUriService _fixUriService = fixUriService;
+    private readonly IIdentityService _identityService = identityService;
+    private readonly ISettingsService _settingsService = settingsService;
+    private BasketGrpcClient.Basket.BasketClient? _basketClient;
 
-    private GrpcChannel _channel;
+    private GrpcChannel? _channel;
 
-    public BasketService(IIdentityService identityService, ISettingsService settingsService,
-        IFixUriService fixUriService)
+    public IEnumerable<BasketItem>? LocalBasketItems { get; set; }
+
+    public async Task<CustomerBasket?> GetBasketAsync()
     {
-        _identityService = identityService;
-        _settingsService = settingsService;
-        _fixUriService = fixUriService;
-    }
+        CustomerBasket? basket = new();
 
-    public IEnumerable<BasketItem> LocalBasketItems { get; set; }
-
-    public async Task<CustomerBasket> GetBasketAsync()
-    {
-        CustomerBasket basket = new();
-
-        var authToken = await _identityService.GetAuthTokenAsync().ConfigureAwait(false);
+        var authToken = await this._identityService.GetAuthTokenAsync().ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(authToken))
         {
@@ -42,10 +35,10 @@ public class BasketService : IBasketService, IDisposable
 
         try
         {
-            var basketResponse = await GetBasketClient()
-                .GetBasketAsync(new GetBasketRequest(), CreateAuthenticationHeaders(authToken));
+            CustomerBasketResponse basketResponse = await this.GetBasketClient()
+                .GetBasketAsync(new GetBasketRequest(), this.CreateAuthenticationHeaders(authToken));
             
-            if (basketResponse.IsInitialized() && basketResponse.Items.Any())
+            if (basketResponse.IsInitialized() && basketResponse.Items.Count != 0)
             {
                 foreach (var item in basketResponse.Items)
                 {
@@ -59,13 +52,13 @@ public class BasketService : IBasketService, IDisposable
             basket = null;
         }
 
-        _fixUriService.FixBasketItemPictureUri(basket?.Items);
+        this._fixUriService.FixBasketItemPictureUri(basket?.Items);
         return basket;
     }
 
     public async Task<CustomerBasket> UpdateBasketAsync(CustomerBasket customerBasket)
     {
-        var authToken = await _identityService.GetAuthTokenAsync().ConfigureAwait(false);
+        var authToken = await this._identityService.GetAuthTokenAsync().ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(authToken))
         {
@@ -80,8 +73,8 @@ public class BasketService : IBasketService, IDisposable
                     x =>
                         new BasketGrpcClient.BasketItem {ProductId = x.ProductId, Quantity = x.Quantity}));
 
-        var result = await GetBasketClient()
-            .UpdateBasketAsync(updateBasketRequest, CreateAuthenticationHeaders(authToken)).ConfigureAwait(false);
+        var result = await this.GetBasketClient()
+            .UpdateBasketAsync(updateBasketRequest, this.CreateAuthenticationHeaders(authToken)).ConfigureAwait(false);
 
         if (result.Items.Count > 0)
         {
@@ -98,35 +91,35 @@ public class BasketService : IBasketService, IDisposable
 
     public async Task ClearBasketAsync()
     {
-        var authToken = await _identityService.GetAuthTokenAsync().ConfigureAwait(false);
+        var authToken = await this._identityService.GetAuthTokenAsync().ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(authToken))
         {
             return;
         }
 
-        await GetBasketClient().DeleteBasketAsync(new DeleteBasketRequest(), CreateAuthenticationHeaders(authToken))
+        await this.GetBasketClient().DeleteBasketAsync(new DeleteBasketRequest(), this.CreateAuthenticationHeaders(authToken))
             .ConfigureAwait(false);
     }
 
     public void Dispose()
     {
-        Dispose(true);
+        this.Dispose(true);
         GC.SuppressFinalize(this);
     }
 
     private BasketGrpcClient.Basket.BasketClient GetBasketClient()
     {
-        if (_basketClient is not null)
+        if (this._basketClient is not null)
         {
-            return _basketClient;
+            return this._basketClient;
         }
 
-        _channel = GrpcChannel.ForAddress(_settingsService.GatewayBasketEndpointBase);
+        this._channel = GrpcChannel.ForAddress(this._settingsService.GatewayBasketEndpointBase);
 
-        _basketClient = new BasketGrpcClient.Basket.BasketClient(_channel);
+        this._basketClient = new BasketGrpcClient.Basket.BasketClient(this._channel);
 
-        return _basketClient;
+        return this._basketClient;
     }
 
     private Metadata CreateAuthenticationHeaders(string token)

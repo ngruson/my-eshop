@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using CommunityToolkit.Maui.Converters;
 
 namespace eShop.ClientApp.Converters;
@@ -13,7 +13,7 @@ public class WebNavigatingEventArgsConverter : ICommunityToolkitValueConverter
 
     public object DefaultConvertBackReturnValue => null;
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo? culture)
     {
         var eventArgs = value as WebNavigatingEventArgs;
         if (eventArgs == null)
@@ -24,7 +24,7 @@ public class WebNavigatingEventArgsConverter : ICommunityToolkitValueConverter
         return eventArgs.Url;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo? culture)
     {
         throw new NotImplementedException();
     }

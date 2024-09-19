@@ -5,7 +5,7 @@ using SmartEnum.EFCore;
 using System.Data;
 
 namespace eShop.Shared.Data.EntityFramework;
-public class eShopDbContext : DbContext, IUnitOfWork<IDbContextTransaction>
+public abstract class eShopDbContext : DbContext, IUnitOfWork<IDbContextTransaction>
 {
     private readonly IMediator _mediator;
     private IDbContextTransaction? _currentTransaction;
@@ -50,7 +50,7 @@ public class eShopDbContext : DbContext, IUnitOfWork<IDbContextTransaction>
         return this._currentTransaction;
     }
 
-    public async Task CommitTransactionAsync(IDbContextTransaction transaction)
+    public async Task CommitTransactionAsync(IDbContextTransaction? transaction)
     {
         ArgumentNullException.ThrowIfNull(transaction);
         if (transaction != this._currentTransaction)

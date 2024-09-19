@@ -1,5 +1,4 @@
 using eShop.Shared.Data.EntityFramework;
-using eShop.Shared.UnitTests.Behaviors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;

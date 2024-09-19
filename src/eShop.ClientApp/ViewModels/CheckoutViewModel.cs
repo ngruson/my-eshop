@@ -10,42 +10,32 @@ using eShop.ClientApp.ViewModels.Base;
 
 namespace eShop.ClientApp.ViewModels;
 
-public partial class CheckoutViewModel : ViewModelBase
+public partial class CheckoutViewModel(
+    BasketViewModel basketViewModel,
+    IAppEnvironmentService appEnvironmentService, IDialogService dialogService, ISettingsService settingsService,
+    INavigationService navigationService) : ViewModelBase(navigationService)
 {
-    private readonly IAppEnvironmentService _appEnvironmentService;
+    private readonly IAppEnvironmentService _appEnvironmentService = appEnvironmentService;
 
-    private readonly BasketViewModel _basketViewModel;
-    private readonly IDialogService _dialogService;
-    private readonly ISettingsService _settingsService;
+    private readonly BasketViewModel _basketViewModel = basketViewModel;
+    private readonly IDialogService _dialogService = dialogService;
+    private readonly ISettingsService _settingsService = settingsService;
 
-    [ObservableProperty] private Order _order;
+    [ObservableProperty] private Order? _order;
 
-    [ObservableProperty] private Address _shippingAddress;
-
-    public CheckoutViewModel(
-        BasketViewModel basketViewModel,
-        IAppEnvironmentService appEnvironmentService, IDialogService dialogService, ISettingsService settingsService,
-        INavigationService navigationService)
-        : base(navigationService)
-    {
-        _dialogService = dialogService;
-        _appEnvironmentService = appEnvironmentService;
-        _settingsService = settingsService;
-
-        _basketViewModel = basketViewModel;
-    }
+    [ObservableProperty] private Address? _shippingAddress;
 
     public override async Task InitializeAsync()
     {
-        await IsBusyFor(
+        await this.IsBusyFor(
             async () =>
             {
-                var basketItems = _appEnvironmentService.BasketService.LocalBasketItems;
+                var basketItems = this._appEnvironmentService.BasketService.LocalBasketItems;
 
-                var userInfo = await _appEnvironmentService.IdentityService.GetUserInfoAsync();
+                var userInfo = await this._appEnvironmentService.IdentityService.GetUserInfoAsync();
 
                 // Create Shipping Address
-                ShippingAddress = new Address
+                this.ShippingAddress = new Address
                 {
                     Id = !string.IsNullOrEmpty(userInfo?.UserId) ? new Guid(userInfo.UserId) : Guid.NewGuid(),
                     Street = userInfo?.Street,
@@ -67,7 +57,7 @@ public partial class CheckoutViewModel : ViewModelBase
                 var orderItems = CreateOrderItems(basketItems);
 
                 // Create new Order
-                Order = new Order
+                this.Order = new Order
                 {
                     //TODO: Get a better order number generator
                     OrderNumber = (int)DateTimeOffset.Now.TimeOfDay.TotalMilliseconds,

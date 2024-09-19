@@ -31,18 +31,6 @@ namespace eShop.Identity.API.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    CardNumber = table.Column<string>(type: "text", nullable: true),
-                    SecurityNumber = table.Column<string>(type: "text", nullable: true),
-                    Expiration = table.Column<string>(type: "text", nullable: true),
-                    CardHolderName = table.Column<string>(type: "text", nullable: true),
-                    CardType = table.Column<int>(type: "integer", nullable: true),
-                    Street = table.Column<string>(type: "text", nullable: true),
-                    City = table.Column<string>(type: "text", nullable: true),
-                    State = table.Column<string>(type: "text", nullable: true),
-                    Country = table.Column<string>(type: "text", nullable: true),
-                    ZipCode = table.Column<string>(type: "text", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),

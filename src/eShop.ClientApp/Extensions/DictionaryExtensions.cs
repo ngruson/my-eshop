@@ -1,4 +1,4 @@
-﻿namespace eShop.ClientApp;
+namespace eShop.ClientApp.Extensions;
 
 public static class DictionaryExtensions
 {
@@ -11,15 +11,15 @@ public static class DictionaryExtensions
 
     public static int ValueAsInt(this IDictionary<string, object> dictionary, string key, int defaultValue = 0)
     {
-        return dictionary.ContainsKey(key) && dictionary[key] is int intValue
+        return dictionary.TryGetValue(key, out object? value) && value is int intValue
             ? intValue
             : defaultValue;
     }
 
-    public static T ValueAs<T>(this IDictionary<string, object> dictionary, string key, T defaultValue = default)
+    public static T ValueAs<T>(this IDictionary<string, object> dictionary, string key, T defaultValue = default!)
     {
-        return dictionary.ContainsKey(key) && dictionary[key] is T value
-            ? value
+        return dictionary.TryGetValue(key, out object? value) && value is T value2
+            ? value2
             : defaultValue;
     }
 }

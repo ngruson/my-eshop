@@ -6,29 +6,22 @@ using IBrowser = IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace eShop.ClientApp.Services.Identity;
 
-public class IdentityService : IIdentityService
+public class IdentityService(IBrowser browser, ISettingsService settingsService, HttpMessageHandler httpMessageHandler) : IIdentityService
 {
-    private readonly IBrowser _browser;
-    private readonly ISettingsService _settingsService;
-    private readonly HttpMessageHandler _httpMessageHandler;
-
-    public IdentityService(IBrowser browser, ISettingsService settingsService, HttpMessageHandler httpMessageHandler)
-    {
-        _browser = browser;
-        _settingsService = settingsService;
-        _httpMessageHandler = httpMessageHandler;
-    }
+    private readonly IBrowser _browser = browser;
+    private readonly ISettingsService _settingsService = settingsService;
+    private readonly HttpMessageHandler _httpMessageHandler = httpMessageHandler;
 
     public async Task<bool> SignInAsync()
     {
-        var response = await GetClient().LoginAsync(new LoginRequest()).ConfigureAwait(false);
+        var response = await this.GetClient().LoginAsync(new LoginRequest()).ConfigureAwait(false);
 
         if (response.IsError)
         {
             return false;
         }
 
-        await _settingsService
+        await this._settingsService
             .SetUserTokenAsync(
                 new UserToken
                 {
@@ -44,28 +37,28 @@ public class IdentityService : IIdentityService
 
     public async Task<bool> SignOutAsync()
     {
-        var response = await GetClient().LogoutAsync(new LogoutRequest()).ConfigureAwait(false);
+        var response = await this.GetClient().LogoutAsync(new LogoutRequest()).ConfigureAwait(false);
 
         if (response.IsError)
         {
             return false;
         }
 
-        await _settingsService.SetUserTokenAsync(default);
+        await this._settingsService.SetUserTokenAsync(default);
 
         return !response.IsError;
     }
 
     public async Task<UserInfo> GetUserInfoAsync()
     {
-        var authToken = await GetAuthTokenAsync().ConfigureAwait(false);
+        var authToken = await this.GetAuthTokenAsync().ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(authToken))
         {
             return UserInfo.Default;
         }
 
-        var userInfoWithClaims = await GetClient().GetUserInfoAsync(authToken).ConfigureAwait(false);
+        var userInfoWithClaims = await this.GetClient().GetUserInfoAsync(authToken).ConfigureAwait(false);
 
         return
             new UserInfo
@@ -97,7 +90,7 @@ public class IdentityService : IIdentityService
     
     public async Task<string> GetAuthTokenAsync()
     {
-        var userToken = await _settingsService.GetUserTokenAsync().ConfigureAwait(false);
+        var userToken = await this._settingsService.GetUserTokenAsync().ConfigureAwait(false);
 
         if (userToken is null)
         {
@@ -109,14 +102,14 @@ public class IdentityService : IIdentityService
             return userToken.AccessToken;
         }
 
-        var response = await GetClient().RefreshTokenAsync(userToken.RefreshToken).ConfigureAwait(false);
+        var response = await this.GetClient().RefreshTokenAsync(userToken.RefreshToken).ConfigureAwait(false);
 
         if (response.IsError)
         {
             return string.Empty;
         }
 
-        await _settingsService
+        await this._settingsService
             .SetUserTokenAsync(
                 new UserToken
                 {
@@ -134,18 +127,18 @@ public class IdentityService : IIdentityService
     {
         var options = new OidcClientOptions
         {
-            Authority = _settingsService.IdentityEndpointBase,
-            ClientId = _settingsService.ClientId,
-            ClientSecret = _settingsService.ClientSecret,
+            Authority = this._settingsService.IdentityEndpointBase,
+            ClientId = this._settingsService.ClientId,
+            ClientSecret = this._settingsService.ClientSecret,
             Scope = "openid profile basket orders offline_access",
-            RedirectUri = _settingsService.CallbackUri,
-            PostLogoutRedirectUri = _settingsService.CallbackUri,
-            Browser = _browser,
+            RedirectUri = this._settingsService.CallbackUri,
+            PostLogoutRedirectUri = this._settingsService.CallbackUri,
+            Browser = this._browser,
         };
 
-        if (_httpMessageHandler is not null)
+        if (this._httpMessageHandler is not null)
         {
-            options.BackchannelHandler = _httpMessageHandler;
+            options.BackchannelHandler = this._httpMessageHandler;
         }
         
         return new OidcClient(options);

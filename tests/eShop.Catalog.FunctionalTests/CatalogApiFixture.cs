@@ -9,9 +9,6 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
     public IResourceBuilder<PostgresServerResource> Postgres { get; private set; }
     private string _connectionString;
 
-    private readonly Dictionary<string, string> _configuration = [];
-    public Dictionary<string, string> Configuration => this._configuration;
-
     public CatalogApiFixture()
     {
         var options = new DistributedApplicationOptions { AssemblyName = typeof(CatalogApiFixture).Assembly.FullName, DisableDashboard = true };
@@ -19,6 +16,7 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
         this.Postgres = appBuilder.AddPostgres("CatalogDB")
             .WithImage("ankane/pgvector")
             .WithImageTag("latest");
+
         this._app = appBuilder.Build();
     }
 
@@ -28,13 +26,10 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
         {
             config.AddInMemoryCollection(new Dictionary<string, string>
             {
-                { $"ConnectionStrings:{this.Postgres.Resource.Name.ToLower()}", this._connectionString },
-                });
+                { $"ConnectionStrings:{this.Postgres.Resource.Name.ToLower()}", this._connectionString }
+            });
 
-            if (this._configuration is not null)
-            {
-                config.AddInMemoryCollection(this._configuration);
-            }
+            Console.WriteLine($"ConnectionStrings:{this.Postgres.Resource.Name.ToLower()}={this._connectionString}");
         });
         return base.CreateHost(builder);
     }
@@ -47,10 +42,6 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
             {
                 { $"ConnectionStrings:{this.Postgres.Resource.Name.ToLower()}", this._connectionString },
                 });
-            if (this._configuration is not null)
-            {
-                config.AddInMemoryCollection(this._configuration);
-            }
         });
         return base.CreateServer(builder);
     }

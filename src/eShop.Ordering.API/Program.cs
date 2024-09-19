@@ -1,4 +1,4 @@
-﻿using eShop.Ordering.API;
+using eShop.Ordering.API.Apis;
 
 var builder = WebApplication.CreateBuilder(args);
 

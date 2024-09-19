@@ -144,6 +144,83 @@ public class EntityUnitTests
             // Assert
             Assert.False(equal);
         }
+
+        [Theory, AutoNSubstituteData]
+        internal void when_both_entities_are_not_transient_and_ids_are_equal_return_true(
+            TestEntity entity1,
+            TestEntity entity2,
+            int id)
+        {
+            // Arrange
+
+            entity1.SetId(id);
+            entity2.SetId(id);
+
+            // Act
+
+            bool equal = entity1.Equals(entity2);
+
+            // Assert
+
+            Assert.True(equal);
+        }
+    }
+
+    public class EqualOperatorTests
+    {
+        [Theory, AutoNSubstituteData]
+        internal void return_true_given_entities_are_equal(
+            TestEntity entity1,
+            TestEntity entity2,
+            int id)
+        {
+            // Arrange
+
+            entity1.SetId(id);
+            entity2.SetId(id);
+
+            // Act
+
+            bool equal = entity1 == entity2;
+
+            // Assert
+
+            Assert.True(equal);
+        }
+
+        [Theory, AutoNSubstituteData]
+        internal void return_false_given_null_entity(
+            TestEntity entity)
+        {
+            // Arrange            
+
+            // Act
+
+            bool equal = null == entity;
+
+            // Assert
+
+            Assert.False(equal);
+        }
+    }
+
+    public class NotEqualOperatorTests
+    {
+        [Theory, AutoNSubstituteData]
+        internal void return_false_given_null_entity(
+            TestEntity entity1,
+            TestEntity entity2)
+        {
+            // Arrange            
+
+            // Act
+
+            bool notEqual = entity1 != entity2;
+
+            // Assert
+
+            Assert.True(notEqual);
+        }
     }
 
     public class GetHashCodeTests
@@ -153,6 +230,24 @@ public class EntityUnitTests
             TestEntity entity)
         {
             // Arrange
+
+            // Act
+
+            int result = entity.GetHashCode();
+
+            // Assert
+
+            Assert.NotEqual(0, result);
+        }
+
+        [Theory, AutoNSubstituteData]
+        internal void when_not_transient_return_get_hash_code(
+            TestEntity entity,
+            int id)
+        {
+            // Arrange
+
+            entity.SetId(id);
 
             // Act
 

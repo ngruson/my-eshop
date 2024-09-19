@@ -135,7 +135,7 @@ public class BasketServiceTests
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", userId)]))
             };
-            serverCallContext.SetUserState("__HttpContext", httpContext);
+            serverCallContext.SetUserState("__HttpContext", httpContext);           
 
             // Act
 

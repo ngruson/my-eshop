@@ -9,9 +9,9 @@ public class CreateOrderDraftCommandHandler
 {
     public Task<OrderDraftDTO> Handle(CreateOrderDraftCommand message, CancellationToken cancellationToken)
     {
-        var order = Order.NewDraft();
-        var orderItems = message.Items.Select(i => i.ToOrderItemDTO());
-        foreach (var item in orderItems)
+        Order order = Order.NewDraft();
+        IEnumerable<OrderItemDTO> orderItems = message.Items.Select(i => i.ToOrderItemDTO());
+        foreach (OrderItemDTO item in orderItems)
         {
             order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, item.Discount, item.PictureUrl, item.Units);
         }

@@ -12,6 +12,7 @@ var postgres = builder.AddPostgres("postgres")
     .WithImageTag("latest");
 
 var catalogDb = postgres.AddDatabase("catalogdb");
+var customerDb = postgres.AddDatabase("customerdb");
 var identityDb = postgres.AddDatabase("identitydb");
 var orderDb = postgres.AddDatabase("orderingdb");
 var webhooksDb = postgres.AddDatabase("webhooksdb");
@@ -33,6 +34,10 @@ var basketApi = builder.AddProject<Projects.eShop_Basket_API>("basket-api")
 var catalogApi = builder.AddProject<Projects.eShop_Catalog_API>("catalog-api")
     .WithReference(rabbitMq)
     .WithReference(catalogDb);
+
+var customerApi = builder.AddProject<Projects.eShop_Customer_API>("customer-api")
+    .WithReference(customerDb)
+    .WithEnvironment("Identity__Url", identityEndpoint);
 
 var orderingApi = builder.AddProject<Projects.eShop_Ordering_API>("ordering-api")
     .WithReference(rabbitMq)
@@ -111,8 +116,9 @@ if (useOpenAI)
         .WithEnvironment("AI__OPENAI__CHATMODEL", chatModelName); ;
 }
 
-var adminApp = builder.AddProject<Projects.eShop_AdminApp>("adminapp")
+var adminApp = builder.AddProject<Projects.eShop_AdminApp>("admin-app")
     .WithExternalHttpEndpoints()
+    .WithReference(customerApi)
     .WithReference(orderingApi)
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
@@ -123,6 +129,7 @@ adminApp.WithEnvironment("CallBackUrl", adminApp.GetEndpoint(launchProfileName))
 
 // Identity has a reference to all of the apps for callback urls, this is a cyclic reference
 identityApi.WithEnvironment("BasketApiClient", basketApi.GetEndpoint("http"))
+           .WithEnvironment("CustomerApiClient", customerApi.GetEndpoint("http"))
            .WithEnvironment("OrderingApiClient", orderingApi.GetEndpoint("http"))
            .WithEnvironment("WebhooksApiClient", webHooksApi.GetEndpoint("http"))
            .WithEnvironment("WebhooksWebClient", webhooksClient.GetEndpoint(launchProfileName))

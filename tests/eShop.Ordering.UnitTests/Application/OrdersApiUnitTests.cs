@@ -8,6 +8,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using NSubstitute.ExceptionExtensions;
 using Microsoft.AspNetCore.Routing;
+using eShop.Ordering.API.Apis;
 
 public class OrdersApiUnitTests
 {
