@@ -1,7 +1,7 @@
 namespace eShop.Ordering.API.Application.Validations;
 public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
 {
-    public CreateOrderCommandValidator(ILogger<CreateOrderCommandValidator> logger)
+    public CreateOrderCommandValidator()
     {
         this.RuleFor(command => command.City).NotEmpty();
         this.RuleFor(command => command.Street).NotEmpty();
@@ -14,11 +14,6 @@ public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
         this.RuleFor(command => command.CardSecurityNumber).NotEmpty().Length(3);
         this.RuleFor(command => command.CardTypeId).NotEmpty();
         this.RuleFor(command => command.OrderItems).Must(ContainOrderItems).WithMessage("No order items found");
-
-        if (logger.IsEnabled(LogLevel.Trace))
-        {
-            logger.LogTrace("INSTANCE CREATED - {ClassName}", this.GetType().Name);
-        }
     }
 
     private bool BeValidExpirationDate(DateTime dateTime)

@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using eShop.Shared.Data;
 
 namespace eShop.Shared.UnitTests.Data;
