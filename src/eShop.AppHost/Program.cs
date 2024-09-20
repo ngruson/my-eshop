@@ -72,6 +72,7 @@ var webApp = builder.AddProject<Projects.eShop_WebApp>("webapp", launchProfileNa
     .WithExternalHttpEndpoints()
     .WithReference(basketApi)
     .WithReference(catalogApi)
+    .WithReference(customerApi)
     .WithReference(orderingApi)
     .WithReference(rabbitMq)
     .WithEnvironment("IdentityUrl", identityEndpoint);

@@ -1,0 +1,33 @@
+@page "/customers"
+@using MediatR
+@using eShop.AdminApp.Application.Queries.GetCustomers
+@inject IMediator Mediator
+
+<PageTitle>Customers</PageTitle>
+
+<div class="tw-container tw-p-8">
+    <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
+        <h3 class="tw-text-2xl tw-font-medium">Customers</h3>
+    </div>
+    <div class="tw-mt-8 tw-mx-32">
+        <FluentDataGrid Items="@customers" ShowHover="true">
+            <PropertyColumn Property="@(p => p.FirstName)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.LastName)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.Street)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.City)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.State)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.Country)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.ZipCode)" Sortable="true" />
+        </FluentDataGrid>
+    </div>
+</div>
+
+@code {
+    private IQueryable<CustomerViewModel>? customers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.customers = (await Mediator.Send(new GetCustomersQuery()))
+            .Value.AsQueryable();
+    }
+}

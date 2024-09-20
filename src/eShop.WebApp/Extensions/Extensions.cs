@@ -10,6 +10,9 @@ using eShop.WebApp.Services.OrderStatus.IntegrationEvents;
 using eShop.Basket.API.Grpc;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.EventHandling;
+using Refit;
+using System.Security.Claims;
+using eShop.Customer.Contracts;
 
 public static class Extensions
 {
@@ -40,6 +43,12 @@ public static class Extensions
 
         builder.Services.AddHttpClient<OrderingService>(o => o.BaseAddress = new("http://ordering-api"))
             .AddApiVersion(1.0)
+            .AddAuthToken();
+
+        builder.Services
+            .AddRefitClient<ICustomerApi>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri($"{builder.Configuration["services:customer-api:http:0"]}"))
             .AddAuthToken();
     }
 
@@ -118,6 +127,6 @@ public static class Extensions
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        return user.FindFirst("name")?.Value;
+        return user.FindFirst(ClaimTypes.Name)?.Value;
     }
 }

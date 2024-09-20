@@ -1,10 +1,8 @@
 using eShop.Customer.Infrastructure.EFCore;
 using eShop.Customer.Infrastructure.Seed;
-using eShop.Identity.Contracts;
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;
 using eShop.Shared.Data.EntityFramework;
-using Refit;
 
 namespace eShop.Customer.API.Extensions;
 
@@ -16,10 +14,6 @@ internal static class Extensions
 
         // Add the authentication services to DI
         builder.AddDefaultAuthentication();
-
-        builder.Services
-            .AddRefitClient<IIdentityApi>()
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri($"{builder.Configuration["Identity:Url"]}"));
 
         services.AddDbContext<CustomerDbContext>(options =>
         {

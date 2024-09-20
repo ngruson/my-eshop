@@ -1,3 +1,4 @@
+using eShop.Identity.API.Quickstart;
 using eShop.Identity.API.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,7 +38,9 @@ builder.Services.AddIdentityServer(options =>
 .AddInMemoryClients(Config.GetClients(builder.Configuration))
 .AddAspNetIdentity<ApplicationUser>()
 // TODO: Not recommended for production - you need to store your key material somewhere secure
-.AddDeveloperSigningCredential();
+.AddDeveloperSigningCredential()
+.AddProfileService<ProfileService>()
+.AddAuthorizeInteractionResponseGenerator<CustomAuthorizeInteractionResponseGenerator>();
 
 builder.Services.AddAuthorization()
     .AddLocalApiAuthentication();

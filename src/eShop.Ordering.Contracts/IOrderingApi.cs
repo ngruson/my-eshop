@@ -1,0 +1,10 @@
+using eShop.Ordering.Contracts.GetOrders;
+using Refit;
+
+namespace eShop.Ordering.Contracts;
+
+public interface IOrderingApi
+{
+    [Get("/api/orders/all?api-version=1.0")]
+    Task<OrderDto[]> GetOrders();
+}

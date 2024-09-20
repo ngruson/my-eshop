@@ -24,7 +24,9 @@ public class CreateUserCommandHandler(
                     Email = request.Dto.Email,
                     EmailConfirmed = true,
                     Id = Guid.NewGuid().ToString(),
-                    PhoneNumber = request.Dto.PhoneNumber
+                    PhoneNumber = request.Dto.PhoneNumber,
+                    FirstName = request.Dto.FirstName,
+                    LastName = request.Dto.LastName
                 };
 
                 IdentityResult identityResult = await this.userManager.CreateAsync(user, "Pass123$");
