@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 namespace IdentityServerHost.Quickstart.UI
@@ -34,7 +34,7 @@ namespace IdentityServerHost.Quickstart.UI
         }
 
         /// <summary>
-        /// Entry point into the login workflow
+        /// Entry point into the login workflow for customers
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
@@ -51,6 +51,17 @@ namespace IdentityServerHost.Quickstart.UI
             }
 
             return View(vm);
+        }
+
+        /// <summary>
+        /// Entry point into the login workflow for employees
+        /// </summary>
+        [HttpGet("loginEmployee")]
+        public async Task<IActionResult> LoginEmployee(string returnUrl)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+
+            return RedirectToAction("Challenge", "External", new { scheme = "Microsoft", returnUrl });
         }
 
         /// <summary>

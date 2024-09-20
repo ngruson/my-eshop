@@ -50,7 +50,9 @@ public class ProfileService(UserManager<ApplicationUser> userManager) : IProfile
         {
             new(JwtClaimTypes.Subject, user.Id),
             new(JwtClaimTypes.PreferredUserName, user.UserName!),
-            new(JwtRegisteredClaimNames.UniqueName, user.UserName!)
+            new(JwtRegisteredClaimNames.UniqueName, user.UserName!),
+            new(JwtClaimTypes.GivenName, user.FirstName),
+            new(JwtClaimTypes.FamilyName, user.LastName)
         };
 
         if (this._userManager.SupportsUserEmail)

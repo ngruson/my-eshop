@@ -1,4 +1,5 @@
-using eShop.AdminApp.Services;
+using eShop.Customer.Contracts;
+using eShop.Ordering.Contracts;
 using eShop.ServiceDefaults;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Refit;
 
 namespace eShop.AdminApp.Extensions;
 
@@ -18,9 +20,23 @@ internal static class Extensions
         builder.Services.AddRazorPages()
             .AddMicrosoftIdentityUI();
 
-        builder.Services.AddHttpClient<OrderingService>(o => o.BaseAddress = new("http://ordering-api"))
-            .AddApiVersion(1.0)
+        //services__ordering - api__http__0
+
+        builder.Services
+            .AddRefitClient<ICustomerApi>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri($"{builder.Configuration["services:customer-api:http:0"]}"))
             .AddAuthToken();
+
+        builder.Services
+            .AddRefitClient<IOrderingApi>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri($"{builder.Configuration["services:ordering-api:http:0"]}"))
+            .AddAuthToken();
+
+        //builder.Services.AddHttpClient<OrderingService>(o => o.BaseAddress = new("http://ordering-api"))
+        //    .AddApiVersion(1.0)
+        //    .AddAuthToken();
 
         builder.Services.AddMediatR(cfg =>
         {

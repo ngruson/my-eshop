@@ -22,6 +22,8 @@ public class CustomersSeed(IMediator mediator) : IDbSeeder
         {
             CreateUserDto createUserDto = new(
                 customer.UserName!,
+                customer.FirstName!,
+                customer.LastName!,
                 customer.Email!,
                 customer.PhoneNumber!
             );
