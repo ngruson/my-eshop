@@ -1,8 +1,6 @@
 using Ardalis.Result;
-using eShop.AdminApp.Application.Queries.GetCustomers;
 using eShop.Customer.Contracts;
 using eShop.Customer.Contracts.GetCustomers;
-using eShop.Ordering.Contracts.GetOrders;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Queries.GetCustomers;

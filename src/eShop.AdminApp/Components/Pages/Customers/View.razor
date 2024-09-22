@@ -2,6 +2,7 @@
 @using MediatR
 @using eShop.AdminApp.Application.Queries.GetCustomers
 @inject IMediator Mediator
+@inject IDialogService DialogService
 
 <PageTitle>Customers</PageTitle>
 
@@ -10,7 +11,7 @@
         <h3 class="tw-text-2xl tw-font-medium">Customers</h3>
     </div>
     <div class="tw-mt-8 tw-mx-32">
-        <FluentDataGrid Items="@customers" ShowHover="true">
+        <FluentDataGrid Items="@customers" ShowHover="true" OnRowClick="TestClick">
             <PropertyColumn Property="@(p => p.FirstName)" Sortable="true" />
             <PropertyColumn Property="@(p => p.LastName)" Sortable="true" />
             <PropertyColumn Property="@(p => p.Street)" Sortable="true" />
@@ -29,5 +30,28 @@
     {
         this.customers = (await Mediator.Send(new GetCustomersQuery()))
             .Value.AsQueryable();
+    }
+
+    private async Task TestClick(FluentDataGridRow<CustomerViewModel> row)
+    {
+        if (row.Item is null)
+        {
+            return;
+        }
+
+        DialogParameters parameters = new()
+            {
+                Title = row.Item.FullName,
+                PrimaryAction = "Update",
+                PrimaryActionEnabled = false,
+                SecondaryAction = "Cancel",
+                Width = "500px",
+                TrapFocus = true,
+                Modal = true,
+                PreventScroll = true
+            };
+
+        IDialogReference dialog = await DialogService.ShowDialogAsync<CustomerDialog>(row.Item, parameters);
+        DialogResult? result = await dialog.Result;
     }
 }

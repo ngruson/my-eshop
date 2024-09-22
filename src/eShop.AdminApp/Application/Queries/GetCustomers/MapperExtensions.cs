@@ -14,7 +14,12 @@ internal static class MapperExtensions
                 _.City,
                 _.State,
                 _.Country,
-                _.ZipCode))
+                _.ZipCode,
+                _.CardNumber,
+                _.SecurityNumber,
+                _.Expiration,
+                _.CardHolderName,
+                _.CardType))
             .ToList();
     }
 }
