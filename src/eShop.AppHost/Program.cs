@@ -1,47 +1,49 @@
 using eShop.AppHost;
 using Microsoft.Extensions.Configuration;
 
-var builder = DistributedApplication.CreateBuilder(args);
-
+IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 builder.AddForwardedHeaders();
 
-var redis = builder.AddRedis("redis");
-var rabbitMq = builder.AddRabbitMQ("eventbus");
-var postgres = builder.AddPostgres("postgres")
+IResourceBuilder<RedisResource> redis = builder.AddRedis("redis");
+IResourceBuilder<RabbitMQServerResource> rabbitMq = builder.AddRabbitMQ("eventbus");
+IResourceBuilder<PostgresServerResource> postgres = builder.AddPostgres("postgres")
     .WithImage("ankane/pgvector")
     .WithImageTag("latest");
 
-var catalogDb = postgres.AddDatabase("catalogdb");
-var customerDb = postgres.AddDatabase("customerdb");
-var identityDb = postgres.AddDatabase("identitydb");
-var orderDb = postgres.AddDatabase("orderingdb");
-var webhooksDb = postgres.AddDatabase("webhooksdb");
+IResourceBuilder<PostgresDatabaseResource> catalogDb = postgres.AddDatabase("catalogdb");
+IResourceBuilder<PostgresDatabaseResource> customerDb = postgres.AddDatabase("customerdb");
+IResourceBuilder<PostgresDatabaseResource> identityDb = postgres.AddDatabase("identitydb");
+IResourceBuilder<PostgresDatabaseResource> orderDb = postgres.AddDatabase("orderingdb");
+IResourceBuilder<PostgresDatabaseResource> webhooksDb = postgres.AddDatabase("webhooksdb");
 
-var launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
+string launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
 
 // Services
-var identityApi = builder.AddProject<Projects.eShop_Identity_API>("identity-api", launchProfileName)
+IResourceBuilder<ProjectResource> identityApi = builder.AddProject<Projects.eShop_Identity_API>("identity-api", launchProfileName)
     .WithExternalHttpEndpoints()
     .WithReference(identityDb);
 
-var identityEndpoint = identityApi.GetEndpoint(launchProfileName);
+EndpointReference identityEndpoint = identityApi.GetEndpoint(launchProfileName);
 
-var basketApi = builder.AddProject<Projects.eShop_Basket_API>("basket-api")
+IResourceBuilder<ProjectResource> basketApi = builder.AddProject<Projects.eShop_Basket_API>("basket-api")
     .WithReference(redis)
     .WithReference(rabbitMq)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
-var catalogApi = builder.AddProject<Projects.eShop_Catalog_API>("catalog-api")
+IResourceBuilder<ProjectResource> catalogApi = builder.AddProject<Projects.eShop_Catalog_API>("catalog-api")
     .WithReference(rabbitMq)
     .WithReference(catalogDb);
 
-var customerApi = builder.AddProject<Projects.eShop_Customer_API>("customer-api")
+IResourceBuilder<ProjectResource> customerApi = builder.AddProject<Projects.eShop_Customer_API>("customer-api")
     .WithReference(customerDb)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
-var orderingApi = builder.AddProject<Projects.eShop_Ordering_API>("ordering-api")
+IResourceBuilder<ProjectResource> orderingApi = builder.AddProject<Projects.eShop_Ordering_API>("ordering-api")
     .WithReference(rabbitMq)
     .WithReference(orderDb)
+    .WithEnvironment("Identity__Url", identityEndpoint);
+
+IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eShop_MasterData_API>("masterData-api")
     .WithEnvironment("Identity__Url", identityEndpoint);
 
 builder.AddProject<Projects.eShop_OrderProcessor>("order-processor")
@@ -51,7 +53,7 @@ builder.AddProject<Projects.eShop_OrderProcessor>("order-processor")
 builder.AddProject<Projects.eShop_PaymentProcessor>("payment-processor")
     .WithReference(rabbitMq);
 
-var webHooksApi = builder.AddProject<Projects.eShop_Webhooks_API>("webhooks-api")
+IResourceBuilder<ProjectResource> webHooksApi = builder.AddProject<Projects.eShop_Webhooks_API>("webhooks-api")
     .WithReference(rabbitMq)
     .WithReference(webhooksDb)
     .WithEnvironment("Identity__Url", identityEndpoint);
@@ -64,11 +66,11 @@ builder.AddProject<Projects.eShop_Mobile_Bff_Shopping>("mobile-bff")
     .WithReference(identityApi);
 
 // Apps
-var webhooksClient = builder.AddProject<Projects.eShop_WebhookClient>("webhooksclient", launchProfileName)
+IResourceBuilder<ProjectResource> webhooksClient = builder.AddProject<Projects.eShop_WebhookClient>("webhooksclient", launchProfileName)
     .WithReference(webHooksApi)
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
-var webApp = builder.AddProject<Projects.eShop_WebApp>("webapp", launchProfileName)
+IResourceBuilder<ProjectResource> webApp = builder.AddProject<Projects.eShop_WebApp>("webapp", launchProfileName)
     .WithExternalHttpEndpoints()
     .WithReference(basketApi)
     .WithReference(catalogApi)
@@ -121,6 +123,7 @@ var adminApp = builder.AddProject<Projects.eShop_AdminApp>("admin-app")
     .WithExternalHttpEndpoints()
     .WithReference(customerApi)
     .WithReference(orderingApi)
+    .WithReference(masterDataApi)
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
 // Wire up the callback urls (self referencing)
@@ -128,14 +131,15 @@ webApp.WithEnvironment("CallBackUrl", webApp.GetEndpoint(launchProfileName));
 webhooksClient.WithEnvironment("CallBackUrl", webhooksClient.GetEndpoint(launchProfileName));
 adminApp.WithEnvironment("CallBackUrl", adminApp.GetEndpoint(launchProfileName));
 
-// Identity has a reference to all of the apps for callback urls, this is a cyclic reference
-identityApi.WithEnvironment("BasketApiClient", basketApi.GetEndpoint("http"))
-           .WithEnvironment("CustomerApiClient", customerApi.GetEndpoint("http"))
-           .WithEnvironment("OrderingApiClient", orderingApi.GetEndpoint("http"))
-           .WithEnvironment("WebhooksApiClient", webHooksApi.GetEndpoint("http"))
-           .WithEnvironment("WebhooksWebClient", webhooksClient.GetEndpoint(launchProfileName))
-           .WithEnvironment("WebAppClient", webApp.GetEndpoint(launchProfileName))
-           .WithEnvironment("AdminAppClient", adminApp.GetEndpoint(launchProfileName));
+// Identity has a reference to all of the apps for callback URLs, this is a cyclic reference
+identityApi.WithEnvironment("AdminAppClient", adminApp.GetEndpoint(launchProfileName))
+    .WithEnvironment("BasketApiClient", basketApi.GetEndpoint("http"))
+    .WithEnvironment("CustomerApiClient", customerApi.GetEndpoint("http"))
+    .WithEnvironment("MasterDataApiClient", masterDataApi.GetEndpoint("http"))
+    .WithEnvironment("OrderingApiClient", orderingApi.GetEndpoint("http"))
+    .WithEnvironment("WebAppClient", webApp.GetEndpoint(launchProfileName))
+    .WithEnvironment("WebhooksApiClient", webHooksApi.GetEndpoint("http"))
+    .WithEnvironment("WebhooksWebClient", webhooksClient.GetEndpoint(launchProfileName));
 
 builder.Build().Run();
 

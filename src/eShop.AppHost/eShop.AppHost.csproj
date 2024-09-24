@@ -23,6 +23,7 @@
     <ProjectReference Include="..\eShop.Catalog.API\eShop.Catalog.API.csproj" />
     <ProjectReference Include="..\eShop.Customer.API\eShop.Customer.API.csproj" />
     <ProjectReference Include="..\eShop.Identity.API\eShop.Identity.API.csproj" />
+    <ProjectReference Include="..\eShop.MasterData.API\eShop.MasterData.API.csproj" />
     <ProjectReference Include="..\eShop.Mobile.Bff.Shopping\eShop.Mobile.Bff.Shopping.csproj" />
     <ProjectReference Include="..\eShop.Ordering.API\eShop.Ordering.API.csproj" />
     <ProjectReference Include="..\eShop.OrderProcessor\eShop.OrderProcessor.csproj" />

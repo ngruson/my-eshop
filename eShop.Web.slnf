@@ -15,6 +15,8 @@
       "src\\eShop.Identity.API\\eShop.Identity.API.csproj",
       "src\\eShop.Identity.Contracts\\eShop.Identity.Contracts.csproj",
       "src\\eShop.IntegrationEventLogEF\\eShop.IntegrationEventLogEF.csproj",
+      "src\\eShop.MasterData.API\\eShop.MasterData.API.csproj",
+      "src\\eShop.MasterData.Contracts\\eShop.MasterData.Contracts.csproj",
       "src\\eShop.Mobile.Bff.Shopping\\eShop.Mobile.Bff.Shopping.csproj",
       "src\\eShop.OrderProcessor\\eShop.OrderProcessor.csproj",
       "src\\eShop.Ordering.API\\eShop.Ordering.API.csproj",
