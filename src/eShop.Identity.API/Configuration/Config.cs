@@ -8,9 +8,10 @@ internal class Config
         return
         [
             new ApiResource("customers", "Customer Service"),
-            new ApiResource("orders", "Orders Service"),
             new ApiResource("basket", "Basket Service"),
-            new ApiResource("webhooks", "Webhooks registration Service"),
+            new ApiResource("masterData", "Master Data Service"),
+            new ApiResource("orders", "Orders Service"),
+            new ApiResource("webhooks", "Webhooks registration Service")
         ];
     }
 
@@ -21,10 +22,11 @@ internal class Config
         return
         [
             new ApiScope("customers", "Customer Service"),
-            new ApiScope("orders", "Orders Service"),
             new ApiScope("basket", "Basket Service"),
+            new ApiScope("masterData", "Master Data Service"),
+            new ApiScope("orders", "Orders Service"),
             new ApiScope("webhooks", "Webhooks registration Service"),
-            new ApiScope(IdentityServerConstants.LocalApi.ScopeName),
+            new ApiScope(IdentityServerConstants.LocalApi.ScopeName)
         ];
     }
 
@@ -161,6 +163,33 @@ internal class Config
             },
             new Client
             {
+                ClientId = "customerswaggerui",
+                ClientName = "Customer Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RedirectUris = { $"{configuration["CustomerApiClient"]}/swagger/oauth2-redirect.html" },
+                PostLogoutRedirectUris = { $"{configuration["CustomerApiClient"]}/swagger/" },
+                AllowedScopes =
+                {
+                    "customers"
+                }
+            },
+            new Client
+            {
+                ClientId = "masterDataSwaggerUI",
+                ClientName = "Master Data Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RedirectUris = { $"{configuration["MasterDataApiClient"]}/swagger/oauth2-redirect.html" },
+                PostLogoutRedirectUris = { $"{configuration["MasterDataApiClient"]}/swagger/" },
+
+                AllowedScopes =
+                {
+                    "masterData"
+                }
+            },
+            new Client
+            {
                 ClientId = "orderingswaggerui",
                 ClientName = "Ordering Swagger UI",
                 AllowedGrantTypes = GrantTypes.Implicit,
@@ -172,21 +201,6 @@ internal class Config
                 AllowedScopes =
                 {
                     "orders"
-                }
-            },
-            new Client
-            {
-                ClientId = "customerswaggerui",
-                ClientName = "Customer Swagger UI",
-                AllowedGrantTypes = GrantTypes.Implicit,
-                AllowAccessTokensViaBrowser = true,
-
-                RedirectUris = { $"{configuration["CustomerApiClient"]}/swagger/oauth2-redirect.html" },
-                PostLogoutRedirectUris = { $"{configuration["CustomerApiClient"]}/swagger/" },
-
-                AllowedScopes =
-                {
-                    "customers"
                 }
             },
             new Client
