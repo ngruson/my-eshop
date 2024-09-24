@@ -12,7 +12,7 @@ namespace eShop.Identity.UnitTests;
 public class CustomAuthorizeInteractionResponseGeneratorUnitTests
 {
     [Theory, AutoNSubstituteData]
-    public async Task Test1(
+    public async Task ProcessInteraction(
         [Substitute] IdentityServerOptions options,
         [Substitute] IClock clock,
         [Substitute] ILogger<CustomAuthorizeInteractionResponseGenerator> logger,
@@ -39,6 +39,6 @@ public class CustomAuthorizeInteractionResponseGeneratorUnitTests
 
         // Assert
 
-        Assert.Equal("/account/loginemployee", result.RedirectUrl);
+        Assert.Equal("/account/loginEmployee", result.RedirectUrl);
     }
 }

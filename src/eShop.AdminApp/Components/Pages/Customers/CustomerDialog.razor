@@ -1,0 +1,66 @@
+@using MediatR
+@using eShop.AdminApp.Application.Commands.UpdateCustomer
+@using eShop.AdminApp.Application.Queries.GetCustomers
+@implements IDialogContentComponent<CustomerViewModel>
+
+<FluentMessageBarProvider Section="MESSAGES_DIALOG" MaxMessageCount="1" />
+
+<EditForm EditContext="@editContext" style="margin:10px">
+    <DataAnnotationsValidator />
+    <FluentStack Orientation="Orientation.Vertical">
+        <div>
+            <FluentLabel Weight="FontWeight.Bold">First Name</FluentLabel>
+            <FluentTextField Name="displayTitle" @bind-Value="Content.FirstName" Style="width:430px" Required Disabled />
+        </div>
+        <div>
+            <FluentLabel Weight="FontWeight.Bold">Last Name</FluentLabel>
+            <FluentTextField Name="displayTitle" @bind-Value="Content.LastName" Style="width:430px" Required Disabled />
+        </div>
+        <div>
+            <FluentLabel Weight="FontWeight.Bold">Street</FluentLabel>
+            <FluentTextField Name="displayTitle" @bind-Value="Content.Street" Style="width:430px" Required />
+            <FluentValidationMessage For="@(() => Content.Street)" />
+        </div>
+        <div>
+            <FluentLabel Weight="FontWeight.Bold">City</FluentLabel>
+            <FluentTextField Name="displayTitle" @bind-Value="Content.City" Style="width:430px" Required />
+            <FluentValidationMessage For="@(() => Content.City)" />
+        </div>
+        <div>
+            <FluentLabel Weight="FontWeight.Bold">State</FluentLabel>
+            <FluentTextField Name="displayTitle" @bind-Value="Content.State" Style="width:430px" Required />
+            <FluentValidationMessage For="@(() => Content.State)" />
+        </div>
+        <div>
+            <FluentLabel Weight="FontWeight.Bold">Country</FluentLabel>
+            <FluentTextField Name="displayTitle" @bind-Value="Content.Country" Style="width:430px" Required />
+            @* <FluentSelect Items=@GetCountries()
+                          TOption="string"
+                          OptionText="@(i => i)"
+                          OptionValue="@(i => i)"
+                          OptionSelected="@(i => i == "Mon - Fri")"
+                          @bind-Value="availabilityWindow.Days"
+                          Width="120px" /> *@
+            <FluentValidationMessage For="@(() => Content.Country)" />
+        </div>
+        <div>
+            <FluentLabel Weight="FontWeight.Bold">Zip Code</FluentLabel>
+            <FluentTextField Name="displayTitle" @bind-Value="Content.ZipCode" Style="width:430px" Required />
+            <FluentValidationMessage For="@(() => Content.ZipCode)" />
+        </div>
+    </FluentStack>
+</EditForm>
+
+@code {
+    [Parameter]
+    public CustomerViewModel Content { get; set; } = default!;
+
+    private EditContext editContext { get; set; } = null!;
+    private ValidationMessageStore? messageStore;
+
+    protected override void OnParametersSet()
+    {
+        editContext = new EditContext(Content);
+        messageStore = new(editContext);
+    }
+}

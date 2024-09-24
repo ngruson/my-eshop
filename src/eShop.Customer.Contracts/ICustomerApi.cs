@@ -9,4 +9,7 @@ public interface ICustomerApi
 
     [Get("/api/customers?firstName={firstName}&lastName={lastName}&api-version=1.0")]
     Task<GetCustomer.CustomerDto> GetCustomer(string firstName, string lastName);
+
+    [Put("/api/customers?api-version=1.0")]
+    Task UpdateCustomer(UpdateCustomer.UpdateCustomerDto dto);
 }
