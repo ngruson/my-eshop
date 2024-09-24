@@ -1,5 +1,6 @@
 @page "/customers"
 @using MediatR
+@using eShop.AdminApp.Application.Commands.UpdateCustomer
 @using eShop.AdminApp.Application.Queries.GetCustomers
 @inject IMediator Mediator
 @inject IDialogService DialogService
@@ -8,10 +9,10 @@
 
 <div class="tw-container tw-p-8">
     <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
-        <h3 class="tw-text-2xl tw-font-medium">Customers</h3>
+        <FluentLabel Class="tw-text-2xl tw-font-medium" Typo="Typography.H1">Customers</FluentLabel>
     </div>
     <div class="tw-mt-8 tw-mx-32">
-        <FluentDataGrid Items="@customers" ShowHover="true" OnRowClick="TestClick">
+        <FluentDataGrid TGridItem="CustomerViewModel" Items="@customers" ShowHover="true" OnRowClick="RowClicked">
             <PropertyColumn Property="@(p => p.FirstName)" Sortable="true" />
             <PropertyColumn Property="@(p => p.LastName)" Sortable="true" />
             <PropertyColumn Property="@(p => p.Street)" Sortable="true" />
@@ -32,7 +33,7 @@
             .Value.AsQueryable();
     }
 
-    private async Task TestClick(FluentDataGridRow<CustomerViewModel> row)
+    private async Task RowClicked(FluentDataGridRow<CustomerViewModel> row)
     {
         if (row.Item is null)
         {
@@ -43,7 +44,7 @@
             {
                 Title = row.Item.FullName,
                 PrimaryAction = "Update",
-                PrimaryActionEnabled = false,
+                PrimaryActionEnabled = true,
                 SecondaryAction = "Cancel",
                 Width = "500px",
                 TrapFocus = true,
@@ -53,5 +54,30 @@
 
         IDialogReference dialog = await DialogService.ShowDialogAsync<CustomerDialog>(row.Item, parameters);
         DialogResult? result = await dialog.Result;
+
+        if (result.Data is CustomerViewModel viewModel)
+        {
+            await Mediator.Send(CreateCommand(viewModel));
+        }
+    }
+
+    private UpdateCustomerCommand CreateCommand(CustomerViewModel model)
+    {
+        return new UpdateCustomerCommand(
+            new Customer.Contracts.UpdateCustomer.UpdateCustomerDto(
+                model.FirstName,
+                model.LastName,
+                model.CardNumber,
+                model.SecurityNumber,
+                model.Expiration,
+                model.CardHolderName,
+                model.CardType,
+                model.Street,
+                model.City,
+                model.State,
+                model.Country,
+                model.ZipCode
+            )
+        );
     }
 }

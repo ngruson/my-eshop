@@ -15,7 +15,7 @@ public class CustomAuthorizeInteractionResponseGenerator(
 
         if (!result.IsError && request.ClientId == "adminapp" && !request.Subject.IsAuthenticated())
         {
-            result = new InteractionResponse { RedirectUrl = "/account/loginemployee" };
+            result = new InteractionResponse { RedirectUrl = "/account/loginEmployee" };
         }
 
         return result;
