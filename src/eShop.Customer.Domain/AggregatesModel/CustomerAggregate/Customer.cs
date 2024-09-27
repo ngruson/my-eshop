@@ -6,7 +6,7 @@ namespace eShop.Customer.Domain.AggregatesModel.CustomerAggregate;
 public class Customer : Entity, IAggregateRoot
 {
     public Customer(string? firstName, string? lastName, string? cardNumber, string? securityNumber, string? expiration,
-        string? cardHolderName, int cardType, string? street, string? city, string? state, string? country, string? zipCode)
+        string? cardHolderName, int? cardType, string? street, string? city, string? state, string? country, string? zipCode)
     {
         this.FirstName = firstName;
         this.LastName = lastName;
@@ -29,7 +29,7 @@ public class Customer : Entity, IAggregateRoot
     [RegularExpression(@"(0[1-9]|1[0-2])\/[0-9]{2}", ErrorMessage = "Expiration should match a valid MM/YY value")]
     public string? Expiration { get; set; }
     public string? CardHolderName { get; set; }
-    public int CardType { get; set; }
+    public int? CardType { get; set; }
     public string? Street { get; set; }
     public string? City { get; set; }
     public string? State { get; set; }

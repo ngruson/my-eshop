@@ -104,17 +104,16 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
         UpdateCustomerDto updateCustomerDto = new(
             customer.FirstName,
             customer.LastName,
-            customer.CardNumber,
-            customer.SecurityNumber,
-            customer.Expiration,
-            customer.CardHolderName,
-            customer.CardType,
             customer.Street,
             customer.City,
             customer.State,
             customer.Country,
-            customer.ZipCode
-        );
+            customer.ZipCode,
+            customer.CardNumber,
+            customer.SecurityNumber,
+            customer.Expiration,
+            customer.CardHolderName,
+            customer.CardType);
 
         response = await this._httpClient.PutAsync(
             "/api/customers",
@@ -123,8 +122,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
                     this._jsonSerializerOptions
                 ),
                 Encoding.UTF8,
-                "application/json"
-            ));
+                "application/json"));
 
         // Assert
 
@@ -147,17 +145,16 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
         UpdateCustomerDto updateCustomerDto = new(
             "Sunny2",
             "Swinnerton2",
-            customer.CardNumber,
-            customer.SecurityNumber,
-            customer.Expiration,
-            customer.CardHolderName,
-            customer.CardType,
             customer.Street,
             customer.City,
             customer.State,
             customer.Country,
-            customer.ZipCode
-        );
+            customer.ZipCode,
+            customer.CardNumber,
+            customer.SecurityNumber,
+            customer.Expiration,
+            customer.CardHolderName,
+            customer.CardType);
 
         response = await this._httpClient.PutAsync(
             "/api/customers",

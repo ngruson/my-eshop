@@ -1,5 +1,6 @@
 @page "/customers"
 @using MediatR
+@using eShop.AdminApp.Application.Commands.CreateCustomer
 @using eShop.AdminApp.Application.Commands.UpdateCustomer
 @using eShop.AdminApp.Application.Queries.GetCustomers
 @inject IMediator Mediator
@@ -8,6 +9,13 @@
 <PageTitle>Customers</PageTitle>
 
 <div class="tw-container tw-p-8">
+    <div class="tw-mb-4">
+        <FluentToolbar>
+            <FluentButton IconStart="@(new Icons.Regular.Size16.PersonAdd())" Appearance="Appearance.Accent" OnClick="AddCustomer">
+                Add Customer
+            </FluentButton>
+        </FluentToolbar>
+    </div>
     <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
         <FluentLabel Class="tw-text-2xl tw-font-medium" Typo="Typography.H1">Customers</FluentLabel>
     </div>
@@ -29,8 +37,43 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await GetCustomers();
+    }
+
+    private async Task GetCustomers()
+    {
         this.customers = (await Mediator.Send(new GetCustomersQuery()))
             .Value.AsQueryable();
+    }
+
+    private async Task AddCustomer()
+    {
+        DialogParameters parameters = new()
+        {
+            Title = "Add Customer",
+            PrimaryAction = "Add",
+            PrimaryActionEnabled = true,
+            SecondaryAction = "Cancel",
+            Width = "500px",
+            TrapFocus = true,
+            Modal = true,
+            PreventScroll = true
+        };
+
+        CustomerViewModel viewModel = new();
+        viewModel.NewCustomer = true;
+
+        IDialogReference dialog = await DialogService.ShowDialogAsync<CustomerDialog>(
+            viewModel, parameters);
+        DialogResult? result = await dialog.Result;
+
+        if (result.Cancelled == false)
+        {
+            CreateCustomerCommand command = viewModel.MapToCreateCustomerCreateCommand();
+            await Mediator.Send(command);
+
+            await GetCustomers();
+        }
     }
 
     private async Task RowClicked(FluentDataGridRow<CustomerViewModel> row)
@@ -57,27 +100,8 @@
 
         if (result.Data is CustomerViewModel viewModel)
         {
-            await Mediator.Send(CreateCommand(viewModel));
+            UpdateCustomerCommand command = viewModel.MapToUpdateCustomerCreateCommand();
+            await Mediator.Send(command);
         }
-    }
-
-    private UpdateCustomerCommand CreateCommand(CustomerViewModel model)
-    {
-        return new UpdateCustomerCommand(
-            new Customer.Contracts.UpdateCustomer.UpdateCustomerDto(
-                model.FirstName,
-                model.LastName,
-                model.CardNumber,
-                model.SecurityNumber,
-                model.Expiration,
-                model.CardHolderName,
-                model.CardType,
-                model.Street,
-                model.City,
-                model.State,
-                model.Country,
-                model.ZipCode
-            )
-        );
     }
 }
