@@ -243,7 +243,7 @@ public sealed class CountryEnum : SmartEnum<CountryEnum, string>
     public static readonly CountryEnum Ukraine = new(nameof(Ukraine), "UA");
     public static readonly CountryEnum UnitedArabEmirates = new("United Arab Emirates", "AE");
     public static readonly CountryEnum UnitedKingdom = new("United Kingdom", "GB");
-    public static readonly CountryEnum UnitedStatesOfAmerica = new("United States of America", "US");
+    public static readonly CountryEnum UnitedStates = new("United States", "US");
     public static readonly CountryEnum UnitedStatesMinorOutlyingIslands = new("United States Minor Outlying Islands", "UM");
     public static readonly CountryEnum Uruguay = new(nameof(Uruguay), "UY");
     public static readonly CountryEnum Uzbekistan = new(nameof(Uzbekistan), "UZ");

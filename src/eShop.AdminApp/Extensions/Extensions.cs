@@ -1,4 +1,5 @@
 using eShop.Customer.Contracts;
+using eShop.MasterData.Contracts;
 using eShop.Ordering.Contracts;
 using eShop.ServiceDefaults;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -29,14 +30,16 @@ internal static class Extensions
             .AddAuthToken();
 
         builder.Services
+            .AddRefitClient<IMasterDataApi>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri($"{builder.Configuration["services:masterData-api:http:0"]}"))
+            .AddAuthToken();
+
+        builder.Services
             .AddRefitClient<IOrderingApi>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri($"{builder.Configuration["services:ordering-api:http:0"]}"))
             .AddAuthToken();
-
-        //builder.Services.AddHttpClient<OrderingService>(o => o.BaseAddress = new("http://ordering-api"))
-        //    .AddApiVersion(1.0)
-        //    .AddAuthToken();
 
         builder.Services.AddMediatR(cfg =>
         {

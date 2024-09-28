@@ -1,6 +1,7 @@
 using eShop.AdminApp.Application.Commands.CreateCustomer;
 using eShop.AdminApp.Application.Commands.UpdateCustomer;
 using eShop.Customer.Contracts.GetCustomers;
+using eShop.MasterData.Contracts;
 
 namespace eShop.AdminApp.Application.Queries.GetCustomers;
 

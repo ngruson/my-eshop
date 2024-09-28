@@ -2,8 +2,7 @@
 @using eShop.AdminApp.Application.Commands.UpdateCustomer
 @using eShop.AdminApp.Application.Queries.GetCustomers
 @using eShop.MasterData.Contracts
-@inject IMasterDataApi MasterDataApi
-@implements IDialogContentComponent<CustomerViewModel>
+@implements IDialogContentComponent<CustomerDialogContent>
 
 <FluentMessageBarProvider Section="MESSAGES_DIALOG" MaxMessageCount="1" />
 
@@ -11,45 +10,75 @@
     <DataAnnotationsValidator />
     <FluentStack Orientation="Orientation.Vertical">
         <div>
-            <FluentTextField Name="firstName" @bind-Value="Content.FirstName" Label="First Name" Required Style="width:430px" />
-            <FluentValidationMessage For="@(() => Content.FirstName)" />
+            <FluentTextField Name="firstName" @bind-Value="Content.Model.FirstName" Label="First Name" Required Style="width:400px" />
+            <FluentValidationMessage For="@(() => Content.Model.FirstName)" />
         </div>
         <div>
-            <FluentTextField Name="lastName" @bind-Value="Content.LastName" Label="Last Name" Required Style="width:430px" />
-            <FluentValidationMessage For="@(() => Content.LastName)" />
+            <FluentTextField Name="lastName" @bind-Value="Content.Model.LastName" Label="Last Name" Required Style="width:400px" />
+            <FluentValidationMessage For="@(() => Content.Model.LastName)" />
         </div>
         <div>
-            <FluentTextField Name="street" @bind-Value="Content.Street" Label="Street" Required Style="width:430px" />
-            <FluentValidationMessage For="@(() => Content.Street)" />
+            <FluentTextField Name="street" @bind-Value="Content.Model.Street" Label="Street" Required Style="width:400px" />
+            <FluentValidationMessage For="@(() => Content.Model.Street)" />
         </div>
         <div>
-            <FluentTextField Name="city" @bind-Value="Content.City" Label="City" Required Style="width:430px" />
-            <FluentValidationMessage For="@(() => Content.City)" />
+            <FluentTextField Name="city" @bind-Value="Content.Model.City" Label="City" Required Style="width:400px" />
+            <FluentValidationMessage For="@(() => Content.Model.City)" />
         </div>
         <div>
-            <FluentTextField Name="state" @bind-Value="Content.State" Label="State" Required Style="width:430px" />
-            <FluentValidationMessage For="@(() => Content.State)" />
+            <FluentSelect Items=@GetCountryOptions()
+                          Name="country"
+                          Label="Country"
+                          TOption="Option<string>"
+                          OptionText="@(_ => _.Text)"
+                          OptionValue="@(_ => _.Value)"
+                          OptionSelected="@(i => i.Value == Content.Model.Country)"
+                          Required
+                          @bind-Value="Content.Model.Country"
+                          Width="400px"
+                          Height="250px" SelectedOptionChanged="CountryValueChanged" />
+            <FluentValidationMessage For="@(() => Content.Model.Country)" />
         </div>
         <div>
-            @* <FluentTextField Name="country" @bind-Value="Content.Country" Label="Country" Required Style="width:430px" /> *@
-            @* <FluentSelect Items=@countries
-                          TOption="CountryDto"
-                          OptionText="@(_ => _.Name)"
-                          OptionValue="@(_ => _.Code)"
-                          @bind-Value="Content.Country"
-                          Width="120px" /> *@
-            <FluentValidationMessage For="@(() => Content.Country)" />
+            <FluentSelect Items=@GetStatesOptions()
+                          Name="state"
+                          Label="State"
+                          Disabled="@(Content.Model.Country != "US")"
+                          TOption="Option<string>"
+                          OptionText="@(_ => _.Text)"
+                          OptionValue="@(_ => _.Value)"
+                          OptionSelected="@(i => i.Value == Content.Model.State)"
+                          Required
+                          @bind-Value="Content.Model.State"
+                          Width="400px"
+                          Height="250px" />
+            <FluentValidationMessage For="@(() => Content.Model.State)" />
         </div>
         <div>
-            <FluentTextField Name="zipCode" @bind-Value="Content.ZipCode" Label="Zip Code" Style="width:430px" Required />
-            <FluentValidationMessage For="@(() => Content.ZipCode)" />
+            <FluentTextField Name="zipCode" @bind-Value="Content.Model.ZipCode" Label="Zip Code" Style="width:400px" Required />
+            <FluentValidationMessage For="@(() => Content.Model.ZipCode)" />
         </div>
     </FluentStack>
 </EditForm>
 
+<FluentDialogFooter>
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Right" VerticalAlignment="VerticalAlignment.Bottom">
+        <FluentButton
+                Title="@(Content.Model.NewCustomer ? "Add" : "Update")"
+                Appearance="Appearance.Accent"
+                      Disabled="@(!editContext.Validate())"
+                OnClick="PrimaryActionButtonClicked">
+            @(Content.Model.NewCustomer ? "Add" : "Update")
+        </FluentButton>
+        <FluentButton Title="Cancel" Appearance="Appearance.Neutral" OnClick="SecondaryActionButtonClicked">
+            Cancel
+        </FluentButton>
+    </FluentStack>
+</FluentDialogFooter>
+
 @code {
     [Parameter]
-    public CustomerViewModel Content { get; set; } = default!;
+    public CustomerDialogContent Content { get; set; } = default!;
 
     [CascadingParameter]
     public FluentDialog? Dialog { get; set; }
@@ -57,39 +86,57 @@
     private EditContext editContext { get; set; } = null!;
     private ValidationMessageStore? messageStore;
 
-    //private IEnumerable<CountryDto> countries = Array.Empty<CountryDto>();
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     this.countries = await MasterDataApi.GetCountries();
-    // }
-
     protected override void OnParametersSet()
     {
-        editContext = new EditContext(Content);
-        editContext.OnFieldChanged += HandleFieldChanged;
+        editContext = new EditContext(Content.Model);
         messageStore = new(editContext);
     }
 
-    private bool fieldChangedBusy;
-
-    private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
+    private async Task PrimaryActionButtonClicked()
     {
-        if (fieldChangedBusy)
+        await Dialog!.CloseAsync(Content);
+    }
+
+    private async Task SecondaryActionButtonClicked()
+    {
+        await Dialog!.CancelAsync();
+    }
+
+    private List<Option<string>> GetCountryOptions()
+    {
+        return this.Content.Countries.Select(_ => new Option<string>
+            {
+                Text = _.Name,
+                Value = _.Code
+            }).ToList();
+    }
+
+    private List<Option<string>> GetStatesOptions()
+    {
+        if (Content.Model.Country != "US")
         {
+            return new List<Option<string>>();
+        }
+
+        var options = this.Content.States.Select(_ => new Option<string>
+            {
+                Text = _.Name,
+                Value = _.Code
+            }).ToList();
+
+        options.Insert(0, new Option<string> { Text = "Select a state", Value = "" });
+
+        return options;
+    }
+
+    private void CountryValueChanged(Option<string> option)
+    {
+        if (option is null)
             return;
-        }
 
-        fieldChangedBusy = true;
-
-        try
+        if (option.Value != "US")
         {
-            messageStore?.Clear(e.FieldIdentifier);
-            editContext.NotifyValidationStateChanged();
-        }
-        finally
-        {
-            fieldChangedBusy = false;
+            Content.Model.State = string.Empty;
         }
     }
 }

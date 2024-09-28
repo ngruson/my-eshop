@@ -5,7 +5,7 @@ namespace eShop.AdminApp.Application.Queries.GetCustomers;
 public class CustomerViewModel(string firstName, string lastName, string street, string city, string state, string country, string zipCode,
     string? cardNumber, string? securityNumber, string? expiration, string? cardHolderName, int? cardType)
 {
-    public CustomerViewModel() : this("", "", "", "", "", "", "", "", "", "", "", 0) { }
+    public CustomerViewModel() : this("", "", "", "", "", "US", "", "", "", "", "", 0) { }
 
     [Display(Name = "First Name"), Required]
     public string FirstName { get; set; } = firstName;
@@ -24,8 +24,8 @@ public class CustomerViewModel(string firstName, string lastName, string street,
 
     [Required]
     public string Country { get; set; } = country;
-
-    [Display(Name = "Zip code")]
+    
+    [Display(Name = "Zip code"), Required]
     public string ZipCode { get; set; } = zipCode;
 
     public string? CardNumber { get; set; } = cardNumber;

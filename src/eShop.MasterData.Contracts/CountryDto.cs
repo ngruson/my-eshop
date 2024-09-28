@@ -1,3 +1,7 @@
 namespace eShop.MasterData.Contracts;
 
-public record CountryDto(string Name, string Code);
+public class CountryDto(string code, string name)
+{
+    public string Code { get; set; } = code;
+    public string Name { get; set; } = name;
+}

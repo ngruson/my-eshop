@@ -3,8 +3,10 @@
 @using eShop.AdminApp.Application.Commands.CreateCustomer
 @using eShop.AdminApp.Application.Commands.UpdateCustomer
 @using eShop.AdminApp.Application.Queries.GetCustomers
+@using eShop.MasterData.Contracts
 @inject IMediator Mediator
 @inject IDialogService DialogService
+@inject IMasterDataApi MasterDataApi
 
 <PageTitle>Customers</PageTitle>
 
@@ -34,9 +36,13 @@
 
 @code {
     private IQueryable<CustomerViewModel>? customers;
+    private IEnumerable<CountryDto> countries = Array.Empty<CountryDto>();
+    private IEnumerable<StateDto> states = Array.Empty<StateDto>();
 
     protected override async Task OnInitializedAsync()
     {
+        this.countries = await MasterDataApi.GetCountries();
+        this.states = await MasterDataApi.GetStates();
         await GetCustomers();
     }
 
@@ -51,23 +57,23 @@
         DialogParameters parameters = new()
         {
             Title = "Add Customer",
-            PrimaryAction = "Add",
-            PrimaryActionEnabled = true,
-            SecondaryAction = "Cancel",
             Width = "500px",
             TrapFocus = true,
             Modal = true,
             PreventScroll = true
         };
 
-        CustomerViewModel viewModel = new();
-        viewModel.NewCustomer = true;
+        CustomerViewModel viewModel = new() { NewCustomer = true };
+        CustomerDialogContent dialogContent = new(
+            viewModel,
+            this.countries,
+            this.states);
 
         IDialogReference dialog = await DialogService.ShowDialogAsync<CustomerDialog>(
-            viewModel, parameters);
+            dialogContent, parameters);
         DialogResult? result = await dialog.Result;
 
-        if (result.Cancelled == false)
+        if (result.Data is CustomerDialogContent)
         {
             CreateCustomerCommand command = viewModel.MapToCreateCustomerCreateCommand();
             await Mediator.Send(command);
@@ -86,19 +92,17 @@
         DialogParameters parameters = new()
             {
                 Title = row.Item.FullName,
-                PrimaryAction = "Update",
-                PrimaryActionEnabled = true,
-                SecondaryAction = "Cancel",
                 Width = "500px",
                 TrapFocus = true,
                 Modal = true,
                 PreventScroll = true
             };
 
-        IDialogReference dialog = await DialogService.ShowDialogAsync<CustomerDialog>(row.Item, parameters);
+        CustomerDialogContent dialogContent = new(row.Item, this.countries, this.states);
+        IDialogReference dialog = await DialogService.ShowDialogAsync<CustomerDialog>(dialogContent, parameters);
         DialogResult? result = await dialog.Result;
 
-        if (result.Data is CustomerViewModel viewModel)
+        if (result.Data is CustomerDialogContent content && content.Model is CustomerViewModel viewModel)
         {
             UpdateCustomerCommand command = viewModel.MapToUpdateCustomerCreateCommand();
             await Mediator.Send(command);
