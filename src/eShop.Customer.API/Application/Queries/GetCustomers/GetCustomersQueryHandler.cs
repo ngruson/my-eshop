@@ -3,6 +3,7 @@ using eShop.Customer.API.Application.GuardClauses;
 using eShop.Customer.Contracts.GetCustomers;
 using eShop.Shared.Data;
 using Ardalis.GuardClauses;
+using eShop.Customer.API.Application.Specifications;
 
 namespace eShop.Customer.API.Application.Queries.GetCustomers;
 
@@ -19,7 +20,7 @@ internal class GetCustomersQueryHandler(
         try
         {
             List<Domain.AggregatesModel.CustomerAggregate.Customer> customers =
-                await this.customerRepository.ListAsync(cancellationToken);
+                await this.customerRepository.ListAsync(new GetCustomersSpecification(), cancellationToken);
 
             var foundResult = Guard.Against.CustomersNullOrEmpty(customers, this.logger);
             if (!foundResult.IsSuccess)

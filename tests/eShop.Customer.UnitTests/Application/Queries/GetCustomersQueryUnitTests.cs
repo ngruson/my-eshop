@@ -2,6 +2,7 @@ using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Customer.API.Application.Queries.GetCustomers;
+using eShop.Customer.API.Application.Specifications;
 using eShop.Customer.Contracts.GetCustomers;
 using eShop.Shared.Data;
 using NSubstitute;
@@ -20,7 +21,7 @@ public class GetCustomersQueryUnitTests
     {
         // Arrange
 
-        customerRepository.ListAsync(default).Returns(customers);
+        customerRepository.ListAsync(Arg.Any<GetCustomersSpecification>(), default).Returns(customers);
 
         // Act
 
@@ -45,7 +46,7 @@ public class GetCustomersQueryUnitTests
         // Assert
         Assert.True(result.IsNotFound());
 
-        await customerRepository.Received().ListAsync(default);
+        await customerRepository.Received().ListAsync(Arg.Any<GetCustomersSpecification>(), default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -56,7 +57,7 @@ public class GetCustomersQueryUnitTests
     {
         // Arrange
 
-        customerRepository.ListAsync(default).ThrowsAsync<Exception>();
+        customerRepository.ListAsync(Arg.Any<GetCustomersSpecification>(), default).ThrowsAsync<Exception>();
 
         // Act
 
@@ -65,6 +66,6 @@ public class GetCustomersQueryUnitTests
         // Assert
         Assert.True(result.IsError());
 
-        await customerRepository.Received().ListAsync(default);
+        await customerRepository.Received().ListAsync(Arg.Any<GetCustomersSpecification>(), default);
     }
 }

@@ -3,27 +3,37 @@ using System.ComponentModel.DataAnnotations;
 namespace eShop.AdminApp.Application.Queries.GetCustomers;
 
 public class CustomerViewModel(string firstName, string lastName, string street, string city, string state, string country, string zipCode,
-    string cardNumber, string securityNumber, string expiration, string cardHolderName, int cardType)
+    string? cardNumber, string? securityNumber, string? expiration, string? cardHolderName, int? cardType)
 {
-    [Display(Name = "First Name")]
+    public CustomerViewModel() : this("", "", "", "", "", "US", "", "", "", "", "", 0) { }
+
+    [Display(Name = "First Name"), Required]
     public string FirstName { get; set; } = firstName;
 
-    [Display(Name = "Last Name")]
+    [Display(Name = "Last Name"), Required]
     public string LastName { get; set; } = lastName;
 
+    [Required]
     public string Street { get; set; } = street;
-    public string City { get; set; } = city;
-    public string State { get; set; } = state;
-    public string Country { get; set; } = country;
 
-    [Display(Name = "Zip code")]
-    public string ZipCode { get; set; } = zipCode;
+    [Required]
+    public string City { get; set; } = city;
+
+    [Required]
+    public string State { get; set; } = state;
+
+    [Required]
+    public string Country { get; set; } = country;
     
-    public string CardNumber { get; set; } = cardNumber;
-    public string SecurityNumber { get; set; } = securityNumber;
-    public string Expiration { get; set; } = expiration;
-    public string CardHolderName { get; set; } = cardHolderName;
-    public int CardType { get; set; } = cardType;
+    [Display(Name = "Zip code"), Required]
+    public string ZipCode { get; set; } = zipCode;
+
+    public string? CardNumber { get; set; } = cardNumber;
+    public string? SecurityNumber { get; set; } = securityNumber;
+    public string? Expiration { get; set; } = expiration;
+    public string? CardHolderName { get; set; } = cardHolderName;
+    public int? CardType { get; set; } = cardType;
 
     public string FullName => $"{this.FirstName} {this.LastName}";
+    public bool NewCustomer { get; set; }
 }

@@ -10,16 +10,16 @@ internal static class MapperExtensions
             .Select(c => new CustomerDto(
                 c.FirstName!,
                 c.LastName!,
+                c.Street!,
+                c.City!,
+                c.State!,
+                c.Country!,
+                c.ZipCode!,
                 c.CardNumber,
                 c.SecurityNumber,
                 c.Expiration,
                 c.CardHolderName,
-                c.CardType,
-                c.Street,
-                c.City,
-                c.State,
-                c.Country,
-                c.ZipCode))
+                c.CardType))
             .ToList();
     }
 }

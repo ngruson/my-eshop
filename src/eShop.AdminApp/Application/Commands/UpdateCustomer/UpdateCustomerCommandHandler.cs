@@ -4,7 +4,7 @@ using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.UpdateCustomer;
 
-public class UpdateCustomerCommandHandler(
+internal class UpdateCustomerCommandHandler(
     ILogger<UpdateCustomerCommandHandler> logger,
     ICustomerApi customerApi) : IRequestHandler<UpdateCustomerCommand, Result>
 {

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.UpdateCustomer;
 
-public class UpdateCustomerCommand(UpdateCustomerDto dto) : IRequest<Result>
+internal class UpdateCustomerCommand(UpdateCustomerDto dto) : IRequest<Result>
 {
     public UpdateCustomerDto Dto { get; } = dto;
 }

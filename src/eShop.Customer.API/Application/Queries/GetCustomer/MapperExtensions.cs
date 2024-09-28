@@ -9,15 +9,15 @@ internal static class MapperExtensions
         return new CustomerDto(
             customer.FirstName!,
             customer.LastName!,
-            customer.CardNumber!,
-            customer.SecurityNumber!,
-            customer.Expiration!,
-            customer.CardHolderName!,
-            customer.CardType!,
             customer.Street!,
             customer.City!,
             customer.State!,
             customer.Country!,
-            customer.ZipCode!);
+            customer.ZipCode!,
+            customer.CardNumber,
+            customer.SecurityNumber,
+            customer.Expiration,
+            customer.CardHolderName,
+            customer.CardType);
     }
 }

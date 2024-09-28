@@ -9,7 +9,7 @@ public class GetCountriesQueryHandler : IRequestHandler<GetCountriesQuery, Resul
     public Task<Result<List<CountryDto>>> Handle(GetCountriesQuery request, CancellationToken cancellationToken)
     {
         List<CountryDto> countries = CountryEnum.List
-            .Select(c => new CountryDto(c.Name, c.Value))
+            .Select(c => new CountryDto(c.Value, c.Name))
             .ToList();
 
         return Task.FromResult(Result<List<CountryDto>>.Success(countries));
