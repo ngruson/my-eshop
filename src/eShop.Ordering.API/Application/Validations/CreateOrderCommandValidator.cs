@@ -1,3 +1,5 @@
+using eShop.Ordering.Contracts.CreateOrder;
+
 namespace eShop.Ordering.API.Application.Validations;
 public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
 {
@@ -13,7 +15,7 @@ public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
         this.RuleFor(command => command.CardExpiration).NotEmpty().Must(this.BeValidExpirationDate).WithMessage("Please specify a valid card expiration date");
         this.RuleFor(command => command.CardSecurityNumber).NotEmpty().Length(3);
         this.RuleFor(command => command.CardTypeId).NotEmpty();
-        this.RuleFor(command => command.OrderItems).Must(ContainOrderItems).WithMessage("No order items found");
+        this.RuleFor(command => command.OrderItems).Must(this.ContainOrderItems).WithMessage("No order items found");
     }
 
     private bool BeValidExpirationDate(DateTime dateTime)
@@ -21,7 +23,7 @@ public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
         return dateTime >= DateTime.UtcNow;
     }
 
-    private bool ContainOrderItems(IEnumerable<OrderItemDTO> orderItems)
+    private bool ContainOrderItems(IEnumerable<OrderItemDto> orderItems)
     {
         return orderItems.Any();
     }

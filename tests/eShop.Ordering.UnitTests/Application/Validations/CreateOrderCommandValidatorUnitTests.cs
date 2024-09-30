@@ -1,15 +1,15 @@
-using eShop.Ordering.API.Application.Models;
 using eShop.Ordering.API.Application.Validations;
+using eShop.Ordering.Contracts.CreateOrder;
 using FluentValidation.TestHelper;
 
-namespace Ordering.UnitTests.Application.Validations;
+namespace eShop.Ordering.UnitTests.Application.Validations;
 public class CreateOrderCommandValidatorUnitTests
 {
     [Theory, AutoNSubstituteData]
     internal void valid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -17,14 +17,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -52,7 +52,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void city_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -60,14 +60,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             city: null,
@@ -96,7 +96,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void street_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -104,14 +104,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -140,7 +140,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void state_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -148,14 +148,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -184,7 +184,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void country_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -192,14 +192,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -228,7 +228,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void zipCode_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -236,21 +236,21 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
             command.Street,
             command.State,
             command.Country,
-            zipcode: null,
+            zipCode: null,
             cardNumber,
             command.CardHolderName,
             DateTime.Now.AddYears(1),
@@ -272,7 +272,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void cardNumber_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -280,14 +280,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -316,7 +316,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void cardNumber_too_short_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -324,14 +324,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string shorter than 12 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 11)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 11)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -360,7 +360,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void cardNumber_too_long_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -368,14 +368,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string longer than 20 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 21)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 21)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -404,7 +404,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void cardHolderName_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -412,14 +412,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -448,7 +448,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void expiration_date_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -456,14 +456,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -492,7 +492,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void expiration_date_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -500,14 +500,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -536,7 +536,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void card_security_number_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -544,11 +544,11 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -577,7 +577,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void card_security_number_too_short_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -585,15 +585,15 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         // Random string shorter than 3 characters
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 2)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 2)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -622,7 +622,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void card_security_number_too_long_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -630,15 +630,15 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         // Random string longer than 3 characters
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 4)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 4)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -667,7 +667,7 @@ public class CreateOrderCommandValidatorUnitTests
     internal void card_type_id_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
-        List<BasketItem> basketItems
+        OrderItemDto[] orderItems
     )
     {
         // Arrange
@@ -675,14 +675,14 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
-            basketItems,
+            orderItems,
             command.UserId,
             command.UserName,
             command.City,
@@ -718,10 +718,10 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
+        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
-        string cardSecurityNumber = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
+        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(

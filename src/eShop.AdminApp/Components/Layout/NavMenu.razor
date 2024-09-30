@@ -1,19 +1,17 @@
-<div class="tw-top-0 tw-left-0 tw-h-screen tw-m-0 tw-bg-[#212b36] tw-text-color-[#637381] tw-text-white">
-    @* tw-text-color-[#637381]  *@
-    <div class="tw-pt-4 tw-px-6 tw-pb-6">
-        <a href="#" class="tw-text-xl tw-font-bold">AdventureWorks</a>
-    </div>
-    <div class="tw-py-2 tw-px-6 tw-text-black">
-        <FluentNavMenu Width="250">
-            <div class="[&_.fluent-nav-link]:tw-flex [&_.fluent-nav-icon]:tw-mr-1.5 tw-text-sm">
-                <FluentNavLink Icon="@(new Icons.Regular.Size20.Home())">Dashboard</FluentNavLink>
-            </div>
-            <div class="tw-y-2 [&_.fluent-nav-link]:tw-flex [&_.fluent-nav-icon]:tw-mr-1.5 tw-text-sm">
-                <FluentNavLink Href="/customers" Icon="@(new Icons.Regular.Size20.CreditCardPerson())">Customers</FluentNavLink>
-            </div>
-            <div class="tw-y-2 [&_.fluent-nav-link]:tw-flex [&_.fluent-nav-icon]:tw-mr-1.5 tw-text-sm">
-                <FluentNavLink Href="/orders" Icon="@(new Icons.Regular.Size20.ShoppingBag())">Orders</FluentNavLink>
-            </div>
-        </FluentNavMenu>
-    </div>
-</div>
+<FluentStack Orientation="Orientation.Vertical" Width="5%" Class="tw-h-full">
+    <FluentAppBar Class="tw-h-full">
+        <FluentAppBarItem Match="NavLinkMatch.All"
+                          IconRest="@(new Icons.Regular.Size20.Home())"
+                          Text="Dashboard" />
+        <FluentAppBarItem Href="/customers"
+                          IconRest="@(new Icons.Regular.Size20.CreditCardPerson())"
+                          Text="Customers" />
+        <FluentAppBarItem Href="/orders"
+                          IconRest="@(new Icons.Regular.Size20.ShoppingBag())"
+                          Text="Orders" />
+        <FluentAppBarItem Href="/admin"
+                          IconRest="@(new Icons.Regular.Size20.AppsSettings())"
+                          Text="Admin" />
+    </FluentAppBar>
+
+</FluentStack>

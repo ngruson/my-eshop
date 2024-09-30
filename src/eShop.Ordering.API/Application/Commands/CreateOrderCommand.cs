@@ -9,17 +9,13 @@ namespace eShop.Ordering.API.Application.Commands;
 // http://blog.gauffin.org/2012/06/griffin-container-introducing-command-support/
 // https://docs.microsoft.com/dotnet/csharp/programming-guide/classes-and-structs/how-to-implement-a-lightweight-class-with-auto-implemented-properties
 
-using eShop.Ordering.API.Application.Models;
-using eShop.Ordering.API.Extensions;
+using eShop.Ordering.Contracts.CreateOrder;
 
 [DataContract]
-public class CreateOrderCommand(List<BasketItem> basketItems, string userId, string userName, string city, string street, string state, string country, string zipcode,
+public class CreateOrderCommand(OrderItemDto[] orderItems, string userId, string userName, string city, string street, string state, string country, string zipCode,
     string cardNumber, string cardHolderName, DateTime cardExpiration,
     string cardSecurityNumber, int cardTypeId) : IRequest<bool>
 {
-    [DataMember]
-    private readonly List<OrderItemDTO> _orderItems = basketItems.ToOrderItemsDTO().ToList();
-
     [DataMember]
     public string? UserId { get; private set; } = userId;
 
@@ -39,7 +35,7 @@ public class CreateOrderCommand(List<BasketItem> basketItems, string userId, str
     public string? Country { get; private set; } = country;
 
     [DataMember]
-    public string? ZipCode { get; private set; } = zipcode;
+    public string? ZipCode { get; private set; } = zipCode;
 
     [DataMember]
     public string? CardNumber { get; private set; } = cardNumber;
@@ -57,5 +53,5 @@ public class CreateOrderCommand(List<BasketItem> basketItems, string userId, str
     public int CardTypeId { get; private set; } = cardTypeId;
 
     [DataMember]
-    public IEnumerable<OrderItemDTO> OrderItems => this._orderItems;
+    public OrderItemDto[] OrderItems => orderItems;
 }

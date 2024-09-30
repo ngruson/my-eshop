@@ -1,6 +1,7 @@
 namespace eShop.Customer.Contracts.CreateCustomer;
 
 public record CreateCustomerDto(
+    string UserName,
     string FirstName,
     string LastName,
     string Street,

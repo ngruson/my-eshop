@@ -18,10 +18,11 @@
             </FluentButton>
         </FluentToolbar>
     </div>
-    <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
-        <FluentLabel Class="tw-text-2xl tw-font-medium" Typo="Typography.H1">Customers</FluentLabel>
+    <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">        
+        <h3 class="tw-text-2xl tw-font-medium">Customers</h3>
     </div>
-    <div class="tw-mt-8 tw-mx-32">
+    @* <div class="tw-mt-8 tw-mx-32"> *@
+    <div>
         <FluentDataGrid TGridItem="CustomerViewModel" Items="@customers" ShowHover="true" OnRowClick="RowClicked">
             <PropertyColumn Property="@(p => p.FirstName)" Sortable="true" />
             <PropertyColumn Property="@(p => p.LastName)" Sortable="true" />

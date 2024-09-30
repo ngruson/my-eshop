@@ -13,7 +13,7 @@ public class CustomAuthorizeInteractionResponseGenerator(
     {
         InteractionResponse result = await base.ProcessLoginAsync(request);
 
-        if (!result.IsError && request.ClientId == "adminapp" && !request.Subject.IsAuthenticated())
+        if (!result.IsError && request.ClientId == "adminApp" && !request.Subject.IsAuthenticated())
         {
             result = new InteractionResponse { RedirectUrl = "/account/loginEmployee" };
         }

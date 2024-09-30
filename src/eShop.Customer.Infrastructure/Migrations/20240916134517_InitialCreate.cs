@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -24,18 +24,19 @@ namespace eShop.Customer.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false),
+                    UserName = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    Street = table.Column<string>(type: "text", nullable: false),
+                    City = table.Column<string>(type: "text", nullable: false),
+                    ZipCode = table.Column<string>(type: "text", nullable: false),
+                    Country = table.Column<string>(type: "text", nullable: false),
+                    State = table.Column<string>(type: "text", nullable: false),
                     CardNumber = table.Column<string>(type: "text", nullable: false),
                     SecurityNumber = table.Column<string>(type: "text", nullable: false),
                     Expiration = table.Column<string>(type: "text", nullable: false),
                     CardHolderName = table.Column<string>(type: "text", nullable: false),
-                    CardType = table.Column<int>(type: "integer", nullable: false),
-                    Street = table.Column<string>(type: "text", nullable: false),
-                    City = table.Column<string>(type: "text", nullable: false),
-                    State = table.Column<string>(type: "text", nullable: false),
-                    Country = table.Column<string>(type: "text", nullable: false),
-                    ZipCode = table.Column<string>(type: "text", nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false)
+                    CardType = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
