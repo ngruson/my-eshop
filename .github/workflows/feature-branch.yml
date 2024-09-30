@@ -27,6 +27,9 @@ jobs:
       - name: Test
         run: |
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.AdminApp.UnitTests/eShop.AdminApp.UnitTests.csproj
+
+            dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.Basket.UnitTests/eShop.Basket.UnitTests.csproj
 
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
@@ -55,6 +58,7 @@ jobs:
 
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.Ordering.UnitTests/eShop.Ordering.UnitTests.csproj
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
