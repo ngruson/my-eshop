@@ -220,7 +220,7 @@ internal class Config
             },
             new Client
             {
-                ClientId = "adminapp",
+                ClientId = "adminApp",
                 ClientName = "Admin Client",
                 ClientSecrets =
                 [
@@ -246,19 +246,13 @@ internal class Config
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess,
+                    IdentityServerConstants.LocalApi.ScopeName,
                     "orders",
                     "basket"
                 ],
                 AccessTokenLifetime = 60*60*2, // 2 hours
                 IdentityTokenLifetime= 60*60*2 // 2 hours
-            },
-            new Client {
-                ClientId = "customer-api",
-                ClientName = "Customer API",
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
-                ClientSecrets = { new Secret("secret".Sha256()) },
-                AllowedScopes = { IdentityServerConstants.LocalApi.ScopeName }
-            },
+            }
         ];
     }
 }

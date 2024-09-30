@@ -1,6 +1,7 @@
 namespace eShop.Customer.Contracts.GetCustomers;
 
 public record CustomerDto(
+    string UserName,
     string FirstName,
     string LastName,
     string Street,

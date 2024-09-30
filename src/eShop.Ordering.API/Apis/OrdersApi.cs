@@ -1,5 +1,6 @@
 using Ardalis.Result.AspNetCore;
 using eShop.Ordering.API.Application.Queries.GetOrders;
+using eShop.Ordering.Contracts.CreateOrder;
 using Microsoft.AspNetCore.Http.HttpResults;
 using CardType = eShop.Ordering.API.Application.Queries.CardType;
 using Order = eShop.Ordering.API.Application.Queries.Order;
@@ -126,7 +127,7 @@ public static class OrdersApi
 
     public static async Task<Results<Ok, BadRequest<string>>> CreateOrderAsync(
         [FromHeader(Name = "x-requestid")] Guid requestId,
-        CreateOrderRequest request,
+        CreateOrderDto request,
         [AsParameters] OrderServices services)
     {
 
@@ -146,13 +147,13 @@ public static class OrdersApi
 
         using (services.Logger.BeginScope(new List<KeyValuePair<string, object>> { new("IdentifiedCommandId", requestId) }))
         {
-            var maskedCCNumber = request.CardNumber.Substring(request.CardNumber.Length - 4).PadLeft(request.CardNumber.Length, 'X');
-            var createOrderCommand = new CreateOrderCommand(request.Items, request.UserId, request.UserName, request.City, request.Street,
+            string maskedCCNumber = request.CardNumber[^4..].PadLeft(request.CardNumber.Length, 'X');
+            CreateOrderCommand createOrderCommand = new(request.Items, request.UserId, request.UserName, request.City, request.Street,
                 request.State, request.Country, request.ZipCode,
                 maskedCCNumber, request.CardHolderName, request.CardExpiration,
                 request.CardSecurityNumber, request.CardTypeId);
 
-            var requestCreateOrder = new IdentifiedCommand<CreateOrderCommand, bool>(createOrderCommand, requestId);
+            IdentifiedCommand<CreateOrderCommand, bool> requestCreateOrder = new(createOrderCommand, requestId);
 
             services.Logger.LogInformation(
                 "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
@@ -161,7 +162,7 @@ public static class OrdersApi
                 requestCreateOrder.Id,
                 requestCreateOrder);
 
-            var result = await services.Mediator.Send(requestCreateOrder);
+            bool result = await services.Mediator.Send(requestCreateOrder);
 
             if (result)
             {
@@ -176,19 +177,3 @@ public static class OrdersApi
         }
     }
 }
-
-public record CreateOrderRequest(
-    string UserId,
-    string UserName,
-    string City,
-    string Street,
-    string State,
-    string Country,
-    string ZipCode,
-    string CardNumber,
-    string CardHolderName,
-    DateTime CardExpiration,
-    string CardSecurityNumber,
-    int CardTypeId,
-    string Buyer,
-    List<BasketItem> Items);

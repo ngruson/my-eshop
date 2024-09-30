@@ -121,6 +121,7 @@ if (useOpenAI)
 
 var adminApp = builder.AddProject<Projects.eShop_AdminApp>("admin-app")
     .WithExternalHttpEndpoints()
+    .WithReference(catalogApi)
     .WithReference(customerApi)
     .WithReference(orderingApi)
     .WithReference(masterDataApi)

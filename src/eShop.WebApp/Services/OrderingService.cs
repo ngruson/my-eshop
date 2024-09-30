@@ -1,4 +1,4 @@
-﻿namespace eShop.WebApp.Services;
+namespace eShop.WebApp.Services;
 
 public class OrderingService(HttpClient httpClient)
 {
@@ -6,12 +6,12 @@ public class OrderingService(HttpClient httpClient)
 
     public Task<OrderRecord[]> GetOrders()
     {
-        return httpClient.GetFromJsonAsync<OrderRecord[]>(remoteServiceBaseUrl)!;
+        return httpClient.GetFromJsonAsync<OrderRecord[]>(this.remoteServiceBaseUrl)!;
     }
 
     public Task CreateOrder(CreateOrderRequest request, Guid requestId)
     {
-        var requestMessage = new HttpRequestMessage(HttpMethod.Post, remoteServiceBaseUrl);
+        HttpRequestMessage requestMessage = new(HttpMethod.Post, this.remoteServiceBaseUrl);
         requestMessage.Headers.Add("x-requestid", requestId.ToString());
         requestMessage.Content = JsonContent.Create(request);
         return httpClient.SendAsync(requestMessage);

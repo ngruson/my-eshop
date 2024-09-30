@@ -2,10 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace eShop.AdminApp.Application.Queries.GetCustomers;
 
-public class CustomerViewModel(string firstName, string lastName, string street, string city, string state, string country, string zipCode,
+public class CustomerViewModel(string userName, string firstName, string lastName, string street, string city, string state, string country, string zipCode,
     string? cardNumber, string? securityNumber, string? expiration, string? cardHolderName, int? cardType)
 {
-    public CustomerViewModel() : this("", "", "", "", "", "US", "", "", "", "", "", 0) { }
+    public CustomerViewModel() : this("", "", "", "", "", "", "US", "", "", "", "", "", 0) { }
+
+    [Display(Name = "Username"), Required]
+    public string UserName { get; set; } = userName;
 
     [Display(Name = "First Name"), Required]
     public string FirstName { get; set; } = firstName;

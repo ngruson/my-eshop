@@ -1,5 +1,6 @@
 using eShop.Identity.API.Quickstart;
 using eShop.Identity.API.Seed;
+using static Duende.IdentityServer.IdentityServerConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,14 +46,14 @@ builder.Services.AddIdentityServer(options =>
 builder.Services.AddAuthorization()
     .AddLocalApiAuthentication();
 
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(AuthorizationTokenPolicyNames.UserPolicy, policy =>
-    {
-        policy
-            .AddAuthenticationSchemes(IdentityServerConstants.LocalApi.AuthenticationScheme)
-            .RequireAuthenticatedUser()
-            .RequireClaim("scope", IdentityServerConstants.LocalApi.ScopeName);
-    });
+//builder.Services.AddAuthorizationBuilder()
+//    .AddPolicy(AuthorizationTokenPolicyNames.UserPolicy, policy =>
+//    {
+//        policy
+//            .AddAuthenticationSchemes(IdentityServerConstants.LocalApi.AuthenticationScheme)
+//            .RequireAuthenticatedUser()
+//            .RequireClaim("scope", IdentityServerConstants.LocalApi.ScopeName);
+//    });
 
 builder.Services.AddAuthentication()
     .AddOpenIdConnect("Microsoft", "Employee Login", options =>
@@ -88,7 +89,7 @@ app.MapDefaultEndpoints();
 var api = app.NewVersionedApi("Identity");
 
 api.MapIdentityApiV1()
-      .RequireAuthorization();
+      .RequireAuthorization(LocalApi.PolicyName);
 
 app.UseDefaultOpenApi();
 

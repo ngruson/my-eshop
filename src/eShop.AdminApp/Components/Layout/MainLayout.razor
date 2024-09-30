@@ -4,53 +4,36 @@
 @inherits LayoutComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="tw-flex">
-    <div>
-        <NavMenu/>
-    </div>
-    <div class="tw-w-full"> 
-        <div class="tw-flex tw-justify-between tw-py-2.5 tw-px-6 tw-bg-white tw-shadow">
-            @* tw-shadow[0_2px_4px_rgba(0,0,20,.08),0_1px_2px_rgba(0,0,20,.08)] *@
-            <FluentAnchor Href="" Class="tw-border-0">
-                <FluentIcon Value="@(new Icons.Regular.Size20.ArrowCircleLeft())" />
-            </FluentAnchor>
-            <ul class="tw-flex tw-text-blue-300 tw-mr-3">
-                <li>
-                    <FluentPersona
-                        ImageSize="50px"
-                        Image="@(new Icons.Regular.Size48.Person().ToDataUri(size: "25px", color: "white"))" />
-                </li>
-                <li>
-                    @* <FluentIcon Value="@(new Icons.Regular.Size20.Home())" OnClick="@(() => open = !open)" /> *@
-                    @* <div class="[&>*]:border-0"> *@
-                </li>
-            </ul>
-        </div>
-        @Body
-    </div>
-    @* <header class="flex justify-between w-full bg-blue-900 text-white p-3">
-        <h1 class="font-bold text-2xl"><i class="fa-solid fa-file-invoice-dollar"/> AdventureWorks</h1>
-        <ul class="flex text-blue-300">
-            <li class="mx-2 hover:text-blue-500"><a href="/">Home</a></li>
-            <li class="mx-2 hover:text-blue-500"><a href="/Contact">Contact</a></li>
-        </ul>
-    </header>
-    <div class="bg-gray-100 p-2 w-full h-[calc(100vh-95px)] overflow-auto">
-        @Body
-    </div>
-    <footer class="text-center bg-black text-white">&copy; 2024 AdventureWorks</footer> *@
-</div>
-
-@* <div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div> *@
+<FluentLayout>
+    <FluentHeader Class="tw-h-16">
+        AdventureWorks
+        <FluentSpacer />
+        <FluentPersona ImageSize="40px"
+                       Image="@(new Icons.Regular.Size48.Person().ToDataUri(size: "25px", color: "white"))" />
+    </FluentHeader>
+    <FluentStack Class="main tw-h-full" Orientation="Orientation.Horizontal" Width="100%">
+        <NavMenu />
+        <FluentBodyContent Class="tw-ml-2.5">
+            <div class="content">
+                <ErrorBoundary>
+                    <FluentMessageBarProvider Section="MESSAGES_TOP"/>
+                    @Body
+                </ErrorBoundary>
+            </div>
+        </FluentBodyContent>
+    </FluentStack>
+</FluentLayout>
 
 <FluentToastProvider />
 <FluentDialogProvider />
 <FluentTooltipProvider />
 <FluentMessageBarProvider />
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
 
 @code {
     private ClaimsPrincipal? user;

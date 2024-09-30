@@ -19,20 +19,20 @@ public class CustomersSeed(IRepository<Domain.AggregatesModel.CustomerAggregate.
             List<CustomerCsv> records = csv.GetRecords<CustomerCsv>().Take(10).ToList();
 
             List<Domain.AggregatesModel.CustomerAggregate.Customer> customers =
-            records.Select(r => new Domain.AggregatesModel.CustomerAggregate.Customer(
-                r.FirstName,
-                r.LastName,
-                r.CardNumber,
-                "123",
-                "12/24",
-                r.CardHolderName,
-                1,
-                r.Street,
-                r.City,
-                r.State,
-                r.Country,
-                r.ZipCode
-            )).ToList();
+                records.Select(r => new Domain.AggregatesModel.CustomerAggregate.Customer(
+                    r.UserName,
+                    r.FirstName,
+                    r.LastName,
+                    r.Street,
+                    r.City,
+                    r.State,
+                    r.Country,
+                    r.ZipCode,
+                    r.CardNumber,
+                    "123",
+                    "12/24",
+                    r.CardHolderName,
+                    1)).ToList();
 
             await this.customerRepository.AddRangeAsync(customers);
         }

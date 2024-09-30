@@ -14,6 +14,9 @@ internal class CustomerConfiguration : IEntityTypeConfiguration<Domain.Aggregate
         entityTypeBuilder.Property(o => o.Id)
             .UseHiLo("customer-seq");
 
+        entityTypeBuilder.Property(o => o.UserName)
+            .IsRequired();
+
         entityTypeBuilder.Property(o => o.FirstName)
             .IsRequired();
 

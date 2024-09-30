@@ -10,6 +10,10 @@
     <DataAnnotationsValidator />
     <FluentStack Orientation="Orientation.Vertical">
         <div>
+            <FluentTextField Name="userName" @bind-Value="Content.Model.UserName" Label="Username" Required Style="width:400px" />
+            <FluentValidationMessage For="@(() => Content.Model.UserName)" />
+        </div>
+        <div>
             <FluentTextField Name="firstName" @bind-Value="Content.Model.FirstName" Label="First Name" Required Style="width:400px" />
             <FluentValidationMessage For="@(() => Content.Model.FirstName)" />
         </div>
@@ -24,6 +28,10 @@
         <div>
             <FluentTextField Name="city" @bind-Value="Content.Model.City" Label="City" Required Style="width:400px" />
             <FluentValidationMessage For="@(() => Content.Model.City)" />
+        </div>
+        <div>
+            <FluentTextField Name="zipCode" @bind-Value="Content.Model.ZipCode" Label="Zip Code" Style="width:400px" Required />
+            <FluentValidationMessage For="@(() => Content.Model.ZipCode)" />
         </div>
         <div>
             <FluentSelect Items=@GetCountryOptions()
@@ -53,11 +61,7 @@
                           Width="400px"
                           Height="250px" />
             <FluentValidationMessage For="@(() => Content.Model.State)" />
-        </div>
-        <div>
-            <FluentTextField Name="zipCode" @bind-Value="Content.Model.ZipCode" Label="Zip Code" Style="width:400px" Required />
-            <FluentValidationMessage For="@(() => Content.Model.ZipCode)" />
-        </div>
+        </div>        
     </FluentStack>
 </EditForm>
 

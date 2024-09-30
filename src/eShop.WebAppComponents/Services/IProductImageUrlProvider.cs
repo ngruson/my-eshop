@@ -1,11 +1,11 @@
-﻿using eShop.WebAppComponents.Catalog;
+using eShop.WebAppComponents.Catalog;
 
 namespace eShop.WebAppComponents.Services;
 
 public interface IProductImageUrlProvider
 {
     string GetProductImageUrl(CatalogItem item)
-        => GetProductImageUrl(item.Id);
+        => this.GetProductImageUrl(item.Id);
 
     string GetProductImageUrl(int productId);
 }

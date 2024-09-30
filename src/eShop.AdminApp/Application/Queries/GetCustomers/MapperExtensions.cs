@@ -1,7 +1,6 @@
 using eShop.AdminApp.Application.Commands.CreateCustomer;
 using eShop.AdminApp.Application.Commands.UpdateCustomer;
 using eShop.Customer.Contracts.GetCustomers;
-using eShop.MasterData.Contracts;
 
 namespace eShop.AdminApp.Application.Queries.GetCustomers;
 
@@ -11,6 +10,7 @@ internal static class MapperExtensions
     {
         return customers
             .Select(_ => new CustomerViewModel(
+                _.UserName,
                 _.FirstName,
                 _.LastName,
                 _.Street,
@@ -30,6 +30,7 @@ internal static class MapperExtensions
     {
         return new CreateCustomerCommand(
             new Customer.Contracts.CreateCustomer.CreateCustomerDto(
+                model.UserName,
                 model.FirstName,
                 model.LastName,
                 model.Street,

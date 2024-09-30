@@ -3,10 +3,9 @@ using System.Text;
 using System.Text.Json;
 using Asp.Versioning;
 using Asp.Versioning.Http;
-using eShop.Ordering.API.Apis;
 using eShop.Ordering.API.Application.Commands;
-using eShop.Ordering.API.Application.Models;
 using eShop.Ordering.API.Application.Queries;
+using eShop.Ordering.Contracts.CreateOrder;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace eShop.Ordering.FunctionalTests;
@@ -29,7 +28,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     {
         // Act
         var response = await this._httpClient.GetAsync("api/orders");
-        var s = await response.Content.ReadAsStringAsync();
+        await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
 
         // Assert
@@ -134,14 +133,14 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
 
     [Theory, AutoNSubstituteData]
     public async Task AddNewOrder(
-        CreateOrderRequest order,
-        BasketItem basketItem)
+        CreateOrderDto order,
+        OrderItemDto orderItem)
     {
         // Act
         
         var cardExpirationDate = DateTime.Now.AddYears(1);
-        var orderRequest = new CreateOrderRequest(order.UserId, order.UserName, null, null, null, null, null,
-            order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, 1, null, [basketItem]);
+        var orderRequest = new CreateOrderDto(order.UserId, order.UserName, null, null, null, null, null,
+            order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, 1, null, [orderItem]);
         var content = new StringContent(JsonSerializer.Serialize(orderRequest), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
@@ -154,11 +153,11 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
 
     [Theory, AutoNSubstituteData]
     public async Task PostDraftOrder(
-        BasketItem basketItem)
+        OrderItemDto orderItem)
     {
         // Act
         
-        var bodyContent = new { BuyerId = "1", Items = new List<BasketItem> { basketItem } };
+        var bodyContent = new { BuyerId = "1", Items = new List<OrderItemDto> { orderItem } };
         var content = new StringContent(JsonSerializer.Serialize(bodyContent), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
@@ -186,7 +185,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(command.Items.Count(), responseData.OrderItems.Count());
-        Assert.Equal(command.Items.Sum(o => o.Quantity * o.UnitPrice), responseData.Total);
+        Assert.Equal(command.Items.Sum(o => o.Units * o.UnitPrice), responseData.Total);
         AssertThatOrderItemsAreTheSameAsRequestPayloadItems(command, responseData);
     }
 

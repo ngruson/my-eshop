@@ -1,4 +1,6 @@
+using eShop.Catalog.Contracts;
 using eShop.Customer.Contracts;
+using eShop.Identity.Contracts;
 using eShop.MasterData.Contracts;
 using eShop.Ordering.Contracts;
 using eShop.ServiceDefaults;
@@ -21,12 +23,22 @@ internal static class Extensions
         builder.Services.AddRazorPages()
             .AddMicrosoftIdentityUI();
 
-        //services__ordering - api__http__0
+        builder.Services
+            .AddRefitClient<ICatalogApi>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri($"{builder.Configuration["services:catalog-api:http:0"]}"))
+            .AddAuthToken();
 
         builder.Services
             .AddRefitClient<ICustomerApi>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri($"{builder.Configuration["services:customer-api:http:0"]}"))
+            .AddAuthToken();
+
+        builder.Services
+            .AddRefitClient<IIdentityApi>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri($"{builder.Configuration["IdentityUrl"]}"))
             .AddAuthToken();
 
         builder.Services
@@ -71,7 +83,7 @@ internal static class Extensions
             options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.Authority = identityUrl;
             options.SignedOutRedirectUri = callBackUrl;
-            options.ClientId = "adminapp";
+            options.ClientId = "adminApp";
             options.ClientSecret = "secret";
             options.ResponseType = "code";
             options.SaveTokens = true;
@@ -79,6 +91,7 @@ internal static class Extensions
             options.RequireHttpsMetadata = false;
             options.Scope.Add("openid");
             options.Scope.Add("profile");
+            options.Scope.Add("IdentityServerApi");
             options.Scope.Add("orders");
             options.Scope.Add("basket");
         });

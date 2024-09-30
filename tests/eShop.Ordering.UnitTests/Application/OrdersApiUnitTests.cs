@@ -9,6 +9,7 @@ using AutoFixture.Xunit2;
 using NSubstitute.ExceptionExtensions;
 using Microsoft.AspNetCore.Routing;
 using eShop.Ordering.API.Apis;
+using eShop.Ordering.Contracts.CreateOrder;
 
 public class OrdersApiUnitTests
 {
@@ -235,7 +236,7 @@ public class OrdersApiUnitTests
         [Theory, AutoNSubstituteData]
         public async Task When_command_succeeds_return_ok(
             [Substitute, Frozen] OrderServices orderServices,
-            CreateOrderRequest request,
+            CreateOrderDto request,
             Guid requestId)
         {
             // Arrange
@@ -255,7 +256,7 @@ public class OrdersApiUnitTests
         [Theory, AutoNSubstituteData]
         public async Task When_command_fails_return_ok(
             OrderServices orderServices,
-            CreateOrderRequest request,
+            CreateOrderDto request,
             Guid requestId)
         {
             // Arrange
@@ -272,7 +273,7 @@ public class OrdersApiUnitTests
         [Theory, AutoNSubstituteData]
         public async Task With_empty_request_id_return_bad_request(
             OrderServices orderServices,
-            CreateOrderRequest request)
+            CreateOrderDto request)
         {
             // Arrange
 

@@ -1,0 +1,100 @@
+@page "/admin/generate-data"
+@using Ardalis.Result
+@using MediatR
+@using eShop.AdminApp.Application.Commands.GenerateOrders
+@using eShop.AdminApp.Application.Services
+@inject IMediator Mediator
+@inject IMessageService MessageService
+
+<PageTitle>Generate Data</PageTitle>
+
+<FluentStack Class="tw-mt-8" Orientation="Orientation.Horizontal">
+    <div>
+        <AdminNavMenu />
+    </div>
+    <div>
+        <FluentLabel Class="tw-text-2xl tw-font-medium" Typo="Typography.H1">Generate Orders</FluentLabel>
+        <EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit" class="tw-mt-4">
+            <DataAnnotationsValidator />
+            <FluentStack Orientation="Orientation.Vertical">
+                <div>
+                    <FluentNumberField @bind-Value="viewModel.OrdersToCreate" Label="Orders to create" />
+                </div>
+                <div>
+                    <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Submit">Generate Orders</FluentButton>
+                </div>
+            </FluentStack>
+        </EditForm>
+        <FluentProgress @ref="progress" Min="0" Max="@progressMax" Value="@progressValue" class="tw-mt-4" />
+        <FluentLabel class="tw-mt-4">@progressMessage</FluentLabel>
+    </div>
+</FluentStack>
+
+@code {
+    private GenerateDataViewModel viewModel = new(100);
+    private EditContext editContext { get; set; } = null!;
+    private ValidationMessageStore? messageStore;
+
+    private FluentProgress progress = default!;
+    private int progressMax;
+    private int progressValue;
+    private string progressMessage = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        editContext = new EditContext(viewModel);
+        messageStore = new(editContext);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        ProgressService<(int, string)> progressService = new();
+        progressService.OnProgressChanged = HandleProgressChanged;
+
+        progressMax = viewModel.OrdersToCreate;
+        progressValue = 0;
+
+        GenerateOrdersCommand command = new(
+            viewModel.OrdersToCreate,
+            progressService);
+
+        Result result = new();
+
+        Task task = Task.Run(async () =>
+        {
+            result = await Mediator.Send(command);
+        });
+
+        while (!task.IsCompleted)
+        {
+            // Perform other work or update the UI
+            await Task.Delay(100); // Check every 100 milliseconds
+            StateHasChanged();
+        }
+
+        if (result.IsSuccess)
+        {
+            MessageService.ShowMessageBar(options =>
+            {
+                options.Title = $"Successfully created {viewModel.OrdersToCreate} orders";
+                options.Intent = MessageIntent.Success;
+                options.Timeout = 4000;
+            });
+        }
+        else
+        {
+            MessageService.ShowMessageBar(options =>
+            {
+                options.Title = "Failed to create orders";
+                options.Intent = MessageIntent.Error;
+                options.Timeout = 4000;
+            });
+        }
+    }
+
+    private void HandleProgressChanged((int, string) progress)
+    {
+        progressValue = progress.Item1;
+        progressMessage = progress.Item2;
+    }
+}

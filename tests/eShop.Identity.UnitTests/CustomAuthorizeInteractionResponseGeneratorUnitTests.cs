@@ -30,7 +30,7 @@ public class CustomAuthorizeInteractionResponseGeneratorUnitTests
 
         ValidatedAuthorizeRequest request = new()
         {
-            ClientId = "adminapp"
+            ClientId = "adminApp"
         };
 
         // Act
