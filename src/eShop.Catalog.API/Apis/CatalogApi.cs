@@ -1,6 +1,6 @@
 using Ardalis.Specification;
-using Catalog.API.Specifications;
 using eShop.Catalog.API.Extensions;
+using eShop.Catalog.API.Specifications;
 using eShop.Shared.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -17,19 +17,20 @@ public static class CatalogApi
 
         // Routes for querying catalog items.
         api.MapGet("/items", GetAllItems);
+        api.MapGet("/items/page", GetPaginatedItems);
         api.MapGet("/items/by", GetItemsByIds);
         api.MapGet("/items/{id:int}", GetItemById);
         api.MapGet("/items/by/{name:minlength(1)}", GetItemsByName);
         api.MapGet("/items/{catalogItemId:int}/pic", GetItemPictureById);
 
         // Routes for resolving catalog items using AI.
-        api.MapGet("/items/withsemanticrelevance/{text:minlength(1)}", GetItemsBySemanticRelevance);
+        api.MapGet("/items/withSemanticRelevance/{text:minlength(1)}", GetItemsBySemanticRelevance);
 
         // Routes for resolving catalog items by type and brand.
         api.MapGet("/items/type/{typeId}/brand/{brandId?}", GetItemsByBrandAndTypeId);
         api.MapGet("/items/type/all/brand/{brandId:int?}", GetItemsByBrandId);
-        api.MapGet("/catalogtypes", GetAllCatalogTypes);
-        api.MapGet("/catalogbrands", GetAllCatalogBrands);
+        api.MapGet("/catalogTypes", GetAllCatalogTypes);
+        api.MapGet("/catalogBrands", GetAllCatalogBrands);
 
         // Routes for modifying catalog items.
         api.MapPut("/items", UpdateItem);
@@ -39,7 +40,15 @@ public static class CatalogApi
         return api;
     }
 
-    public static async Task<Results<Ok<PaginatedItems<CatalogItem>>, BadRequest<string>>> GetAllItems(
+    public static async Task<Results<Ok<CatalogItem[]>, BadRequest<string>>> GetAllItems(
+        [FromServices] IRepository<CatalogItem> repository)
+    {
+        List<CatalogItem> catalogItems = await repository.ListAsync(new GetCatalogItemsSpecification());
+
+        return TypedResults.Ok(catalogItems.ToArray());
+    }
+
+    public static async Task<Results<Ok<PaginatedItems<CatalogItem>>, BadRequest<string>>> GetPaginatedItems(
         [AsParameters] PaginationRequest paginationRequest,
         [FromServices] IRepository<CatalogItem> repository)
     {

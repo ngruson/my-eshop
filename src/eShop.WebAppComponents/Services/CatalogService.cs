@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using System.Web;
 using eShop.WebAppComponents.Catalog;
 
@@ -10,46 +10,53 @@ public class CatalogService(HttpClient httpClient) : ICatalogService
 
     public Task<CatalogItem?> GetCatalogItem(int id)
     {
-        var uri = $"{remoteServiceBaseUrl}items/{id}";
+        string uri = $"{this.remoteServiceBaseUrl}items/{id}";
         return httpClient.GetFromJsonAsync<CatalogItem>(uri);
     }
 
-    public async Task<CatalogResult> GetCatalogItems(int pageIndex, int pageSize, int? brand, int? type)
+    public async Task<CatalogItem[]> GetCatalogItems()
     {
-        var uri = GetAllCatalogItemsUri(remoteServiceBaseUrl, pageIndex, pageSize, brand, type);
-        var result = await httpClient.GetFromJsonAsync<CatalogResult>(uri);
+        string uri = $"{this.remoteServiceBaseUrl}items";
+        CatalogItem[]? result = await httpClient.GetFromJsonAsync<CatalogItem[]>(uri);
         return result!;
     }
 
-    public async Task<List<CatalogItem>> GetCatalogItems(IEnumerable<int> ids)
+    public async Task<CatalogResult> GetPaginatedCatalogItems(int pageIndex, int pageSize, int? brand, int? type)
     {
-        var uri = $"{remoteServiceBaseUrl}items/by?ids={string.Join("&ids=", ids)}";
-        var result = await httpClient.GetFromJsonAsync<List<CatalogItem>>(uri);
+        string uri = GetPaginatedCatalogItemsUri(this.remoteServiceBaseUrl, pageIndex, pageSize, brand, type);
+        CatalogResult? result = await httpClient.GetFromJsonAsync<CatalogResult>(uri);
         return result!;
     }
 
-    public Task<CatalogResult> GetCatalogItemsWithSemanticRelevance(int page, int take, string text)
+    public async Task<CatalogItem[]> GetCatalogItems(IEnumerable<int> ids)
     {
-        var url = $"{remoteServiceBaseUrl}items/withsemanticrelevance/{HttpUtility.UrlEncode(text)}?pageIndex={page}&pageSize={take}";
-        var result = httpClient.GetFromJsonAsync<CatalogResult>(url);
+        string uri = $"{this.remoteServiceBaseUrl}items/by?ids={string.Join("&ids=", ids)}";
+        CatalogItem[]? result = await httpClient.GetFromJsonAsync<CatalogItem[]>(uri);
         return result!;
     }
 
-    public async Task<IEnumerable<CatalogBrand>> GetBrands()
+    public async Task<CatalogResult> GetCatalogItemsWithSemanticRelevance(int page, int take, string text)
     {
-        var uri = $"{remoteServiceBaseUrl}catalogBrands";
-        var result = await httpClient.GetFromJsonAsync<CatalogBrand[]>(uri);
+        string url = $"{this.remoteServiceBaseUrl}items/withsemanticrelevance/{HttpUtility.UrlEncode(text)}?pageIndex={page}&pageSize={take}";
+        CatalogResult? result = await httpClient.GetFromJsonAsync<CatalogResult>(url);
         return result!;
     }
 
-    public async Task<IEnumerable<CatalogItemType>> GetTypes()
+    public async Task<CatalogBrand[]> GetBrands()
     {
-        var uri = $"{remoteServiceBaseUrl}catalogTypes";
-        var result = await httpClient.GetFromJsonAsync<CatalogItemType[]>(uri);
+        string uri = $"{this.remoteServiceBaseUrl}catalogBrands";
+        CatalogBrand[]? result = await httpClient.GetFromJsonAsync<CatalogBrand[]>(uri);
         return result!;
     }
 
-    private static string GetAllCatalogItemsUri(string baseUri, int pageIndex, int pageSize, int? brand, int? type)
+    public async Task<CatalogItemType[]> GetTypes()
+    {
+        string uri = $"{this.remoteServiceBaseUrl}catalogTypes";
+        CatalogItemType[]? result = await httpClient.GetFromJsonAsync<CatalogItemType[]>(uri);
+        return result!;
+    }
+
+    private static string GetPaginatedCatalogItemsUri(string baseUri, int pageIndex, int pageSize, int? brand, int? type)
     {
         string filterQs;
 
@@ -69,6 +76,6 @@ public class CatalogService(HttpClient httpClient) : ICatalogService
             filterQs = string.Empty;
         }
 
-        return $"{baseUri}items{filterQs}?pageIndex={pageIndex}&pageSize={pageSize}";
+        return $"{baseUri}items/page/{filterQs}?pageIndex={pageIndex}&pageSize={pageSize}";
     }
 }

@@ -12,7 +12,7 @@ using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.GenerateOrders;
 
-internal class GenerateOrdersCommandHandler(
+internal partial class GenerateOrdersCommandHandler(
     ILogger<GenerateOrdersCommandHandler> logger,
     IConfiguration config,
     ICustomerApi customerApi,
@@ -46,8 +46,7 @@ internal class GenerateOrdersCommandHandler(
 
             // Get all products
             this.WriteProgress(request, (0, "Getting catalog items..."));
-            GetCatalogItemsResponse catalogItemsResponse = await this.catalogApi.GetCatalogItems();
-            CatalogItemDto[] catalogItems = catalogItemsResponse.Data;
+            CatalogItemDto[] catalogItems = await this.catalogApi.GetCatalogItems();
             this.WriteProgress(request, (0, "Received {Count} catalog items"), catalogItems.Length);
 
             Random random = new();
@@ -57,9 +56,10 @@ internal class GenerateOrdersCommandHandler(
                 CustomerDto customer = customers[random.Next(customers.Length)];
                 UserDto user = users.Single(_ => _.UserName == customer.UserName);
 
-                OrderItemDto[] orderItems = new OrderItemDto[4];
+                int orderItemsCount = random.Next(0, 5);
+                OrderItemDto[] orderItems = new OrderItemDto[orderItemsCount];
 
-                for (int j = 0; j < random.Next(0, 5); j++)
+                for (int j = 0; j < orderItemsCount; j++)
                 {
                     CatalogItemDto catalogItem = catalogItems[random.Next(catalogItems.Length)];
 
@@ -114,9 +114,9 @@ internal class GenerateOrdersCommandHandler(
         string progressMessage;
         List<string> items = ExtractItems(progress.Item2);
 
-        if (items.Any())
+        if (items.Count > 0)
         {
-            Dictionary<string, object> keyValuePairs = new();
+            Dictionary<string, object> keyValuePairs = [];
             foreach (string item in items)
             {
                 keyValuePairs.Add(item, args[items.IndexOf(item)]);
@@ -134,9 +134,8 @@ internal class GenerateOrdersCommandHandler(
 
     private static List<string> ExtractItems(string input)
     {
-        List<string> items = new List<string>();
-        Regex regex = new Regex(@"\{(.*?)\}");
-        MatchCollection matches = regex.Matches(input);
+        List<string> items = [];
+        MatchCollection matches = AccoladesRegex().Matches(input);
 
         foreach (Match match in matches)
         {
@@ -154,4 +153,7 @@ internal class GenerateOrdersCommandHandler(
         }
         return template;
     }
+
+    [GeneratedRegex(@"\{(.*?)\}")]
+    private static partial Regex AccoladesRegex();
 }

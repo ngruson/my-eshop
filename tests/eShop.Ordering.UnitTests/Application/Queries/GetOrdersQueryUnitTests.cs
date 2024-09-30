@@ -42,24 +42,6 @@ public class GetOrdersQueryUnitTests
     }
 
     [Theory, AutoNSubstituteData]
-    internal async Task WhenOrdersDoNotExist_ReturnNotFound(
-        GetOrdersQueryHandler sut,
-        GetOrdersQuery query
-    )
-    {
-        // Arrange
-
-        // Act
-
-        Result<List<OrderDto>> result = await sut.Handle(query, default);
-
-        //Assert
-
-        Assert.True(result.IsNotFound());
-        Assert.Null(result.Value);
-    }
-
-    [Theory, AutoNSubstituteData]
     internal async Task WhenExceptionIsThrown_ReturnError(
         [Substitute, Frozen] IRepository<Order> orderRepository,
         GetOrdersQueryHandler sut,

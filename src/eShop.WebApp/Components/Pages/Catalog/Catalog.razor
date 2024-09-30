@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @inject NavigationManager Nav
 @inject CatalogService CatalogService
 @attribute [StreamRendering]
@@ -53,7 +53,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        catalogResult = await CatalogService.GetCatalogItems(
+        catalogResult = await CatalogService.GetPaginatedCatalogItems(
             Page.GetValueOrDefault(1) - 1,
             PageSize,
             BrandId,
