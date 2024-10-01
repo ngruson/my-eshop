@@ -1,10 +1,10 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
-using Catalog.API.Specifications;
 using eShop.Catalog.API.APIs;
 using eShop.Catalog.API.IntegrationEvents.Events;
 using eShop.Catalog.API.Model;
 using eShop.Catalog.API.Services;
+using eShop.Catalog.API.Specifications;
 using eShop.Shared.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -52,7 +52,7 @@ public class CatalogApiUnitTests
             // Act
 
             Results<Ok<PaginatedItems<CatalogItem>>, BadRequest<string>> results =
-                await CatalogApi.GetAllItems(paginationRequest, repository);
+                await CatalogApi.GetPaginatedItems(paginationRequest, repository);
 
             // Assert
 

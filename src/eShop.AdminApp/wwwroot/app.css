@@ -608,16 +608,8 @@ body {
   }
 }
 
-.tw-left-0 {
-  left: 0px;
-}
-
-.tw-top-0 {
-  top: 0px;
-}
-
-.tw-m-0 {
-  margin: 0px;
+.tw-m-8 {
+  margin: 2rem;
 }
 
 .tw-mx-32 {
@@ -629,44 +621,28 @@ body {
   margin-bottom: 1rem;
 }
 
-.tw-mr-3 {
-  margin-right: 0.75rem;
-}
-
-.tw-mt-8 {
-  margin-top: 2rem;
+.tw-ml-2\.5 {
+  margin-left: 0.625rem;
 }
 
 .tw-mt-4 {
   margin-top: 1rem;
 }
 
-.tw-flex {
-  display: flex;
+.tw-mt-8 {
+  margin-top: 2rem;
+}
+
+.tw-h-16 {
+  height: 4rem;
 }
 
 .tw-h-full {
   height: 100%;
 }
 
-.tw-h-screen {
-  height: 100vh;
-}
-
-.tw-w-full {
-  width: 100%;
-}
-
 .tw-w-52 {
   width: 13rem;
-}
-
-.tw-justify-between {
-  justify-content: space-between;
-}
-
-.tw-border-0 {
-  border-width: 0px;
 }
 
 .tw-border-b {
@@ -678,45 +654,12 @@ body {
   border-bottom-color: rgb(223 227 232 / var(--tw-border-opacity));
 }
 
-.tw-bg-\[\#212b36\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(33 43 54 / var(--tw-bg-opacity));
-}
-
-.tw-bg-white {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
 .tw-p-8 {
   padding: 2rem;
 }
 
-.tw-px-6 {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
-.tw-py-2 {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
-.tw-py-2\.5 {
-  padding-top: 0.625rem;
-  padding-bottom: 0.625rem;
-}
-
 .tw-pb-4 {
   padding-bottom: 1rem;
-}
-
-.tw-pb-6 {
-  padding-bottom: 1.5rem;
-}
-
-.tw-pt-4 {
-  padding-top: 1rem;
 }
 
 .tw-text-2xl {
@@ -729,53 +672,10 @@ body {
   line-height: 1.5rem;
 }
 
-.tw-text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.tw-text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-}
-
-.tw-font-bold {
-  font-weight: 700;
-}
-
 .tw-font-medium {
   font-weight: 500;
 }
 
 .tw-font-normal {
   font-weight: 400;
-}
-
-.tw-text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
-}
-
-.tw-text-blue-300 {
-  --tw-text-opacity: 1;
-  color: rgb(147 197 253 / var(--tw-text-opacity));
-}
-
-.tw-text-white {
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.tw-shadow {
-  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.\[\&_\.fluent-nav-icon\]\:tw-mr-1\.5 .fluent-nav-icon {
-  margin-right: 0.375rem;
-}
-
-.\[\&_\.fluent-nav-link\]\:tw-flex .fluent-nav-link {
-  display: flex;
 }

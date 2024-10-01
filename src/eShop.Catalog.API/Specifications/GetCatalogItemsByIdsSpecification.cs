@@ -1,6 +1,6 @@
 using Ardalis.Specification;
 
-namespace Catalog.API.Specifications;
+namespace eShop.Catalog.API.Specifications;
 
 public class GetCatalogItemsByIdsSpecification : Specification<CatalogItem>
 {

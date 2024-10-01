@@ -1,6 +1,6 @@
 using Ardalis.Specification;
 
-namespace Catalog.API.Specifications;
+namespace eShop.Catalog.API.Specifications;
 
 public class GetCatalogItemsForPageSpecification : Specification<CatalogItem>
 {
@@ -10,5 +10,5 @@ public class GetCatalogItemsForPageSpecification : Specification<CatalogItem>
             .OrderBy(c => c.Name)
             .Skip(pageSize * pageIndex)
             .Take(pageSize);
-    }       
+    }
 }

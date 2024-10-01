@@ -25,7 +25,7 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     public async Task GetCatalogItemsRespectsPageSize()
     {
         // Act
-        var response = await this._httpClient.GetAsync("/api/catalog/items?pageIndex=0&pageSize=5");
+        var response = await this._httpClient.GetAsync("/api/catalog/items/page?pageIndex=0&pageSize=5");
 
         // Assert
         response.EnsureSuccessStatusCode();

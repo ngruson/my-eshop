@@ -1,0 +1,86 @@
+@page "/catalog"
+@using MediatR
+@using eShop.AdminApp.Application.Queries.GetCatalogBrands
+@using eShop.AdminApp.Application.Queries.GetCatalogItems
+@using eShop.AdminApp.Application.Queries.GetCatalogTypes
+@inject IMediator Mediator
+
+<PageTitle>Catalog</PageTitle>
+
+<FluentTabs>
+    <FluentTab Label="Catalog Items">
+        <div class="tw-container tw-p-8">
+            <div class="tw-mb-4">
+                <FluentToolbar>
+                    <FluentButton IconStart="@(new Icons.Regular.Size16.ShoppingBagAdd())" Appearance="Appearance.Accent">
+                        Add Catalog Item
+                    </FluentButton>
+                </FluentToolbar>
+            </div>
+            <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
+                <h3 class="tw-text-2xl tw-font-medium">Catalog Items</h3>
+            </div>
+            <div>
+                <FluentDataGrid TGridItem="CatalogItemViewModel" Items="@catalogItems" ShowHover="true" ResizableColumns=true>
+                    <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.Price)" Sortable="true" />
+                </FluentDataGrid>
+            </div>
+        </div>
+    </FluentTab>
+    <FluentTab Label="Catalog Types">
+        <div class="tw-container tw-p-8">
+            <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
+                <h3 class="tw-text-2xl tw-font-medium">Catalog Types</h3>
+            </div>
+            <div>
+                <FluentDataGrid TGridItem="CatalogTypeViewModel" Items="@catalogTypes" ShowHover="true" ResizableColumns=true>
+                    <PropertyColumn Property="@(p => p.Type)" Sortable="true" />
+                </FluentDataGrid>
+            </div>
+        </div>
+    </FluentTab>
+    <FluentTab Label="Catalog Brands">
+        <div class="tw-container tw-p-8">
+            <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
+                <h3 class="tw-text-2xl tw-font-medium">Catalog Brands</h3>
+            </div>
+            <div>
+                <FluentDataGrid TGridItem="CatalogBrandViewModel" Items="@catalogBrands" ShowHover="true" ResizableColumns=true>
+                    <PropertyColumn Property="@(p => p.Brand)" Sortable="true" />
+                </FluentDataGrid>
+            </div>
+        </div>
+    </FluentTab>
+</FluentTabs>
+
+@code {
+    private IQueryable<CatalogItemViewModel>? catalogItems;
+    private IQueryable<CatalogTypeViewModel>? catalogTypes;
+    private IQueryable<CatalogBrandViewModel>? catalogBrands;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCatalogItems();
+        await GetCatalogTypes();
+        await GetCatalogBrands();
+    }
+
+    private async Task GetCatalogItems()
+    {
+        this.catalogItems = (await Mediator.Send(new GetCatalogItemsQuery()))
+            .Value.AsQueryable();
+    }
+
+    private async Task GetCatalogTypes()
+    {
+        this.catalogTypes = (await Mediator.Send(new GetCatalogTypesQuery()))
+            .Value.AsQueryable();
+    }
+
+    private async Task GetCatalogBrands()
+    {
+        this.catalogBrands = (await Mediator.Send(new GetCatalogBrandsQuery()))
+            .Value.AsQueryable();
+    }
+}

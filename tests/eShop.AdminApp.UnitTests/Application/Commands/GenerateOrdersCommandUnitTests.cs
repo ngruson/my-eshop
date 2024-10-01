@@ -26,7 +26,7 @@ public class GenerateOrdersCommandUnitTests
         GenerateOrdersCommandHandler sut,
         CustomerDto[] customers,
         UserDto[] users,
-        GetCatalogItemsResponse getCatalogItemsResponse)
+        CatalogItemDto[] catalogItems)
     {
         // Arrange
 
@@ -48,7 +48,7 @@ public class GenerateOrdersCommandUnitTests
             .Returns(users2);
 
         catalogApi.GetCatalogItems()
-            .Returns(getCatalogItemsResponse);
+            .Returns(catalogItems);
 
         // Act
 
