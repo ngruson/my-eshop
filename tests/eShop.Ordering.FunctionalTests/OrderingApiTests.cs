@@ -140,7 +140,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         
         var cardExpirationDate = DateTime.Now.AddYears(1);
         var orderRequest = new CreateOrderDto(order.UserId, order.UserName, null, null, null, null, null,
-            order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, 1, null, [orderItem]);
+            order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, "Amex", null, [orderItem]);
         var content = new StringContent(JsonSerializer.Serialize(orderRequest), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }

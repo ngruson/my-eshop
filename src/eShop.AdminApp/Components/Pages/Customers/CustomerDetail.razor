@@ -1,0 +1,80 @@
+@page "/customer/{objectId:guid}"
+@using MediatR
+@using eShop.AdminApp.Application.Queries.Customer.GetCustomer
+@inject IMediator Mediator
+
+<PageTitle>@Customer.FullName</PageTitle>
+
+<FluentBreadcrumb Class="tw-ml-8 tw-mt-2">
+    <FluentBreadcrumbItem Href="/customers">
+        Customers
+    </FluentBreadcrumbItem>
+    <FluentBreadcrumbItem>
+        @Customer.FullName
+    </FluentBreadcrumbItem>
+</FluentBreadcrumb>
+<div class="tw-container tw-p-8">    
+    <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
+        <h3 class="tw-text-2xl tw-font-medium">@Customer.FullName</h3>
+    </div>    
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="20" Class="tw-w-full">
+        <div class="tw-w-2/4">
+            <h4>General Information</h4>
+            <FluentCard>
+                <div>
+                    <FluentTextField Label="Username" Value="@Customer.UserName" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+                <div>
+                    <FluentTextField Label="First Name" Value="@Customer.FirstName" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+                <div>
+                    <FluentTextField Label="Last Name" Value="@Customer.LastName" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+                <div>
+                    <FluentTextField Label="Street" Value="@Customer.Street" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+                <div>
+                    <FluentTextField Label="Zip Code" Value="@Customer.ZipCode" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+                <div>
+                    <FluentTextField Label="City" Value="@Customer.City" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+                <div>
+                    <FluentTextField Label="State" Value="@Customer.State" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+                <div>
+                    <FluentTextField Label="Country" Value="@Customer.Country" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+            </FluentCard>
+        </div>
+        <div class="tw-w-2/4">
+            <h4>Card Details</h4>
+            <FluentCard>
+                <div>
+                    <FluentTextField Label="Card Number" Value="@Customer.CardNumber" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+                <div>
+                    <FluentTextField Label="Expiration" Value="@Customer.Expiration" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+                <div>
+                    <FluentTextField Label="Cardholder Name" Value="@Customer.CardHolderName" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+                <div>
+                    <FluentTextField Label="Card Type" Value="@Customer.CardType" ReadOnly Appearance="FluentInputAppearance.Filled" />
+                </div>
+            </FluentCard>
+        </div>
+    </FluentStack>
+</div>
+
+@code {
+    [Parameter]
+    public Guid ObjectId { get; set; } = default!;
+
+    private CustomerViewModel Customer { get; set; } = new CustomerViewModel();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Customer = await Mediator.Send(new GetCustomerQuery(ObjectId));
+    }
+}

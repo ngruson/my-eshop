@@ -14,7 +14,7 @@ public class PaymentMethod : Entity
     private readonly string? _cardHolderName;
     private readonly DateTime _expiration;
 
-    private readonly int _cardTypeId;
+    private readonly CardType? _cardType;
     public CardType? CardType { get; private set; }
 
     public string? Alias => this._alias;
@@ -23,7 +23,7 @@ public class PaymentMethod : Entity
 
     protected PaymentMethod() { }
 
-    public PaymentMethod(int cardTypeId, string alias, string cardNumber, string securityNumber, string cardHolderName, DateTime expiration)
+    public PaymentMethod(CardType cardType, string alias, string cardNumber, string securityNumber, string cardHolderName, DateTime expiration)
     {
         this._cardNumber = !string.IsNullOrWhiteSpace(cardNumber) ? cardNumber : throw new OrderingDomainException(nameof(cardNumber));
         this._securityNumber = !string.IsNullOrWhiteSpace(securityNumber) ? securityNumber : throw new OrderingDomainException(nameof(securityNumber));
@@ -36,12 +36,12 @@ public class PaymentMethod : Entity
 
         this._alias = alias;
         this._expiration = expiration;
-        this._cardTypeId = cardTypeId;
+        this._cardType = cardType;
     }
 
-    public bool IsEqualTo(int cardTypeId, string cardNumber, DateTime expiration)
+    public bool IsEqualTo(CardType cardType, string cardNumber, DateTime expiration)
     {
-        return this._cardTypeId == cardTypeId
+        return this._cardType == cardType
             && this._cardNumber == cardNumber
             && this._expiration == expiration;
     }

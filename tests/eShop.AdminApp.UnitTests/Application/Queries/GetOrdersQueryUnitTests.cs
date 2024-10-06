@@ -1,7 +1,7 @@
 using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
-using eShop.AdminApp.Application.Queries.GetOrders;
+using eShop.AdminApp.Application.Queries.Order.GetOrders;
 using eShop.Ordering.Contracts;
 using eShop.Ordering.Contracts.GetOrders;
 using NSubstitute;

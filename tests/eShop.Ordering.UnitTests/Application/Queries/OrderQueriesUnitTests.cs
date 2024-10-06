@@ -4,7 +4,7 @@ using eShop.Ordering.API.Application.Queries;
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 
-namespace Ordering.UnitTests.Application.Queries;
+namespace eShop.Ordering.UnitTests.Application.Queries;
 
 public class OrderQueriesUnitTests
 {
@@ -12,9 +12,9 @@ public class OrderQueriesUnitTests
     {
         [Theory, AutoNSubstituteData]
         internal async Task GetOrdersById_WhenOrderFound_ReturnsOrder(
-        [Substitute, Frozen] IRepository<eShop.Ordering.Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
+        [Substitute, Frozen] IRepository<Ordering.Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
         OrderQueries sut,
-        eShop.Ordering.Domain.AggregatesModel.OrderAggregate.Order order
+        Ordering.Domain.AggregatesModel.OrderAggregate.Order order
         )
         {
             // Arrange
@@ -34,7 +34,7 @@ public class OrderQueriesUnitTests
         [Theory, AutoNSubstituteData]
         internal async Task GetOrdersById_WhenOrderNotFound_ThrowsKeyNotFoundException(
             OrderQueries sut,
-            eShop.Ordering.Domain.AggregatesModel.OrderAggregate.Order order
+            Ordering.Domain.AggregatesModel.OrderAggregate.Order order
             )
         {
             // Arrange
@@ -53,9 +53,9 @@ public class OrderQueriesUnitTests
     {
         [Theory, AutoNSubstituteData]
         internal async Task WhenOrdersFound_ReturnsOrders(
-        [Substitute, Frozen] IRepository<eShop.Ordering.Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
+        [Substitute, Frozen] IRepository<Ordering.Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
         OrderQueries sut,
-        List<eShop.Ordering.Domain.AggregatesModel.OrderAggregate.Order> orders,
+        List<Ordering.Domain.AggregatesModel.OrderAggregate.Order> orders,
         string userId
         )
         {
@@ -77,9 +77,9 @@ public class OrderQueriesUnitTests
     {
         [Theory, AutoNSubstituteData]
         internal async Task WhenCardTypesFound_ReturnsCardTypes(
-        [Substitute, Frozen] IRepository<eShop.Ordering.Domain.AggregatesModel.BuyerAggregate.CardType> cardTypeRepository,
+        [Substitute, Frozen] IRepository<CardType> cardTypeRepository,
         OrderQueries sut,
-        List<eShop.Ordering.Domain.AggregatesModel.BuyerAggregate.CardType> cardTypes
+        List<CardType> cardTypes
         )
         {
             // Arrange

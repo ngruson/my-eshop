@@ -1,12 +1,13 @@
 @page "/customers"
 @using MediatR
-@using eShop.AdminApp.Application.Commands.CreateCustomer
-@using eShop.AdminApp.Application.Commands.UpdateCustomer
-@using eShop.AdminApp.Application.Queries.GetCustomers
+@using eShop.AdminApp.Application.Commands.Customer.CreateCustomer
+@using eShop.AdminApp.Application.Commands.Customer.UpdateCustomer
+@using eShop.AdminApp.Application.Queries.Customer.GetCustomers
 @using eShop.MasterData.Contracts
 @inject IMediator Mediator
 @inject IDialogService DialogService
 @inject IMasterDataApi MasterDataApi
+@inject NavigationManager Navigation
 
 <PageTitle>Customers</PageTitle>
 
@@ -26,10 +27,11 @@
             <PropertyColumn Property="@(p => p.FirstName)" Sortable="true" />
             <PropertyColumn Property="@(p => p.LastName)" Sortable="true" />
             <PropertyColumn Property="@(p => p.Street)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.ZipCode)" Sortable="true" />
             <PropertyColumn Property="@(p => p.City)" Sortable="true" />
             <PropertyColumn Property="@(p => p.State)" Sortable="true" />
             <PropertyColumn Property="@(p => p.Country)" Sortable="true" />
-            <PropertyColumn Property="@(p => p.ZipCode)" Sortable="true" />
+            
         </FluentDataGrid>
     </div>
 </div>
@@ -82,30 +84,32 @@
         }
     }
 
-    private async Task RowClicked(FluentDataGridRow<CustomerViewModel> row)
+    private void RowClicked(FluentDataGridRow<CustomerViewModel> row)
     {
         if (row.Item is null)
         {
             return;
         }
 
-        DialogParameters parameters = new()
-            {
-                Title = row.Item.FullName,
-                Width = "500px",
-                TrapFocus = true,
-                Modal = true,
-                PreventScroll = true
-            };
+        Navigation.NavigateTo($"/customer/{row.Item.ObjectId}");
 
-        CustomerDialogContent dialogContent = new(row.Item, this.countries, this.states);
-        IDialogReference dialog = await DialogService.ShowDialogAsync<CustomerDialog>(dialogContent, parameters);
-        DialogResult? result = await dialog.Result;
+        // DialogParameters parameters = new()
+        //     {
+        //         Title = row.Item.FullName,
+        //         Width = "500px",
+        //         TrapFocus = true,
+        //         Modal = true,
+        //         PreventScroll = true
+        //     };
 
-        if (result.Data is CustomerDialogContent content && content.Model is CustomerViewModel viewModel)
-        {
-            UpdateCustomerCommand command = viewModel.MapToUpdateCustomerCreateCommand();
-            await Mediator.Send(command);
-        }
+        // CustomerDialogContent dialogContent = new(row.Item, this.countries, this.states);
+        // IDialogReference dialog = await DialogService.ShowDialogAsync<CustomerDialog>(dialogContent, parameters);
+        // DialogResult? result = await dialog.Result;
+
+        // if (result.Data is CustomerDialogContent content && content.Model is CustomerViewModel viewModel)
+        // {
+        //     UpdateCustomerCommand command = viewModel.MapToUpdateCustomerCreateCommand();
+        //     await Mediator.Send(command);
+        // }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -16,6 +15,11 @@ namespace Ordering.Infrastructure.Migrations
 
             migrationBuilder.CreateSequence(
                 name: "buyerseq",
+                schema: "ordering",
+                incrementBy: 10);
+
+            migrationBuilder.CreateSequence(
+                name: "cardTypeSeq",
                 schema: "ordering",
                 incrementBy: 10);
 
@@ -48,16 +52,17 @@ namespace Ordering.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "cardtypes",
+                name: "cardTypes",
                 schema: "ordering",
                 columns: table => new
                 {
-                    Value = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    ObjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_cardtypes", x => x.Value);
+                    table.PrimaryKey("PK_cardTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -102,20 +107,20 @@ namespace Ordering.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_paymentmethods", x => x.Id);
+                    table.PrimaryKey("PK_paymentMethods", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_paymentmethods_buyers_BuyerId",
+                        name: "FK_paymentMethods_buyers_BuyerId",
                         column: x => x.BuyerId,
                         principalSchema: "ordering",
                         principalTable: "buyers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_paymentmethods_cardtypes_CardTypeId",
+                        name: "FK_paymentMethods_cardTypes_CardTypeId",
                         column: x => x.CardTypeId,
                         principalSchema: "ordering",
-                        principalTable: "cardtypes",
-                        principalColumn: "Value",
+                        principalTable: "cardTypes",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -125,6 +130,7 @@ namespace Ordering.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false),
+                    ObjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     Address_Street = table.Column<string>(type: "text", nullable: true),
                     Address_City = table.Column<string>(type: "text", nullable: true),
                     Address_State = table.Column<string>(type: "text", nullable: true),
@@ -167,6 +173,7 @@ namespace Ordering.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false),
+                    ObjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProductId = table.Column<int>(type: "integer", nullable: false),
                     OrderId = table.Column<int>(type: "integer", nullable: false),
                     Discount = table.Column<decimal>(type: "numeric", nullable: false),
@@ -259,11 +266,15 @@ namespace Ordering.Infrastructure.Migrations
                 schema: "ordering");
 
             migrationBuilder.DropTable(
-                name: "cardtypes",
+                name: "cardTypes",
                 schema: "ordering");
 
             migrationBuilder.DropSequence(
                 name: "buyerseq",
+                schema: "ordering");
+
+            migrationBuilder.DropSequence(
+                name: "cardTypeSeq",
                 schema: "ordering");
 
             migrationBuilder.DropSequence(

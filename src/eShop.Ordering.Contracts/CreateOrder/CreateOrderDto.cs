@@ -12,6 +12,6 @@ public record CreateOrderDto(
     string CardHolderName,
     DateTime CardExpiration,
     string CardSecurityNumber,
-    int CardTypeId,
+    string CardType,
     string Buyer,
     OrderItemDto[] Items);

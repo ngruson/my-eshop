@@ -18,6 +18,19 @@ public abstract class Entity
         }
     }
 
+    Guid _objectId;
+    public virtual Guid ObjectId
+    {
+        get
+        {
+            return this._objectId;
+        }
+        protected set
+        {
+            this._objectId = value;
+        }
+    }
+
     private List<INotification>? _domainEvents;
     public IReadOnlyCollection<INotification>? DomainEvents => this._domainEvents?.AsReadOnly();
 

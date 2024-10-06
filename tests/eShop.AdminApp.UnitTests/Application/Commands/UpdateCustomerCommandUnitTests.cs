@@ -3,8 +3,8 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Customer.Contracts;
 using NSubstitute;
-using eShop.AdminApp.Application.Commands.UpdateCustomer;
 using NSubstitute.ExceptionExtensions;
+using eShop.AdminApp.Application.Commands.Customer.UpdateCustomer;
 
 namespace eShop.AdminApp.UnitTests.Application.Commands;
 

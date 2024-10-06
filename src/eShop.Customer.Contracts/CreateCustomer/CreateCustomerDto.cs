@@ -13,4 +13,4 @@ public record CreateCustomerDto(
     string? SecurityNumber,
     string? Expiration,
     string? CardHolderName,
-    int? CardType);
+    string? CardType);

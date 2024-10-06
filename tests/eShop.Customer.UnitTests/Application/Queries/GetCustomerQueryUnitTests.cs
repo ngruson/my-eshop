@@ -1,7 +1,7 @@
 using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
-using eShop.Customer.API.Application.Queries.GetCustomer;
+using eShop.Customer.API.Application.Queries.GetCustomerByObjectId;
 using eShop.Customer.API.Application.Specifications;
 using eShop.Customer.Contracts.GetCustomer;
 using eShop.Shared.Data;
@@ -14,14 +14,14 @@ public class GetCustomerQueryUnitTests
 {
     [Theory, AutoNSubstituteData]
     internal async Task Handle_ShouldReturnSuccessGivenCustomerExists(
-        GetCustomerQuery query,
+        GetCustomerByObjectIdQuery query,
         Domain.AggregatesModel.CustomerAggregate.Customer customer,
         [Substitute, Frozen] IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> customerRepository,
-        GetCustomerQueryHandler sut)
+        GetCustomerByObjectIdQueryHandler sut)
     {
         // Arrange
 
-        customerRepository.FirstOrDefaultAsync(Arg.Any<GetCustomerSpecification>(), default)
+        customerRepository.FirstOrDefaultAsync(Arg.Any<GetCustomerByObjectIdSpecification>(), default)
             .Returns(customer);
 
         // Act
@@ -36,8 +36,8 @@ public class GetCustomerQueryUnitTests
 
     [Theory, AutoNSubstituteData]
     internal async Task Handle_ShouldReturnNotFoundGivenCustomerDoesNotExist(
-        GetCustomerQuery query,
-        GetCustomerQueryHandler sut)
+        GetCustomerByObjectIdQuery query,
+        GetCustomerByObjectIdQueryHandler sut)
     {
         // Arrange
 
@@ -52,13 +52,13 @@ public class GetCustomerQueryUnitTests
 
     [Theory, AutoNSubstituteData]
     internal async Task Handle_ShouldReturnErrorWhenExceptionIsThrown(
-        GetCustomerQuery query,
+        GetCustomerByObjectIdQuery query,
         [Substitute, Frozen] IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> customerRepository,
-        GetCustomerQueryHandler sut)
+        GetCustomerByObjectIdQueryHandler sut)
     {
         // Arrange
 
-        customerRepository.FirstOrDefaultAsync(Arg.Any<GetCustomerSpecification>(), default)
+        customerRepository.FirstOrDefaultAsync(Arg.Any<GetCustomerByObjectIdSpecification>(), default)
             .ThrowsAsync<Exception>();
 
         // Act

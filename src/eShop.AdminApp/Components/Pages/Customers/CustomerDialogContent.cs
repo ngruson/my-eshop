@@ -1,4 +1,4 @@
-using eShop.AdminApp.Application.Queries.GetCustomers;
+using eShop.AdminApp.Application.Queries.Customer.GetCustomers;
 using eShop.MasterData.Contracts;
 
 namespace eShop.AdminApp.Components.Pages.Customers;

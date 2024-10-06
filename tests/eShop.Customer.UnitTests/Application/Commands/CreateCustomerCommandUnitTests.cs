@@ -2,6 +2,7 @@ using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Customer.API.Application.Commands.CreateCustomer;
+using eShop.Customer.Domain.AggregatesModel.CustomerAggregate;
 using eShop.Shared.Data;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -20,7 +21,9 @@ public class CreateCustomerCommandUnitTests
 
         // Act
 
-        Result result = await sut.Handle(command, CancellationToken.None);
+        Result result = await sut.Handle(
+            command with { Dto = command.Dto with { CardType = CardType.Amex.Name } },
+            CancellationToken.None);
 
         // Assert
 
@@ -35,14 +38,16 @@ public class CreateCustomerCommandUnitTests
         [Substitute, Frozen] IRepository<Domain.AggregatesModel.CustomerAggregate.Customer> customerRepository,
         CreateCustomerCommandHandler sut)
     {
-        // Arrange
+        // Arrange        
 
         customerRepository.AddAsync(Arg.Any<Domain.AggregatesModel.CustomerAggregate.Customer>(), default)
             .ThrowsAsync<Exception>();
 
         // Act
 
-        Result result = await sut.Handle(command, CancellationToken.None);
+        Result result = await sut.Handle(
+            command with { Dto = command.Dto with { CardType = CardType.Amex.Name } }
+            , CancellationToken.None);
 
         // Assert
 

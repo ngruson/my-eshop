@@ -14,7 +14,7 @@ public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
         this.RuleFor(command => command.CardHolderName).NotEmpty();
         this.RuleFor(command => command.CardExpiration).NotEmpty().Must(this.BeValidExpirationDate).WithMessage("Please specify a valid card expiration date");
         this.RuleFor(command => command.CardSecurityNumber).NotEmpty().Length(3);
-        this.RuleFor(command => command.CardTypeId).NotEmpty();
+        this.RuleFor(command => command.CardType).NotEmpty();
         this.RuleFor(command => command.OrderItems).Must(this.ContainOrderItems).WithMessage("No order items found");
     }
 

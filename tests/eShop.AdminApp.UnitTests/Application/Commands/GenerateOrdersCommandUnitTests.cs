@@ -11,6 +11,7 @@ using eShop.Identity.Contracts;
 using eShop.Catalog.Contracts;
 using eShop.Identity.Contracts.GetUsers;
 using eShop.Catalog.Contracts.GetCatalogItems;
+using eShop.AdminApp.Application.Commands.Order.GenerateOrders;
 
 namespace eShop.AdminApp.UnitTests.Application.Commands;
 

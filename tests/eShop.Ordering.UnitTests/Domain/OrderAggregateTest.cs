@@ -110,73 +110,73 @@ public class OrderAggregateTest
         Assert.Equal(unitPrice * 2, order.GetTotal());
     }
 
-    [Fact]
-    public void Add_new_Order_raises_new_event()
+    [Theory, AutoNSubstituteData]
+    public void Add_new_Order_raises_new_event(
+        CardType cardType)
     {
         //Arrange
-        var street = "fakeStreet";
-        var city = "FakeCity";
-        var state = "fakeState";
-        var country = "fakeCountry";
-        var zipCode = "FakeZipCode";
-        var cardTypeId = 5;
-        var cardNumber = "12";
-        var cardSecurityNumber = "123";
-        var cardHolderName = "FakeName";
-        var cardExpiration = DateTime.UtcNow.AddYears(1);
-        var expectedResult = 1;
+        string street = "fakeStreet";
+        string city = "FakeCity";
+        string state = "fakeState";
+        string country = "fakeCountry";
+        string zipCode = "FakeZipCode";
+        string cardNumber = "12";
+        string cardSecurityNumber = "123";
+        string cardHolderName = "FakeName";
+        DateTime cardExpiration = DateTime.UtcNow.AddYears(1);
+        int expectedResult = 1;
 
         //Act 
-        var fakeOrder = new Order("1", "fakeName", new Address(street, city, state, country, zipCode), cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        Order fakeOrder = new("1", "fakeName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
 
         //Assert
         Assert.Equal(fakeOrder.DomainEvents.Count, expectedResult);
     }
 
-    [Fact]
-    public void Add_event_Order_explicitly_raises_new_event()
+    [Theory, AutoNSubstituteData]
+    public void Add_event_Order_explicitly_raises_new_event(
+        CardType cardType)
     {
         //Arrange   
-        var street = "fakeStreet";
-        var city = "FakeCity";
-        var state = "fakeState";
-        var country = "fakeCountry";
-        var zipCode = "FakeZipCode";
-        var cardTypeId = 5;
-        var cardNumber = "12";
-        var cardSecurityNumber = "123";
-        var cardHolderName = "FakeName";
-        var cardExpiration = DateTime.UtcNow.AddYears(1);
-        var expectedResult = 2;
+        string street = "fakeStreet";
+        string city = "FakeCity";
+        string state = "fakeState";
+        string country = "fakeCountry";
+        string zipCode = "FakeZipCode";
+        string cardNumber = "12";
+        string cardSecurityNumber = "123";
+        string cardHolderName = "FakeName";
+        DateTime cardExpiration = DateTime.UtcNow.AddYears(1);
+        int expectedResult = 2;
 
         //Act 
-        var fakeOrder = new Order("1", "fakeName", new Address(street, city, state, country, zipCode), cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
-        fakeOrder.AddDomainEvent(new OrderStartedDomainEvent(fakeOrder, "fakeName", "1", cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration));
+        Order fakeOrder = new("1", "fakeName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        fakeOrder.AddDomainEvent(new OrderStartedDomainEvent(fakeOrder, "fakeName", "1", cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration));
         //Assert
         Assert.Equal(fakeOrder.DomainEvents.Count, expectedResult);
     }
 
-    [Fact]
-    public void Remove_event_Order_explicitly()
+    [Theory, AutoNSubstituteData]
+    public void Remove_event_Order_explicitly(
+        CardType cardType)
     {
         //Arrange    
-        var street = "fakeStreet";
-        var city = "FakeCity";
-        var state = "fakeState";
-        var country = "fakeCountry";
-        var zipCode = "FakeZipCode";
-        var cardTypeId = 5;
-        var cardNumber = "12";
-        var cardSecurityNumber = "123";
-        var cardHolderName = "FakeName";
-        var cardExpiration = DateTime.UtcNow.AddYears(1);
-        var fakeOrder = new Order("1", "fakeName", new Address(street, city, state, country, zipCode), cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
-        var @fakeEvent = new OrderStartedDomainEvent(fakeOrder, "1", "fakeName", cardTypeId, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
-        var expectedResult = 1;
+        string street = "fakeStreet";
+        string city = "FakeCity";
+        string state = "fakeState";
+        string country = "fakeCountry";
+        string zipCode = "FakeZipCode";
+        string cardNumber = "12";
+        string cardSecurityNumber = "123";
+        string cardHolderName = "FakeName";
+        DateTime cardExpiration = DateTime.UtcNow.AddYears(1);
+        Order fakeOrder = new("1", "fakeName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        OrderStartedDomainEvent fakeEvent = new(fakeOrder, "1", "fakeName", cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        int expectedResult = 1;
 
         //Act         
-        fakeOrder.AddDomainEvent(@fakeEvent);
-        fakeOrder.RemoveDomainEvent(@fakeEvent);
+        fakeOrder.AddDomainEvent(fakeEvent);
+        fakeOrder.RemoveDomainEvent(fakeEvent);
         //Assert
         Assert.Equal(fakeOrder.DomainEvents.Count, expectedResult);
     }

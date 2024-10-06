@@ -32,7 +32,6 @@ public class Order
     private readonly List<OrderItem> _orderItems;
    
     public IReadOnlyCollection<OrderItem> OrderItems => this._orderItems.AsReadOnly();
-
     public int? PaymentId { get; private set; }
 
     public static Order NewDraft()
@@ -50,7 +49,7 @@ public class Order
         this._isDraft = false;
     }
 
-    public Order(string userId, string userName, Address address, int cardTypeId, string cardNumber, string cardSecurityNumber,
+    public Order(string userId, string userName, Address address, CardType cardType, string cardNumber, string cardSecurityNumber,
             string cardHolderName, DateTime cardExpiration, int? buyerId = null, int? paymentMethodId = null) : this()
     {
         this.BuyerId = buyerId;
@@ -61,7 +60,7 @@ public class Order
 
         // Add the OrderStarterDomainEvent to the domain events collection 
         // to be raised/dispatched when committing changes into the Database [ After DbContext.SaveChanges() ]
-        this.AddOrderStartedDomainEvent(userId, userName, cardTypeId, cardNumber,
+        this.AddOrderStartedDomainEvent(userId, userName, cardType, cardNumber,
                                     cardSecurityNumber, cardHolderName, cardExpiration);
     }
 
@@ -168,10 +167,10 @@ public class Order
         }
     }
 
-    private void AddOrderStartedDomainEvent(string userId, string userName, int cardTypeId, string cardNumber,
+    private void AddOrderStartedDomainEvent(string userId, string userName, CardType cardType, string cardNumber,
             string cardSecurityNumber, string cardHolderName, DateTime cardExpiration)
     {
-        var orderStartedDomainEvent = new OrderStartedDomainEvent(this, userId, userName, cardTypeId,
+        var orderStartedDomainEvent = new OrderStartedDomainEvent(this, userId, userName, cardType,
                                                                     cardNumber, cardSecurityNumber,
                                                                     cardHolderName, cardExpiration);
 

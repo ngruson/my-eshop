@@ -21,7 +21,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandlerUnitTe
 
         // Add AutoFixture customization later
         OrderStartedDomainEvent copy = new(evt.Order, evt.UserId, evt.UserName,
-            evt.CardTypeId, evt.CardNumber, evt.CardSecurityNumber, evt.CardHolderName,
+            evt.CardType, evt.CardNumber, evt.CardSecurityNumber, evt.CardHolderName,
             DateTime.Now.AddYears(1));
 
         buyerRepository.SingleOrDefaultAsync(Arg.Any<GetBuyerByIdentitySpecification>(), default)
@@ -52,7 +52,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandlerUnitTe
             evt.Order,
             evt.UserId,
             evt.UserName,
-            evt.CardTypeId,
+            evt.CardType,
             evt.CardNumber,
             evt.CardSecurityNumber,
             evt.CardHolderName,

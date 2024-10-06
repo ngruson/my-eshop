@@ -1,6 +1,7 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Ordering.API.Infrastructure;
+using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Shared.Data;
 using eShop.Shared.DI;
 
