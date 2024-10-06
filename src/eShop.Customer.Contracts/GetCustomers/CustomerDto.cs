@@ -1,6 +1,7 @@
 namespace eShop.Customer.Contracts.GetCustomers;
 
 public record CustomerDto(
+    Guid ObjectId,
     string UserName,
     string FirstName,
     string LastName,
@@ -13,4 +14,4 @@ public record CustomerDto(
     string? SecurityNumber,
     string? Expiration,
     string? CardHolderName,
-    int? CardType);
+    string? CardType);

@@ -47,7 +47,7 @@
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.0" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.1.0" />
-    <PackageVersion Include="Microsoft.Identity.Web.UI" Version="3.1.0" />    
+    <PackageVersion Include="Microsoft.Identity.Web.UI" Version="3.1.0" />
     <PackageVersion Include="MSTest.TestAdapter" Version="3.4.3" />
     <PackageVersion Include="MSTest.TestFramework" Version="3.4.3" />
     <!-- Version together with EF -->
@@ -102,7 +102,7 @@
     <PackageVersion Include="Ardalis.GuardClauses" Version="4.6.0" />
     <PackageVersion Include="Ardalis.Result" Version="10.0.0" />
     <PackageVersion Include="Ardalis.Result.AspNetCore" Version="10.0.0" />
-    <PackageVersion Include="Ardalis.SmartEnum" Version="8.0.0" />
+    <PackageVersion Include="Ardalis.SmartEnum" Version="8.1.0" />
     <PackageVersion Include="Ardalis.SmartEnum.EFCore" Version="8.0.0" />
     <PackageVersion Include="Ardalis.Specification" Version="8.0.0" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0" />

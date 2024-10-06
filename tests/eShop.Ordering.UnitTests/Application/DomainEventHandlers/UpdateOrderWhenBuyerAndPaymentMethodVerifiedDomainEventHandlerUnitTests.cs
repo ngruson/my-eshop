@@ -12,7 +12,7 @@ public class UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandlerUnitT
         [Substitute, Frozen] IRepository<Order> orderRepository,
         [Substitute, Frozen] IRepository<Buyer> buyerRepository,
         UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler sut,
-        int cardTypeId,
+        CardType cardType,
         string alias,
         string cardNumber,
         string securityNumber,
@@ -24,7 +24,7 @@ public class UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandlerUnitT
 
         BuyerAndPaymentMethodVerifiedDomainEvent evt = new(
             buyer,
-            new PaymentMethod(cardTypeId, alias, cardNumber, securityNumber, cardHolderName, DateTime.Now.AddYears(1)),
+            new PaymentMethod(cardType, alias, cardNumber, securityNumber, cardHolderName, DateTime.Now.AddYears(1)),
             order.Id
         );
 

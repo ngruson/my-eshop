@@ -1,5 +1,6 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
@@ -10,32 +11,22 @@ public class CreateOrderCommandUnitTests
     [Theory, AutoNSubstituteData]
     public async Task WhenValidOrder_CreateOrder(
         [Substitute, Frozen] IRepository<Order> orderRepositoryMock,
+        [Substitute, Frozen] IRepository<CardType> cardTypeRepositoryMock,
         CreateOrderCommandHandler sut,
-        CreateOrderCommand command)
+        CreateOrderCommand command,
+        CardType cardType)
     {
         // Arrange
+
+        cardTypeRepositoryMock.SingleOrDefaultAsync(Arg.Any<CardTypeSpecification>(), default)
+            .Returns(cardType);
 
         OrderItemDto[] orderItems = command.OrderItems.Select(
             x => new OrderItemDto(x.ProductId, x.ProductName, x.UnitPrice, 0, x.Units, x.PictureUrl)).ToArray();
 
-        CreateOrderCommand command2 = new(
-            orderItems,
-            command.UserId,
-            command.UserName,
-            command.City,
-            command.Street,
-            command.State,
-            command.Country,
-            command.ZipCode,
-            command.CardNumber,
-            command.CardHolderName,
-            command.CardExpiration,
-            command.CardSecurityNumber,
-            command.CardTypeId);
-
         //Act
 
-        await sut.Handle(command, default);
+        await sut.Handle(command with { CardType = cardType.Name}, default);
 
         //Assert
 

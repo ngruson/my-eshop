@@ -21,7 +21,7 @@ internal class DeleteCustomerCommandHandler(
 
             Domain.AggregatesModel.CustomerAggregate.Customer? customer =
                 await this.customerRepository.FirstOrDefaultAsync(
-                    new GetCustomerSpecification(request.FirstName, request.LastName),
+                    new GetCustomerByObjectIdSpecification(request.ObjectId),
                     cancellationToken);
 
             var foundResult = Guard.Against.CustomerNull(customer, this.logger);

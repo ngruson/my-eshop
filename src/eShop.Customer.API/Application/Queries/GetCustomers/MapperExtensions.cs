@@ -8,6 +8,7 @@ internal static class MapperExtensions
     {
         return customers
             .Select(c => new CustomerDto(
+                c.ObjectId,
                 c.UserName!,
                 c.FirstName!,
                 c.LastName!,
@@ -20,7 +21,7 @@ internal static class MapperExtensions
                 c.SecurityNumber,
                 c.Expiration,
                 c.CardHolderName,
-                c.CardType))
+                c.CardType?.Name))
             .ToList();
     }
 }

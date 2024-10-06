@@ -2,9 +2,9 @@ using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Ordering.Contracts;
-using eShop.AdminApp.Application.Commands.CreateOrder;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using eShop.AdminApp.Application.Commands.Order.CreateOrder;
 
 namespace eShop.AdminApp.UnitTests.Application.Commands;
 

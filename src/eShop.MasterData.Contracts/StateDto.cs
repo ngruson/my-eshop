@@ -1,3 +1,3 @@
 namespace eShop.MasterData.Contracts;
 
-public record StateDto(string Name, string Code);
+public record StateDto(string Code, string Name);

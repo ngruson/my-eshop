@@ -20,7 +20,7 @@ public class DeleteCustomerCommandUnitTests
         // Arrange
 
         customerRepository.FirstOrDefaultAsync(
-                Arg.Any<GetCustomerSpecification>(),
+                Arg.Any<GetCustomerByObjectIdSpecification>(),
                 default)
             .Returns(customer);
 

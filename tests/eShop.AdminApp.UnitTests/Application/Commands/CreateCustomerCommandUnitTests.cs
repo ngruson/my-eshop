@@ -1,7 +1,7 @@
 using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
-using eShop.AdminApp.Application.Commands.CreateCustomer;
+using eShop.AdminApp.Application.Commands.Customer.CreateCustomer;
 using eShop.Customer.Contracts;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;

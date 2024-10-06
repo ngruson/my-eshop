@@ -116,7 +116,7 @@ if (useOpenAI)
 
     webApp
         .WithReference(openAI)
-        .WithEnvironment("AI__OPENAI__CHATMODEL", chatModelName); ;
+        .WithEnvironment("AI__OPENAI__CHATMODEL", chatModelName);
 }
 
 var adminApp = builder.AddProject<Projects.eShop_AdminApp>("admin-app")

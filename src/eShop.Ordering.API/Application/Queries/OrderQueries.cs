@@ -1,18 +1,17 @@
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
-using Microsoft.EntityFrameworkCore.Storage;
 using BuyerAggregate = eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 using OrderAggregate = eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
 namespace eShop.Ordering.API.Application.Queries;
 
 public class OrderQueries(
-    IRepository<BuyerAggregate.CardType> cardTypeRepository,
+    IRepository<CardType> cardTypeRepository,
     IRepository<OrderAggregate.Order> orderRepository)
     : IOrderQueries
 {
     private readonly IRepository<OrderAggregate.Order> orderRepository = orderRepository;
-    private readonly IRepository<BuyerAggregate.CardType> cardTypeRepository = cardTypeRepository;
+    private readonly IRepository<CardType> cardTypeRepository = cardTypeRepository;
 
     public async Task<Order> GetOrderAsync(int id)
     {
@@ -57,8 +56,6 @@ public class OrderQueries(
 
     public async Task<IEnumerable<CardType>> GetCardTypesAsync()
     {
-        List<BuyerAggregate.CardType> cardTypes = await this.cardTypeRepository.ListAsync();
-
-        return cardTypes.Select(c => new CardType { Id = c.Value, Name = c.Name });
+        return await this.cardTypeRepository.ListAsync();
     }        
 }

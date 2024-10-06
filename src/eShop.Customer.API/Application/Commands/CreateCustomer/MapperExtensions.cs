@@ -1,4 +1,5 @@
 using eShop.Customer.Contracts.CreateCustomer;
+using eShop.Customer.Domain.AggregatesModel.CustomerAggregate;
 
 namespace eShop.Customer.API.Application.Commands.CreateCustomer;
 
@@ -7,6 +8,7 @@ internal static class MapperExtensions
     public static Domain.AggregatesModel.CustomerAggregate.Customer MapFromDto(this CreateCustomerDto dto)
     {
         return new Domain.AggregatesModel.CustomerAggregate.Customer(
+            Guid.NewGuid(),
             dto.UserName,
             dto.FirstName,
             dto.LastName,            
@@ -19,6 +21,6 @@ internal static class MapperExtensions
             dto.SecurityNumber,
             dto.Expiration,
             dto.CardHolderName,
-            dto.CardType);
+            CardType.FromName(dto.CardType));
     }
 }

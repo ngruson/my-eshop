@@ -5,7 +5,7 @@ public class PaymentMethodUnitTests
     {
         [Theory, AutoNSubstituteData]
         public void WhenValid_CreatePaymentMethod(
-            int cardTypeId,
+            CardType cardType,
             string alias,
             string cardNumber,
             string securityNumber,
@@ -15,7 +15,7 @@ public class PaymentMethodUnitTests
 
             //Act
 
-            PaymentMethod _ = new(cardTypeId, alias, cardNumber, securityNumber, cardHolderName, DateTime.Now.AddYears(1));
+            PaymentMethod _ = new(cardType, alias, cardNumber, securityNumber, cardHolderName, DateTime.Now.AddYears(1));
 
             //Assert
 
@@ -23,7 +23,7 @@ public class PaymentMethodUnitTests
 
         [Theory, AutoNSubstituteData]
         public void WhenCardNumberEmpty_ThrowDomainException(
-            int cardTypeId,
+            CardType cardType,
             string alias,
             string securityNumber,
             string cardHolderName)
@@ -32,7 +32,7 @@ public class PaymentMethodUnitTests
 
             //Act
 
-            PaymentMethod func() => new(cardTypeId, alias, null, securityNumber, cardHolderName, DateTime.Now.AddYears(1));
+            PaymentMethod func() => new(cardType, alias, null, securityNumber, cardHolderName, DateTime.Now.AddYears(1));
 
             //Assert
 
@@ -41,7 +41,7 @@ public class PaymentMethodUnitTests
 
         [Theory, AutoNSubstituteData]
         public void WhenCardHasExpired_ThrowDomainException(
-            int cardTypeId,
+            CardType cardType,
             string alias,
             string cardNumber,
             string securityNumber,
@@ -51,7 +51,7 @@ public class PaymentMethodUnitTests
 
             //Act
 
-            PaymentMethod func() => new(cardTypeId, alias, cardNumber, securityNumber, cardHolderName, DateTime.Now.AddYears(-1));
+            PaymentMethod func() => new(cardType, alias, cardNumber, securityNumber, cardHolderName, DateTime.Now.AddYears(-1));
 
             //Assert
 

@@ -1,7 +1,7 @@
 using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
-using eShop.AdminApp.Application.Queries.GetCatalogItems;
+using eShop.AdminApp.Application.Queries.Catalog.GetCatalogItems;
 using eShop.Catalog.Contracts;
 using eShop.Catalog.Contracts.GetCatalogItems;
 using NSubstitute;

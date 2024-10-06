@@ -5,6 +5,7 @@ using Asp.Versioning.Http;
 using eShop.Customer.Contracts.CreateCustomer;
 using eShop.Customer.Contracts.GetCustomers;
 using eShop.Customer.Contracts.UpdateCustomer;
+using eShop.Customer.Domain.AggregatesModel.CustomerAggregate;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace eShop.Customer.FunctionalTests;
@@ -40,11 +41,48 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
     }
 
     [Fact]
-    public async Task GetCustomer_ReturnOkGivenCustomerExist()
+    public async Task GetCustomerByObjectId_ReturnOkGivenCustomerExist()
+    {
+        // Arrange
+
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers/name/Bob%20Smith");
+        response.EnsureSuccessStatusCode();
+        string body = await response.Content.ReadAsStringAsync();
+        CustomerDto result = JsonSerializer.Deserialize<CustomerDto>(body, this._jsonSerializerOptions);
+
+        // Act
+
+        response = await this._httpClient.GetAsync($"/api/customers/{result.ObjectId}");
+
+        // Assert
+
+        response.EnsureSuccessStatusCode();
+        body = await response.Content.ReadAsStringAsync();
+        result = JsonSerializer.Deserialize<CustomerDto>(body, this._jsonSerializerOptions);
+
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task GetCustomerByObjectId_ReturnNotFoundGivenCustomerDoesNotExist()
+    {
+        // Arrange
+
+        // Act
+
+        HttpResponseMessage response = await this._httpClient.GetAsync($"/api/customers/{Guid.NewGuid()}");
+
+        // Assert
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetCustomerByName_ReturnOkGivenCustomerExist()
     {
         // Act
 
-        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Bob&lastName=Smith");
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers/name/Bob%20Smith");
 
         // Assert
 
@@ -56,11 +94,11 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
     }
 
     [Fact]
-    public async Task GetCustomer_ReturnNotFoundGivenCustomerDoesNotExist()
+    public async Task GetCustomerByName_ReturnNotFoundGivenCustomerDoesNotExist()
     {
         // Act
 
-        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Bob2&lastName=Smith2");
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers/name/John%20Doe");
 
         // Assert
 
@@ -76,7 +114,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
         HttpResponseMessage response = await this._httpClient.PostAsync(
             "/api/customers",
             new StringContent(
-                JsonSerializer.Serialize(dto,
+                JsonSerializer.Serialize(dto with { CardType = CardType.Amex.Name },
                     this._jsonSerializerOptions
                 ),
                 Encoding.UTF8,
@@ -93,7 +131,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
     {
         // Arrange
 
-        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Immanuel&lastName=Gooding");
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers/name/Immanuel%20Gooding");
         response.EnsureSuccessStatusCode();
         string body = await response.Content.ReadAsStringAsync();
         Contracts.GetCustomer.CustomerDto customer =
@@ -102,18 +140,15 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
         // Act
 
         UpdateCustomerDto updateCustomerDto = new(
+            customer.ObjectId,
+            customer.UserName,
             customer.FirstName,
             customer.LastName,
             customer.Street,
             customer.City,
             customer.State,
             customer.Country,
-            customer.ZipCode,
-            customer.CardNumber,
-            customer.SecurityNumber,
-            customer.Expiration,
-            customer.CardHolderName,
-            customer.CardType);
+            customer.ZipCode);
 
         response = await this._httpClient.PutAsync(
             "/api/customers",
@@ -134,7 +169,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
     {
         // Arrange
 
-        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers?firstName=Sunny&lastName=Swinnerton");
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers/name/Sunny%20Swinnerton");
         response.EnsureSuccessStatusCode();
         string body = await response.Content.ReadAsStringAsync();
         Contracts.GetCustomer.CustomerDto customer =
@@ -143,18 +178,15 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
         // Act
 
         UpdateCustomerDto updateCustomerDto = new(
+            Guid.NewGuid(),
+            customer.UserName,
             "Sunny2",
             "Swinnerton2",
             customer.Street,
             customer.City,
             customer.State,
             customer.Country,
-            customer.ZipCode,
-            customer.CardNumber,
-            customer.SecurityNumber,
-            customer.Expiration,
-            customer.CardHolderName,
-            customer.CardType);
+            customer.ZipCode);
 
         response = await this._httpClient.PutAsync(
             "/api/customers",
@@ -176,10 +208,15 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
     {
         // Arrange
 
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers/name/Alice%20Smith");
+        response.EnsureSuccessStatusCode();
+        string body = await response.Content.ReadAsStringAsync();
+        CustomerDto result = JsonSerializer.Deserialize<CustomerDto>(body, this._jsonSerializerOptions);
+
         // Act
 
-        HttpResponseMessage response = await this._httpClient.DeleteAsync(
-            "/api/customers?firstName=Alice&lastName=Smith");
+        response = await this._httpClient.DeleteAsync(
+            $"/api/customers/{result.ObjectId}");
 
         // Assert
 
@@ -194,7 +231,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
         // Act
 
         HttpResponseMessage response = await this._httpClient.DeleteAsync(
-            "/api/customers?firstName=Bob3&lastName=Smith3");
+            $"/api/customers/{Guid.NewGuid()}");
 
         // Assert
 

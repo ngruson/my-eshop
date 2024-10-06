@@ -2,7 +2,6 @@ using Ardalis.Result.AspNetCore;
 using eShop.Ordering.API.Application.Queries.GetOrders;
 using eShop.Ordering.Contracts.CreateOrder;
 using Microsoft.AspNetCore.Http.HttpResults;
-using CardType = eShop.Ordering.API.Application.Queries.CardType;
 using Order = eShop.Ordering.API.Application.Queries.Order;
 
 namespace eShop.Ordering.API.Apis;
@@ -151,7 +150,7 @@ public static class OrdersApi
             CreateOrderCommand createOrderCommand = new(request.Items, request.UserId, request.UserName, request.City, request.Street,
                 request.State, request.Country, request.ZipCode,
                 maskedCCNumber, request.CardHolderName, request.CardExpiration,
-                request.CardSecurityNumber, request.CardTypeId);
+                request.CardSecurityNumber, request.CardType);
 
             IdentifiedCommand<CreateOrderCommand, bool> requestCreateOrder = new(createOrderCommand, requestId);
 

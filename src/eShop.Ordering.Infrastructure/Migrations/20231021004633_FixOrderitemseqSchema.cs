@@ -26,9 +26,9 @@ namespace Ordering.Infrastructure.Migrations
                 oldDefaultValue: 1);
 
             migrationBuilder.AlterColumn<int>(
-                name: "Value",
+                name: "Id",
                 schema: "ordering",
-                table: "cardtypes",
+                table: "cardTypes",
                 type: "integer",
                 nullable: false,
                 oldClrType: typeof(int),
@@ -55,9 +55,9 @@ namespace Ordering.Infrastructure.Migrations
                 oldType: "integer");
 
             migrationBuilder.AlterColumn<int>(
-                name: "Value",
+                name: "Id",
                 schema: "ordering",
-                table: "cardtypes",
+                table: "cardTypes",
                 type: "integer",
                 nullable: false,
                 defaultValue: 1,

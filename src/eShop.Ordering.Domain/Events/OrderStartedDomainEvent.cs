@@ -1,4 +1,4 @@
-﻿
+
 namespace eShop.Ordering.Domain.Events;
 
 /// <summary>
@@ -8,7 +8,7 @@ public record class OrderStartedDomainEvent(
     Order Order, 
     string UserId,
     string UserName,
-    int CardTypeId,
+    CardType CardType,
     string CardNumber,
     string CardSecurityNumber,
     string CardHolderName,

@@ -9,7 +9,7 @@ public class GetStatesQueryHandler : IRequestHandler<GetStatesQuery, Result<List
     public Task<Result<List<StateDto>>> Handle(GetStatesQuery request, CancellationToken cancellationToken)
     {
         List<StateDto> states = StateEnum.List
-            .Select(c => new StateDto(c.Name, c.Value))
+            .Select(c => new StateDto(c.Value, c.Name))
             .ToList();
 
         return Task.FromResult(Result<List<StateDto>>.Success(states));

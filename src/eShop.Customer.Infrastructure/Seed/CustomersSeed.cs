@@ -1,4 +1,5 @@
 using CsvHelper;
+using eShop.Customer.Domain.AggregatesModel.CustomerAggregate;
 using eShop.Shared.Data;
 using eShop.Shared.Data.Seed;
 using eShop.Shared.DI;
@@ -20,6 +21,7 @@ public class CustomersSeed(IRepository<Domain.AggregatesModel.CustomerAggregate.
 
             List<Domain.AggregatesModel.CustomerAggregate.Customer> customers =
                 records.Select(r => new Domain.AggregatesModel.CustomerAggregate.Customer(
+                    Guid.NewGuid(),
                     r.UserName,
                     r.FirstName,
                     r.LastName,
@@ -32,7 +34,7 @@ public class CustomersSeed(IRepository<Domain.AggregatesModel.CustomerAggregate.
                     "123",
                     "12/24",
                     r.CardHolderName,
-                    1)).ToList();
+                    CardType.Amex)).ToList();
 
             await this.customerRepository.AddRangeAsync(customers);
         }

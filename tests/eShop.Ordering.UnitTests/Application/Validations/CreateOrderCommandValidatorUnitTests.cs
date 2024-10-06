@@ -36,7 +36,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -70,7 +70,7 @@ public class CreateOrderCommandValidatorUnitTests
             orderItems,
             command.UserId,
             command.UserName,
-            city: null,
+            City: null,
             command.Street,
             command.State,
             command.Country,
@@ -79,7 +79,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -115,7 +115,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.UserId,
             command.UserName,
             command.City,
-            street: null,
+            Street: null,
             command.State,
             command.Country,
             command.ZipCode,
@@ -123,7 +123,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -160,14 +160,14 @@ public class CreateOrderCommandValidatorUnitTests
             command.UserName,
             command.City,
             command.Street,
-            state: null,
+            State: null,
             command.Country,
             command.ZipCode,
             cardNumber,
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -205,13 +205,13 @@ public class CreateOrderCommandValidatorUnitTests
             command.City,
             command.Street,
             command.State,
-            country: null,
+            Country: null,
             command.ZipCode,
             cardNumber,
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -250,12 +250,12 @@ public class CreateOrderCommandValidatorUnitTests
             command.Street,
             command.State,
             command.Country,
-            zipCode: null,
+            ZipCode: null,
             cardNumber,
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -295,11 +295,11 @@ public class CreateOrderCommandValidatorUnitTests
             command.State,
             command.Country,
             command.ZipCode,
-            cardNumber: null,
+            CardNumber: null,
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -339,11 +339,11 @@ public class CreateOrderCommandValidatorUnitTests
             command.State,
             command.Country,
             command.ZipCode,
-            cardNumber: null,
+            CardNumber: null,
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -383,11 +383,11 @@ public class CreateOrderCommandValidatorUnitTests
             command.State,
             command.Country,
             command.ZipCode,
-            cardNumber: null,
+            CardNumber: null,
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -428,10 +428,10 @@ public class CreateOrderCommandValidatorUnitTests
             command.Country,
             command.ZipCode,
             cardNumber,
-            cardHolderName: null,
+            CardHolderName: null,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -475,7 +475,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.CardHolderName,
             DateTime.MinValue,
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -519,7 +519,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.CardHolderName,
             DateTime.Now.AddYears(-1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -559,8 +559,8 @@ public class CreateOrderCommandValidatorUnitTests
             cardNumber,
             command.CardHolderName,
             DateTime.Now.AddYears(1),
-            cardSecurityNumber: null,
-            command.CardTypeId
+            CardSecurityNumber: null,
+            command.CardType
         );
 
         // Act
@@ -605,7 +605,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -650,7 +650,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act
@@ -664,7 +664,7 @@ public class CreateOrderCommandValidatorUnitTests
     }
 
     [Theory, AutoNSubstituteData]
-    internal void card_type_id_empty_invalid(
+    internal void card_type_empty_invalid(
         CreateOrderCommandValidator sut,
         CreateOrderCommand command,
         OrderItemDto[] orderItems
@@ -694,7 +694,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            0
+            ""
         );
 
         // Act
@@ -704,7 +704,7 @@ public class CreateOrderCommandValidatorUnitTests
         //Assert
 
         Assert.False(result.IsValid);
-        Assert.Contains(nameof(command.CardTypeId), result.Errors.Select(_ => _.PropertyName));
+        Assert.Contains(nameof(command.CardType), result.Errors.Select(_ => _.PropertyName));
     }
 
     [Theory, AutoNSubstituteData]
@@ -737,7 +737,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            command.CardTypeId
+            command.CardType
         );
 
         // Act

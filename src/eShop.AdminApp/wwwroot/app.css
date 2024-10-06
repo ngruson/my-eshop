@@ -608,21 +608,20 @@ body {
   }
 }
 
-.tw-m-8 {
-  margin: 2rem;
-}
-
-.tw-mx-32 {
-  margin-left: 8rem;
-  margin-right: 8rem;
-}
-
 .tw-mb-4 {
   margin-bottom: 1rem;
 }
 
 .tw-ml-2\.5 {
   margin-left: 0.625rem;
+}
+
+.tw-ml-8 {
+  margin-left: 2rem;
+}
+
+.tw-mt-2 {
+  margin-top: 0.5rem;
 }
 
 .tw-mt-4 {
@@ -641,8 +640,16 @@ body {
   height: 100%;
 }
 
+.tw-w-2\/4 {
+  width: 50%;
+}
+
 .tw-w-52 {
   width: 13rem;
+}
+
+.tw-w-full {
+  width: 100%;
 }
 
 .tw-border-b {

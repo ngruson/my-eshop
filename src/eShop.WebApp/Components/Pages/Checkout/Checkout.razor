@@ -98,10 +98,9 @@
     {
         string firstName = ReadClaim(ClaimTypes.GivenName)!;
         string lastName = ReadClaim(ClaimTypes.Surname)!;
+        string name = $"{firstName} {lastName}";
 
-        CustomerDto customer = await CustomerApi.GetCustomer(
-            ReadClaim(ClaimTypes.GivenName)!,
-            ReadClaim(ClaimTypes.Surname)!);
+        CustomerDto customer = await CustomerApi.GetCustomer(name);
 
         Info = new BasketCheckoutInfo
         {

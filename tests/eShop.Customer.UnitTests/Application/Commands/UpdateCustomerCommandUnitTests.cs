@@ -21,7 +21,7 @@ public class UpdateCustomerCommandUnitTests
         // Arrange
 
         customerRepository.FirstOrDefaultAsync(
-                Arg.Any<GetCustomerSpecification>(),
+                Arg.Any<GetCustomerByObjectIdSpecification>(),
                 default)
             .Returns(customer);
 
@@ -64,7 +64,7 @@ public class UpdateCustomerCommandUnitTests
         // Arrange
 
         customerRepository.FirstOrDefaultAsync(
-                Arg.Any<GetCustomerSpecification>(),
+                Arg.Any<GetCustomerByObjectIdSpecification>(),
                 default)
             .ThrowsAsync<Exception>();
 

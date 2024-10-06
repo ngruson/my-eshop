@@ -26,6 +26,9 @@ namespace Ordering.Infrastructure.Migrations
             modelBuilder.HasSequence("buyerseq")
                 .IncrementsBy(10);
 
+            modelBuilder.HasSequence("cardTypeSeq")
+                .IncrementsBy(10);
+
             modelBuilder.HasSequence("orderitemseq")
                 .IncrementsBy(10);
 
@@ -92,17 +95,24 @@ namespace Ordering.Infrastructure.Migrations
 
             modelBuilder.Entity("eShop.Ordering.Domain.AggregatesModel.BuyerAggregate.CardType", b =>
                 {
-                    b.Property<int>("Value")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "cardTypeSeq");
+
+                    b.Property<Guid>("ObjectId")
+                        .IsRequired()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.HasKey("Value");
+                    b.HasKey("Id");
 
-                    b.ToTable("cardtypes", "ordering");
+                    b.ToTable("cardTypes", "ordering");
                 });
 
             modelBuilder.Entity("eShop.Ordering.Domain.AggregatesModel.BuyerAggregate.PaymentMethod", b =>
@@ -160,6 +170,10 @@ namespace Ordering.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "orderseq");
 
+                    b.Property<Guid>("ObjectId")
+                        .IsRequired()
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -196,6 +210,10 @@ namespace Ordering.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "orderitemseq");
+
+                    b.Property<Guid>("ObjectId")
+                        .IsRequired()
+                        .HasColumnType("uuid");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("integer");

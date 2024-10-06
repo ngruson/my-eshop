@@ -21,11 +21,8 @@ internal class UpdateCustomerCommandHandler(
 
             Domain.AggregatesModel.CustomerAggregate.Customer? customer =
                 await this.customerRepository.FirstOrDefaultAsync(
-                    new GetCustomerSpecification(request.Dto.FirstName, request.Dto.LastName),
+                    new GetCustomerByObjectIdSpecification(request.Dto.ObjectId),
                     cancellationToken);
-
-            // Log customer first name and last name
-            this.logger.LogInformation("Customer first name: {FirstName}, last name: {LastName}", request.Dto.FirstName, request.Dto.LastName);
 
             var foundResult = Guard.Against.CustomerNull(customer, this.logger);
             if (!foundResult.IsSuccess)
