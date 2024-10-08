@@ -1,7 +1,6 @@
-namespace eShop.Customer.Contracts.UpdateCustomer;
+namespace eShop.Customer.Contracts.UpdateCustomerGeneralInfo;
 
 public record UpdateCustomerDto(
-    Guid ObjectId,
     string UserName,
     string FirstName,
     string LastName,

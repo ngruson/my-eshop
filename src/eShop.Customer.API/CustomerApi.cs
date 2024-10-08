@@ -1,12 +1,11 @@
 using Ardalis.Result.AspNetCore;
 using eShop.Customer.API.Application.Commands.CreateCustomer;
 using eShop.Customer.API.Application.Commands.DeleteCustomer;
-using eShop.Customer.API.Application.Commands.UpdateCustomer;
+using eShop.Customer.API.Application.Commands.UpdateCustomerGeneralInfo;
 using eShop.Customer.API.Application.Queries.GetCustomerByName;
 using eShop.Customer.API.Application.Queries.GetCustomerByObjectId;
 using eShop.Customer.API.Application.Queries.GetCustomers;
 using eShop.Customer.Contracts.CreateCustomer;
-using eShop.Customer.Contracts.UpdateCustomer;
 
 namespace eShop.Customer.API;
 
@@ -34,8 +33,8 @@ internal static class CustomerApi
             (await mediator.Send(new CreateCustomerCommand(dto)))
                 .ToMinimalApiResult());
 
-        api.MapPut("/", async ([FromBody] UpdateCustomerDto dto, [FromServices] IMediator mediator) =>
-            (await mediator.Send(new UpdateCustomerCommand(dto)))
+        api.MapPut("/{objectId}/generalInfo", async (Guid objectId, [FromBody] Contracts.UpdateCustomerGeneralInfo.UpdateCustomerDto dto, [FromServices] IMediator mediator) =>
+            (await mediator.Send(new UpdateCustomerCommand(objectId, dto)))
                 .ToMinimalApiResult());
 
         api.MapDelete("/{objectId}", async (Guid objectId, [FromServices] IMediator mediator) =>

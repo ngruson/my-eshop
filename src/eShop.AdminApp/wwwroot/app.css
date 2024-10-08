@@ -608,6 +608,11 @@ body {
   }
 }
 
+.tw-mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .tw-mb-4 {
   margin-bottom: 1rem;
 }
@@ -638,6 +643,14 @@ body {
 
 .tw-h-full {
   height: 100%;
+}
+
+.tw-w-1\/12 {
+  width: 8.333333%;
+}
+
+.tw-w-11\/12 {
+  width: 91.666667%;
 }
 
 .tw-w-2\/4 {

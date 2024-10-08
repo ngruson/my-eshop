@@ -1,44 +1,34 @@
-@page "/customer/{objectId:guid}"
+@page "/customer/new"
 @using MediatR
 @using eShop.AdminApp.Application.Commands.Customer.UpdateCustomer
 @using eShop.AdminApp.Application.Queries.Customer.GetCustomer
 @using eShop.MasterData.Contracts
 @inject IMediator Mediator
 @inject IMasterDataApi MasterDataApi
+@inject NavigationManager Navigation
 
-<PageTitle>@Customer?.FullName</PageTitle>
+<PageTitle>@Customer.FullName</PageTitle>
 
 <FluentBreadcrumb Class="tw-ml-8 tw-mt-2">
     <FluentBreadcrumbItem Href="/customers">
         Customers
     </FluentBreadcrumbItem>
     <FluentBreadcrumbItem>
-        @Customer?.FullName
+        @(Customer.FullName ?? "Create Customer")
     </FluentBreadcrumbItem>
 </FluentBreadcrumb>
 
 <div class="tw-container tw-p-8">    
     <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
-        <h3 class="tw-text-2xl tw-font-medium">@Customer?.FullName</h3>
+        <h3 class="tw-text-2xl tw-font-medium">@Customer.FullName</h3>
     </div>    
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="20" Class="tw-w-full">
         <div class="tw-w-2/4">
             <CustomerGeneralInfo Customer="@Customer" />
         </div>
-        <div class="tw-w-2/4">
-            <CustomerCardDetails Customer="@Customer" />
-        </div>
     </FluentStack>
 </div>
 
 @code {
-    [Parameter]
-    public Guid ObjectId { get; set; } = default!;
-
-    private CustomerViewModel? Customer { get; set; }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        Customer = await Mediator.Send(new GetCustomerQuery(ObjectId));
-    }
+    private CustomerViewModel Customer { get; set; } = new CustomerViewModel();
 }

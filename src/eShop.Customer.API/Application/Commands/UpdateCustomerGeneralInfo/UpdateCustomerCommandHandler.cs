@@ -4,7 +4,7 @@ using eShop.Customer.API.Application.GuardClauses;
 using eShop.Customer.API.Application.Specifications;
 using eShop.Shared.Data;
 
-namespace eShop.Customer.API.Application.Commands.UpdateCustomer;
+namespace eShop.Customer.API.Application.Commands.UpdateCustomerGeneralInfo;
 
 internal class UpdateCustomerCommandHandler(
     ILogger<UpdateCustomerCommandHandler> logger,
@@ -21,7 +21,7 @@ internal class UpdateCustomerCommandHandler(
 
             Domain.AggregatesModel.CustomerAggregate.Customer? customer =
                 await this.customerRepository.FirstOrDefaultAsync(
-                    new GetCustomerByObjectIdSpecification(request.Dto.ObjectId),
+                    new GetCustomerByObjectIdSpecification(request.ObjectId),
                     cancellationToken);
 
             var foundResult = Guard.Against.CustomerNull(customer, this.logger);

@@ -26,11 +26,11 @@ public class GetCustomerQueryHandler(
 
             this.logger.LogInformation("Retrieved customer {ObjectId} from API", request.ObjectId);
 
-            Result<CountryViewModel[]> countries = await this.mediator.Send(new GetCountriesQuery(), cancellationToken);
-            Result<StateViewModel[]> states = await this.mediator.Send(new GetStatesQuery(), cancellationToken);
+            //Result<CountryViewModel[]> countries = await this.mediator.Send(new GetCountriesQuery(), cancellationToken);
+            //Result<StateViewModel[]> states = await this.mediator.Send(new GetStatesQuery(), cancellationToken);
 
-            return customer
-                .MapToCustomerViewModel(countries.Value, states.Value);
+           return customer
+                .MapToCustomerViewModel();
         }
         catch (Exception ex)
         {

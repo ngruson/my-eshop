@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using eShop.AdminApp.Components.Validation;
 
 namespace eShop.AdminApp.Application.Queries.Customer.GetCustomer;
 
@@ -24,8 +25,8 @@ public class CustomerViewModel(Guid objectId, string userName, string firstName,
     [Required]
     public string City { get; set; } = city;
 
-    [Required]
-    public string State { get; set; } = state;
+    [RequiredIf(nameof(Country), "US")]
+    public string? State { get; set; } = state;
 
     [Required]
     public string Country { get; set; } = country;

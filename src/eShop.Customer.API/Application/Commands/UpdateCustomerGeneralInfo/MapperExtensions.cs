@@ -1,6 +1,6 @@
-using eShop.Customer.Contracts.UpdateCustomer;
+using eShop.Customer.Contracts.UpdateCustomerGeneralInfo;
 
-namespace eShop.Customer.API.Application.Commands.UpdateCustomer;
+namespace eShop.Customer.API.Application.Commands.UpdateCustomerGeneralInfo;
 internal static class MapperExtensions
 {
     public static void MapFromDto(this UpdateCustomerDto dto, Domain.AggregatesModel.CustomerAggregate.Customer customer)

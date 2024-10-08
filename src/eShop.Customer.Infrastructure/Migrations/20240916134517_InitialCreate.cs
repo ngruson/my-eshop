@@ -33,11 +33,11 @@ namespace eShop.Customer.Infrastructure.Migrations
                     ZipCode = table.Column<string>(type: "text", nullable: false),
                     Country = table.Column<string>(type: "text", nullable: false),
                     State = table.Column<string>(type: "text", nullable: false),
-                    CardNumber = table.Column<string>(type: "text", nullable: false),
-                    SecurityNumber = table.Column<string>(type: "text", nullable: false),
-                    Expiration = table.Column<string>(type: "text", nullable: false),
-                    CardHolderName = table.Column<string>(type: "text", nullable: false),
-                    CardType = table.Column<int>(type: "integer", nullable: false)
+                    CardNumber = table.Column<string>(type: "text", nullable: true),
+                    SecurityNumber = table.Column<string>(type: "text", nullable: true),
+                    Expiration = table.Column<string>(type: "text", nullable: true),
+                    CardHolderName = table.Column<string>(type: "text", nullable: true),
+                    CardType = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {

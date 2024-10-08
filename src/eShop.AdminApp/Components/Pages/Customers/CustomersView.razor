@@ -54,34 +54,9 @@
             .Value.AsQueryable();
     }
 
-    private async Task AddCustomer()
+    private void AddCustomer()
     {
-        DialogParameters parameters = new()
-        {
-            Title = "Add Customer",
-            Width = "500px",
-            TrapFocus = true,
-            Modal = true,
-            PreventScroll = true
-        };
-
-        CustomerViewModel viewModel = new() { NewCustomer = true };
-        CustomerDialogContent dialogContent = new(
-            viewModel,
-            this.countries,
-            this.states);
-
-        IDialogReference dialog = await DialogService.ShowDialogAsync<CustomerDialog>(
-            dialogContent, parameters);
-        DialogResult? result = await dialog.Result;
-
-        if (result.Data is CustomerDialogContent)
-        {
-            CreateCustomerCommand command = viewModel.MapToCreateCustomerCreateCommand();
-            await Mediator.Send(command);
-
-            await GetCustomers();
-        }
+        Navigation.NavigateTo("/customer/new");
     }
 
     private void RowClicked(FluentDataGridRow<CustomerViewModel> row)
@@ -92,24 +67,5 @@
         }
 
         Navigation.NavigateTo($"/customer/{row.Item.ObjectId}");
-
-        // DialogParameters parameters = new()
-        //     {
-        //         Title = row.Item.FullName,
-        //         Width = "500px",
-        //         TrapFocus = true,
-        //         Modal = true,
-        //         PreventScroll = true
-        //     };
-
-        // CustomerDialogContent dialogContent = new(row.Item, this.countries, this.states);
-        // IDialogReference dialog = await DialogService.ShowDialogAsync<CustomerDialog>(dialogContent, parameters);
-        // DialogResult? result = await dialog.Result;
-
-        // if (result.Data is CustomerDialogContent content && content.Model is CustomerViewModel viewModel)
-        // {
-        //     UpdateCustomerCommand command = viewModel.MapToUpdateCustomerCreateCommand();
-        //     await Mediator.Send(command);
-        // }
     }
 }
