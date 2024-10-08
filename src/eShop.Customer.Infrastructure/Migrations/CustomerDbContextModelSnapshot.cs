@@ -68,22 +68,18 @@ namespace eShop.Customer.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("CardHolderName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("CardNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("CardType")
                         .HasColumnType("integer");
 
                     b.Property<string>("Expiration")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SecurityNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");

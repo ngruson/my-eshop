@@ -23,34 +23,33 @@ internal class CustomerConfiguration : IEntityTypeConfiguration<Domain.Aggregate
         entityTypeBuilder.Property(o => o.LastName)
             .IsRequired();
 
-        entityTypeBuilder.Property(o => o.CardNumber)
-            .IsRequired();
-
-        entityTypeBuilder.Property(o => o.SecurityNumber)
-            .IsRequired();
-
-        entityTypeBuilder.Property(o => o.Expiration)
-            .IsRequired();
-
-        entityTypeBuilder.Property(o => o.CardHolderName)
-            .IsRequired();
-
-        entityTypeBuilder.Property(o => o.CardType)
-            .IsRequired();
-
         entityTypeBuilder.Property(o => o.Street)
             .IsRequired();
 
+        entityTypeBuilder.Property(o => o.ZipCode)
+            .IsRequired();
+
         entityTypeBuilder.Property(o => o.City)
+            .IsRequired();        
+
+        entityTypeBuilder.Property(o => o.Country)
             .IsRequired();
 
         entityTypeBuilder.Property(o => o.State)
             .IsRequired();
 
-        entityTypeBuilder.Property(o => o.Country)
-            .IsRequired();
+        //entityTypeBuilder.Property(o => o.CardNumber)
+        //    .IsRequired();
 
-        entityTypeBuilder.Property(o => o.ZipCode)
-            .IsRequired();
+        //entityTypeBuilder.Property(o => o.SecurityNumber)
+        //    .IsRequired();
+
+        //entityTypeBuilder.Property(o => o.Expiration)
+        //    .IsRequired();
+
+        //entityTypeBuilder.Property(o => o.CardHolderName)            
+
+        //entityTypeBuilder.Property(o => o.CardType)
+        //    .IsRequired();        
     }
 }

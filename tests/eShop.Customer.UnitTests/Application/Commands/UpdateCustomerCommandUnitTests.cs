@@ -1,7 +1,7 @@
 using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
-using eShop.Customer.API.Application.Commands.UpdateCustomer;
+using eShop.Customer.API.Application.Commands.UpdateCustomerGeneralInfo;
 using eShop.Customer.API.Application.Specifications;
 using eShop.Shared.Data;
 using NSubstitute;

@@ -11,7 +11,7 @@ internal static class MapperExtensions
             Guid.NewGuid(),
             dto.UserName,
             dto.FirstName,
-            dto.LastName,            
+            dto.LastName,
             dto.Street,
             dto.City,
             dto.State,
@@ -21,6 +21,6 @@ internal static class MapperExtensions
             dto.SecurityNumber,
             dto.Expiration,
             dto.CardHolderName,
-            CardType.FromName(dto.CardType));
+            dto.CardType is not null ? CardType.FromName(dto.CardType) : null);
     }
 }

@@ -4,7 +4,7 @@ using Asp.Versioning;
 using Asp.Versioning.Http;
 using eShop.Customer.Contracts.CreateCustomer;
 using eShop.Customer.Contracts.GetCustomers;
-using eShop.Customer.Contracts.UpdateCustomer;
+using eShop.Customer.Contracts.UpdateCustomerGeneralInfo;
 using eShop.Customer.Domain.AggregatesModel.CustomerAggregate;
 using Microsoft.AspNetCore.Mvc.Testing;
 
@@ -139,8 +139,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
 
         // Act
 
-        UpdateCustomerDto updateCustomerDto = new(
-            customer.ObjectId,
+        UpdateCustomerDto updateCustomerDto = new(            
             customer.UserName,
             customer.FirstName,
             customer.LastName,
@@ -151,7 +150,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
             customer.ZipCode);
 
         response = await this._httpClient.PutAsync(
-            "/api/customers",
+            $"/api/customers/{customer.ObjectId}/generalInfo",
             new StringContent(
                 JsonSerializer.Serialize(updateCustomerDto,
                     this._jsonSerializerOptions
@@ -178,7 +177,6 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
         // Act
 
         UpdateCustomerDto updateCustomerDto = new(
-            Guid.NewGuid(),
             customer.UserName,
             "Sunny2",
             "Swinnerton2",
@@ -189,7 +187,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
             customer.ZipCode);
 
         response = await this._httpClient.PutAsync(
-            "/api/customers",
+            $"/api/customers/{Guid.NewGuid()}/generalInfo",
             new StringContent(
                 JsonSerializer.Serialize(updateCustomerDto,
                     this._jsonSerializerOptions

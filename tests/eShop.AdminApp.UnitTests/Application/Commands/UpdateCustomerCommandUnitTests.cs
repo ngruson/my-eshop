@@ -26,7 +26,7 @@ public class UpdateCustomerCommandUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await customerApi.Received().UpdateCustomer(command.Dto);
+        await customerApi.Received().UpdateCustomer(command.ObjectId, command.Dto);
     }
 
     [Theory, AutoNSubstituteData]
@@ -37,7 +37,7 @@ public class UpdateCustomerCommandUnitTests
     {
         // Arrange
 
-        customerApi.UpdateCustomer(command.Dto)
+        customerApi.UpdateCustomer(command.ObjectId, command.Dto)
             .ThrowsAsync<Exception>();
 
         // Act
@@ -48,6 +48,6 @@ public class UpdateCustomerCommandUnitTests
 
         Assert.True(result.IsError());
 
-        await customerApi.Received().UpdateCustomer(command.Dto);
+        await customerApi.Received().UpdateCustomer(command.ObjectId, command.Dto);
     }
 }

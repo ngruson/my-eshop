@@ -58,19 +58,4 @@ internal static class MapperExtensions
                 model.CardHolderName,
                 model.CardType));
     }
-
-    internal static UpdateCustomerCommand MapToUpdateCustomerCreateCommand(this CustomerViewModel model)
-    {
-        return new UpdateCustomerCommand(
-            new eShop.Customer.Contracts.UpdateCustomer.UpdateCustomerDto(
-                model.ObjectId,
-                model.UserName,
-                model.FirstName,
-                model.LastName,
-                model.Street,
-                model.City,
-                model.State!,
-                model.Country,
-                model.ZipCode));
-    }
 }

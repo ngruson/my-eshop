@@ -17,7 +17,7 @@ internal class UpdateCustomerCommandHandler(
         {
             this.logger.LogInformation("Updating customer...");
 
-            await this.customerApi.UpdateCustomer(request.Dto);
+            await this.customerApi.UpdateCustomer(request.ObjectId, request.Dto);
 
             this.logger.LogInformation("Customer updated");
 
