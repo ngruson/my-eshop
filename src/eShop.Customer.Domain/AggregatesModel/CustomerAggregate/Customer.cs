@@ -41,4 +41,7 @@ public class Customer : Entity, IAggregateRoot
     public string? Expiration { get; set; }
     public string? CardHolderName { get; set; }
     public CardType? CardType { get; set; }
+
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAtUtc { get; set; }
 }

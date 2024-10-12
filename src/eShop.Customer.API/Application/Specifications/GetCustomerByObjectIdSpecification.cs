@@ -6,6 +6,6 @@ internal class GetCustomerByObjectIdSpecification : Specification<Domain.Aggrega
 {
     public GetCustomerByObjectIdSpecification(Guid objectId)
     {
-        this.Query.Where(_ => _.ObjectId == objectId);
+        this.Query.Where(_ => _.ObjectId == objectId && !_.IsDeleted);
     }
 }

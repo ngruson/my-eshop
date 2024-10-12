@@ -17,7 +17,7 @@ internal class DeleteCustomerCommandHandler(
     {
         try
         {
-            this.logger.LogInformation("Deleting customer...");
+            this.logger.LogInformation("Soft deleting customer...");
 
             Domain.AggregatesModel.CustomerAggregate.Customer? customer =
                 await this.customerRepository.FirstOrDefaultAsync(
@@ -30,15 +30,18 @@ internal class DeleteCustomerCommandHandler(
                 return foundResult;
             }
 
-            await this.customerRepository.DeleteAsync(customer!, cancellationToken);
+            customer!.IsDeleted = true;
+            customer.DeletedAtUtc = DateTime.UtcNow;
 
-            this.logger.LogInformation("Customer deleted");
+            await this.customerRepository.UpdateAsync(customer!, cancellationToken);
+
+            this.logger.LogInformation("Customer soft deleted");
 
             return Result.Success();
         }
         catch (Exception ex)
         {
-            string errorMessage = "Failed to delete customer.";
+            string errorMessage = "Failed to soft delete customer.";
             this.logger.LogError(ex, "Error: {Message}", errorMessage);
             return Result.Error(errorMessage);
         }

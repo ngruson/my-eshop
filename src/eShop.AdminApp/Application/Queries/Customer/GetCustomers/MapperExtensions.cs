@@ -1,5 +1,4 @@
 using eShop.AdminApp.Application.Commands.Customer.CreateCustomer;
-using eShop.AdminApp.Application.Commands.Customer.UpdateCustomer;
 using eShop.AdminApp.Application.Queries.MasterData.GetCountries;
 using eShop.AdminApp.Application.Queries.MasterData.GetStates;
 using eShop.Customer.Contracts.GetCustomers;
@@ -26,7 +25,8 @@ internal static class MapperExtensions
                 _.SecurityNumber,
                 _.Expiration,
                 _.CardHolderName,
-                _.CardType))
+                _.CardType,
+                _.IsDeleted))
             .ToList();
     }
 

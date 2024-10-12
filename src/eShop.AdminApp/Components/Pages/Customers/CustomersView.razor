@@ -1,6 +1,7 @@
 @page "/customers"
 @using MediatR
 @using eShop.AdminApp.Application.Commands.Customer.CreateCustomer
+@using eShop.AdminApp.Application.Commands.Customer.DeleteCustomer
 @using eShop.AdminApp.Application.Commands.Customer.UpdateCustomer
 @using eShop.AdminApp.Application.Queries.Customer.GetCustomers
 @using eShop.MasterData.Contracts
@@ -14,16 +15,23 @@
 <div class="tw-container tw-p-8">
     <div class="tw-mb-4">
         <FluentToolbar>
-            <FluentButton IconStart="@(new Icons.Regular.Size16.PersonAdd())" Appearance="Appearance.Accent" OnClick="AddCustomer">
-                Add Customer
-            </FluentButton>
+            <FluentIcon Title="Add Customer" Value="@(new Icons.Regular.Size16.PersonAdd())" OnClick="AddCustomer" />
+            <FluentIcon Title="Delete Selected Customers" Value="@(new Icons.Regular.Size16.Delete())" OnClick="DeleteCustomers" />
         </FluentToolbar>
     </div>
-    <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">        
+    <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
         <h3 class="tw-text-2xl tw-font-medium">Customers</h3>
     </div>
     <div>
-        <FluentDataGrid TGridItem="CustomerViewModel" Items="@customers" ShowHover="true" OnRowClick="RowClicked">
+        <FluentCheckbox Label="Show deleted" @bind-Value="includeDeleted" @bind-Value:after="@(() => GetCustomers())" />
+        <FluentDataGrid TGridItem="CustomerViewModel" Items="@customers" ShowHover="true">
+            <SelectColumn TGridItem="CustomerViewModel"
+                          SelectMode="DataGridSelectMode.Multiple"
+                          SelectFromEntireRow="false"
+                          @bind-SelectedItems="@SelectedItems" />
+            <TemplateColumn>
+                <FluentIcon Title="Customer Detail"  Value="@(new Icons.Regular.Size16.ArrowCircleRight())" OnClick="() => NavigateToCustomer(context.ObjectId)" />
+            </TemplateColumn>
             <PropertyColumn Property="@(p => p.FirstName)" Sortable="true" />
             <PropertyColumn Property="@(p => p.LastName)" Sortable="true" />
             <PropertyColumn Property="@(p => p.Street)" Sortable="true" />
@@ -31,13 +39,14 @@
             <PropertyColumn Property="@(p => p.City)" Sortable="true" />
             <PropertyColumn Property="@(p => p.State)" Sortable="true" />
             <PropertyColumn Property="@(p => p.Country)" Sortable="true" />
-            
         </FluentDataGrid>
     </div>
 </div>
 
 @code {
     private IQueryable<CustomerViewModel>? customers;
+    private IEnumerable<CustomerViewModel> SelectedItems = Array.Empty<CustomerViewModel>();
+    private bool includeDeleted;
     private IEnumerable<CountryDto> countries = Array.Empty<CountryDto>();
     private IEnumerable<StateDto> states = Array.Empty<StateDto>();
 
@@ -50,7 +59,7 @@
 
     private async Task GetCustomers()
     {
-        this.customers = (await Mediator.Send(new GetCustomersQuery()))
+        this.customers = (await Mediator.Send(new GetCustomersQuery(includeDeleted)))
             .Value.AsQueryable();
     }
 
@@ -59,13 +68,26 @@
         Navigation.NavigateTo("/customer/new");
     }
 
-    private void RowClicked(FluentDataGridRow<CustomerViewModel> row)
-    {
-        if (row.Item is null)
-        {
-            return;
-        }
+    private void NavigateToCustomer(Guid objectId) => Navigation.NavigateTo($"/customer/{objectId}");
 
-        Navigation.NavigateTo($"/customer/{row.Item.ObjectId}");
+    private async Task DeleteCustomers()
+    {
+        if (SelectedItems.Any())
+        {
+            IDialogReference dialog = await DialogService.ShowConfirmationAsync(
+                "Are you sure you want to delete the selected customers?",
+                "Yes", "No",
+                "Delete Customers");
+            DialogResult dialogResult = await dialog.Result;
+
+            if (dialogResult.Cancelled == false)
+            {
+                foreach (CustomerViewModel customer in SelectedItems)
+                {
+                    await Mediator.Send(new DeleteCustomerCommand(customer.ObjectId));
+                }
+                await GetCustomers();
+            }
+        }
     }
 }

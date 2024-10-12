@@ -37,7 +37,9 @@ namespace eShop.Customer.Infrastructure.Migrations
                     SecurityNumber = table.Column<string>(type: "text", nullable: true),
                     Expiration = table.Column<string>(type: "text", nullable: true),
                     CardHolderName = table.Column<string>(type: "text", nullable: true),
-                    CardType = table.Column<int>(type: "integer", nullable: true)
+                    CardType = table.Column<int>(type: "integer", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeletedAtUtc = table.Column<DateTime?>(type: "timestamp", nullable: true),
                 },
                 constraints: table =>
                 {
