@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 namespace eShop.AdminApp.Application.Queries.Customer.GetCustomers;
 
 public class CustomerViewModel(Guid objectId, string userName, string firstName, string lastName, string street, string city, string state, string country, string zipCode,
-    string? cardNumber, string? securityNumber, string? expiration, string? cardHolderName, string? cardType)
+    string? cardNumber, string? securityNumber, string? expiration, string? cardHolderName, string? cardType, bool isDeleted)
 {
-    public CustomerViewModel() : this(Guid.Empty, "", "", "", "", "", "", "US", "", "", "", "", "", "") { }
+    public CustomerViewModel() : this(Guid.Empty, "", "", "", "", "", "", "US", "", "", "", "", "", "", false) { }
 
     public Guid ObjectId { get; set; } = objectId;
 
@@ -40,4 +40,5 @@ public class CustomerViewModel(Guid objectId, string userName, string firstName,
 
     public string FullName => $"{this.FirstName} {this.LastName}";
     public bool NewCustomer { get; set; }
+    public bool IsDeleted { get; set; } = isDeleted;
 }

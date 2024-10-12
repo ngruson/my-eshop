@@ -3,6 +3,4 @@ using eShop.Customer.Contracts.GetCustomers;
 
 namespace eShop.Customer.API.Application.Queries.GetCustomers;
 
-internal class GetCustomersQuery : IRequest<Result<List<CustomerDto>>>
-{
-}
+internal record GetCustomersQuery(bool IncludeDeleted) : IRequest<Result<List<CustomerDto>>>;

@@ -15,8 +15,8 @@ internal static class CustomerApi
     {
         var api = app.MapGroup("api/customers").HasApiVersion(1.0);
 
-        api.MapGet("/all", async ([FromServices] IMediator mediator) =>
-            (await mediator.Send(new GetCustomersQuery()))
+        api.MapGet("/", async (bool? includeDeleted, [FromServices] IMediator mediator) =>
+            (await mediator.Send(new GetCustomersQuery(includeDeleted ?? false)))
                 .ToMinimalApiResult());
 
         api.MapGet("/{objectId}",

@@ -14,4 +14,5 @@ public record CustomerDto(
     string? SecurityNumber,
     string? Expiration,
     string? CardHolderName,
-    string? CardType);
+    string? CardType,
+    bool IsDeleted);

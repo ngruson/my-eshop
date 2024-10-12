@@ -82,6 +82,12 @@ namespace eShop.Customer.Infrastructure.Migrations
                     b.Property<string>("SecurityNumber")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp");
+
                     b.HasKey("Id");
 
                     b.ToTable("customers", "customer");

@@ -20,7 +20,7 @@ public class GetCustomersQueryHandler(
     {
         try
         {
-            CustomerDto[] customers = await this.customerApi.GetCustomers();
+            CustomerDto[] customers = await this.customerApi.GetCustomers(request.ShowDeleted);
 
             Result<CountryViewModel[]> countries = await this.mediator.Send(new GetCountriesQuery(), cancellationToken);
             Result<StateViewModel[]> states = await this.mediator.Send(new GetStatesQuery(), cancellationToken);

@@ -21,7 +21,8 @@ internal static class MapperExtensions
                 c.SecurityNumber,
                 c.Expiration,
                 c.CardHolderName,
-                c.CardType?.Name))
+                c.CardType?.Name,
+                c.IsDeleted))
             .ToList();
     }
 }

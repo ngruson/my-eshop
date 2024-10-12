@@ -29,7 +29,7 @@ public sealed class CustomerApiTests : IClassFixture<CustomerApiFixture>
     {
         // Act
 
-        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers/all");
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/customers/");
 
         // Assert
 
