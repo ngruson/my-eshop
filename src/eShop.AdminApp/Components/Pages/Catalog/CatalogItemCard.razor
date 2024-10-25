@@ -1,0 +1,191 @@
+@using Ardalis.Result
+@using MediatR
+@using eShop.AdminApp.Application.Commands.Catalog.CreateCatalogItem
+@using eShop.AdminApp.Application.Commands.Catalog.UpdateCatalogItem
+@using eShop.AdminApp.Application.Queries.Catalog.GetCatalogBrands
+@using eShop.AdminApp.Application.Queries.Catalog.GetCatalogItem
+@using eShop.AdminApp.Application.Queries.Catalog.GetCatalogTypes
+@using eShop.Catalog.Contracts.GetCatalogBrands
+@using eShop.Catalog.Contracts.GetCatalogTypes
+@inject IMediator Mediator
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+
+<FluentStack Orientation="Orientation.Horizontal">
+    <div class="tw-w-11/12">
+        <h4>Catalog Item</h4>
+    </div>
+    <div class="tw-w-1/12">
+        @if (CatalogItem?.ObjectId != Guid.Empty)
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.Edit())" Class="tw-mx-auto" OnClick="ToggleEdit" />
+        }
+    </div>
+</FluentStack>
+@if (editContext is not null)
+{
+    <EditForm EditContext="@editContext">
+        <DataAnnotationsValidator />
+        <FluentCard>
+            <div>
+                <FluentTextField Label="Name" @bind-Value="@CatalogItem!.Name" ReadOnly="@(!isEditing)" Appearance="@textFieldAppearance" />
+            </div>
+            <div>
+                <FluentTextArea Label="Description" Rows="6" Cols="60" @bind-Value="@CatalogItem!.Description" ReadOnly="@(!isEditing)" Appearance="@textFieldAppearance" />
+            </div>
+            <div>
+                <FluentNumberField Label="Price" @bind-Value="@CatalogItem.Price" ReadOnly="@(!isEditing)" Appearance="@textFieldAppearance" />
+            </div>
+            <div>
+                <FluentTextField Label="Picture" @bind-Value="@CatalogItem!.PictureFileName" ReadOnly="@(!isEditing)" Appearance="@textFieldAppearance" />
+            </div>
+            <div>
+                <FluentSelect Appearance="@selectListAppearance"
+                        Height="250px"
+                        Items=@GetCatalogTypesOptions()
+                        Name="catalogType"
+                        Label="Type"
+                        TOption="Option<string>"
+                        OptionText="@(_ => _.Text)"
+                        OptionValue="@(_ => _.Value)"
+                        OptionSelected="@(i => i.Value == CatalogItem.CatalogType)"
+                        Position="SelectPosition.Above"
+                        ReadOnly="@(!isEditing)"
+                        Disabled="@(!isEditing)"
+                        @bind-Value="CatalogItem.CatalogType" />
+                <FluentValidationMessage For="@(() => CatalogItem.CatalogType)" />
+            </div>
+            <div>
+                <FluentSelect Appearance="@selectListAppearance" @ref="catalogBrandSelect"
+                    Height="250px"
+                    Items=@GetCatalogBrandsOptions()
+                    Name="catalogBrand"
+                    Label="Brand"
+                    TOption="Option<string>"
+                    OptionText="@(_ => _.Text)"
+                    OptionValue="@(_ => _.Value)"
+                    OptionSelected="@(i => i.Value == CatalogItem.CatalogBrand)"
+                    Position="SelectPosition.Above"
+                    ReadOnly="@(!isEditing)"
+                    Disabled="@(!isEditing)"
+                    @bind-Value="CatalogItem.CatalogBrand" />
+                <FluentValidationMessage For="@(() => CatalogItem.CatalogBrand)" />
+
+            </div>
+            <div>
+                <FluentNumberField Label="Available stock" @bind-Value="@CatalogItem.AvailableStock" ReadOnly="true" Appearance="FluentInputAppearance.Filled" />
+            </div>
+            <div>
+                <FluentNumberField Label="Restock threshold" @bind-Value="@CatalogItem.RestockThreshold" ReadOnly="@(!isEditing)" Appearance="@textFieldAppearance" />
+            </div>
+            <div>
+                <FluentNumberField Label="Max stock threshold" @bind-Value="@CatalogItem.MaxStockThreshold" ReadOnly="@(!isEditing)" Appearance="@textFieldAppearance" />
+            </div>
+            <div>
+                <FluentCheckbox Label="On reorder" @bind-Value="@CatalogItem.OnReorder" ReadOnly="true" Appearance="FluentInputAppearance.Filled" />
+            </div>
+            <div class="tw-mt-4">
+                <FluentButton Appearance="Appearance.Accent" Disabled="@(!isEditing || (isEditing && !editContext.Validate()))" Type="ButtonType.Submit" OnClick="SaveChanges">@buttonText</FluentButton>
+                <FluentButton Appearance="Appearance.Outline" Disabled="@(!isEditing)" OnClick="ToggleEdit">Cancel</FluentButton>
+            </div>
+        </FluentCard>
+    </EditForm>
+}
+else
+{
+    <FluentProgressRing></FluentProgressRing>
+    <FluentLabel>Loading...</FluentLabel>
+}
+
+@code {
+    [Parameter]
+    public CatalogItemViewModel? CatalogItem { get; set; }
+    private IEnumerable<CatalogTypeViewModel> catalogTypes = Array.Empty<CatalogTypeViewModel>();
+    private IEnumerable<CatalogBrandViewModel> catalogBrands = Array.Empty<CatalogBrandViewModel>();
+
+    private EditContext? editContext { get; set; }
+    private ValidationMessageStore? messageStore;
+    private bool isEditing;
+    private string buttonText = "Update";
+    private FluentInputAppearance textFieldAppearance = FluentInputAppearance.Filled;
+    private Appearance selectListAppearance = Appearance.Filled;
+
+    private FluentSelect<Option<string>>? catalogBrandSelect;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Result<CatalogTypeViewModel[]> getCatalogTypesResult = await Mediator.Send(new GetCatalogTypesQuery());
+        if (getCatalogTypesResult.IsSuccess)
+        {
+            this.catalogTypes = getCatalogTypesResult.Value;
+        }
+
+        Result<CatalogBrandViewModel[]> getCatalogBrandsResult = await Mediator.Send(new GetCatalogBrandsQuery());
+        if (getCatalogBrandsResult.IsSuccess)
+        {
+            this.catalogBrands = getCatalogBrandsResult.Value;
+        }
+
+        if (CatalogItem is not null)
+        {
+            if (CatalogItem.ObjectId == Guid.Empty)
+            {
+                buttonText = "Add";
+                ToggleEdit();
+            }
+
+            editContext = new EditContext(CatalogItem);
+            messageStore = new(editContext);
+        }
+    }
+
+    private void ToggleEdit()
+    {
+        isEditing = !isEditing;
+        textFieldAppearance = isEditing ? FluentInputAppearance.Outline : FluentInputAppearance.Filled;
+        selectListAppearance = isEditing ? Appearance.Outline : Appearance.Filled;
+    }
+
+    private void SaveChanges()
+    {
+        if (CatalogItem!.ObjectId == Guid.Empty)
+        {
+            CreateCatalogItemCommand command = CatalogItem.MapToCreateCatalogItemCommand();
+            Mediator.Send(command);
+            Navigation.NavigateTo("/catalog");
+        }
+        else
+        {
+            UpdateCatalogItemCommand command = CatalogItem.MapToUpdateCatalogItemCommand();
+            Mediator.Send(command);
+            ToggleEdit();
+            ToastService.ShowToast(ToastIntent.Success, "Catalog item updated successfully");
+        }
+    }
+
+    private List<Option<string>> GetCatalogTypesOptions()
+    {
+        List<Option<string>> options = this.catalogTypes.Select(_ => new Option<string>
+            {
+                Text = _.Name,
+                Value = _.ObjectId
+            }).ToList();
+
+        options.Insert(0, new Option<string> { Text = "Select a type", Value = "" });
+
+        return options;
+    }
+
+    private List<Option<string>> GetCatalogBrandsOptions()
+    {
+        List<Option<string>> options = this.catalogBrands.Select(_ => new Option<string>
+            {
+                Text = _.Name,
+                Value = _.ObjectId
+            }).ToList();
+
+        options.Insert(0, new Option<string> { Text = "Select a brand", Value = "" });
+
+        return options;
+    }
+}

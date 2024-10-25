@@ -15,7 +15,7 @@ public class PaymentMethod : Entity
     private readonly DateTime _expiration;
 
     private readonly CardType? _cardType;
-    public CardType? CardType { get; private set; }
+    public CardType? CardType => this._cardType;
 
     public string? Alias => this._alias;
     public string? SecurityNumber => this._securityNumber;
@@ -25,6 +25,7 @@ public class PaymentMethod : Entity
 
     public PaymentMethod(CardType cardType, string alias, string cardNumber, string securityNumber, string cardHolderName, DateTime expiration)
     {
+        this.ObjectId = Guid.NewGuid();
         this._cardNumber = !string.IsNullOrWhiteSpace(cardNumber) ? cardNumber : throw new OrderingDomainException(nameof(cardNumber));
         this._securityNumber = !string.IsNullOrWhiteSpace(securityNumber) ? securityNumber : throw new OrderingDomainException(nameof(securityNumber));
         this._cardHolderName = !string.IsNullOrWhiteSpace(cardHolderName) ? cardHolderName : throw new OrderingDomainException(nameof(cardHolderName));

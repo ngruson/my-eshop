@@ -5,14 +5,28 @@ using Pgvector;
 
 namespace eShop.Catalog.API.Model;
 
-public class CatalogItem : IAggregateRoot
+public class CatalogItem : Entity, IAggregateRoot
 {
-    public int Id { get; set; }
+    public CatalogItem(Guid objectId, string name, string description, decimal price, string? pictureFileName,
+        CatalogType catalogType, CatalogBrand? catalogBrand, int availableStock, int restockThreshold, int maxStockThreshold)
+    {
+        this.ObjectId = objectId;
+        this.Name = name;
+        this.Description = description;
+        this.Price = price;
+        this.PictureFileName = pictureFileName;
+        this.CatalogType = catalogType;
+        this.CatalogBrand = catalogBrand;
+        this.AvailableStock = availableStock;
+        this.RestockThreshold = restockThreshold;
+        this.MaxStockThreshold = maxStockThreshold;
+    }
 
+    private CatalogItem() { }
     [Required]
-    public required string Name { get; set; }
+    public string? Name { get; set; }
 
-    public required string Description { get; set; }
+    public string? Description { get; set; }
 
     public decimal Price { get; set; }
 
@@ -44,6 +58,9 @@ public class CatalogItem : IAggregateRoot
     /// True if item is on reorder
     /// </summary>
     public bool OnReorder { get; set; }
+
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAtUtc { get; set; }
 
 
     /// <summary>

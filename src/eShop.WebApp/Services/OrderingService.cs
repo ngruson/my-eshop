@@ -1,3 +1,5 @@
+using eShop.Ordering.Contracts.CreateOrder;
+
 namespace eShop.WebApp.Services;
 
 public class OrderingService(HttpClient httpClient)
@@ -9,7 +11,7 @@ public class OrderingService(HttpClient httpClient)
         return httpClient.GetFromJsonAsync<OrderRecord[]>(this.remoteServiceBaseUrl)!;
     }
 
-    public Task CreateOrder(CreateOrderRequest request, Guid requestId)
+    public Task CreateOrder(CreateOrderDto request, Guid requestId)
     {
         HttpRequestMessage requestMessage = new(HttpMethod.Post, this.remoteServiceBaseUrl);
         requestMessage.Headers.Add("x-requestid", requestId.ToString());

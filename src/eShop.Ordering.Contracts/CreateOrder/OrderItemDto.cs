@@ -1,7 +1,7 @@
 namespace eShop.Ordering.Contracts.CreateOrder;
 
 public record OrderItemDto(
-    int ProductId,
+    Guid ProductId,
     string ProductName,
     decimal UnitPrice,
     decimal Discount,

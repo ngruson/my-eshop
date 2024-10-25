@@ -15,4 +15,4 @@ public record CreateOrderCommand(
     string CardHolderName,
     DateTime CardExpiration,
     string CardSecurityNumber,
-    string CardType) : IRequest<bool>;
+    Guid CardType) : IRequest<bool>;

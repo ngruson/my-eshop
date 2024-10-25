@@ -11,7 +11,7 @@ public class OrderAggregateTest
     public void Create_order_item_success()
     {
         //Arrange    
-        var productId = 1;
+        Guid productId = Guid.NewGuid();
         var productName = "FakeProductName";
         var unitPrice = 12;
         var discount = 15;
@@ -29,7 +29,7 @@ public class OrderAggregateTest
     public void Invalid_number_of_units()
     {
         //Arrange    
-        var productId = 1;
+        Guid productId = Guid.NewGuid();
         var productName = "FakeProductName";
         var unitPrice = 12;
         var discount = 15;
@@ -44,7 +44,7 @@ public class OrderAggregateTest
     public void Invalid_total_of_order_item_lower_than_discount_applied()
     {
         //Arrange    
-        var productId = 1;
+        Guid productId = Guid.NewGuid();
         var productName = "FakeProductName";
         var unitPrice = 12;
         var discount = 15;
@@ -59,7 +59,7 @@ public class OrderAggregateTest
     public void Invalid_discount_setting()
     {
         //Arrange    
-        var productId = 1;
+        Guid productId = Guid.NewGuid();
         var productName = "FakeProductName";
         var unitPrice = 12;
         var discount = 15;
@@ -77,7 +77,7 @@ public class OrderAggregateTest
     public void Invalid_units_setting()
     {
         //Arrange    
-        var productId = 1;
+        Guid productId = Guid.NewGuid();
         var productName = "FakeProductName";
         var unitPrice = 12;
         var discount = 15;
@@ -94,7 +94,7 @@ public class OrderAggregateTest
     [Theory, AutoNSubstituteData]
     public void when_add_two_times_on_the_same_item_then_the_total_of_order_should_be_the_sum_of_the_two_items(
         Order order,
-        int productId,
+        Guid productId,
         string productName,
         decimal unitPrice)
     {

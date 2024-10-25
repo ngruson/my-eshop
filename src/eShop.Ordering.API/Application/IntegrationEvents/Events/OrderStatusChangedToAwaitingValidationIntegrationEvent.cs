@@ -20,14 +20,4 @@ public record OrderStatusChangedToAwaitingValidationIntegrationEvent : Integrati
     }
 }
 
-public record OrderStockItem
-{
-    public int ProductId { get; }
-    public int Units { get; }
-
-    public OrderStockItem(int productId, int units)
-    {
-        this.ProductId = productId;
-        this.Units = units;
-    }
-}
+public record OrderStockItem(Guid ProductId, int Units);

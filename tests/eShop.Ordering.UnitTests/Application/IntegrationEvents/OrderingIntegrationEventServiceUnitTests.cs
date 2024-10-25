@@ -5,6 +5,8 @@ using eShop.EventBus.Events;
 using eShop.IntegrationEventLogEF;
 using eShop.IntegrationEventLogEF.Services;
 using eShop.Ordering.API.Application.IntegrationEvents;
+using eShop.Ordering.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using NSubstitute.ExceptionExtensions;
 
 namespace Ordering.UnitTests.Application.IntegrationEvents;
@@ -71,10 +73,15 @@ public class OrderingIntegrationEventServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task SaveEvent(
             [Substitute, Frozen] IIntegrationEventLogService eventLogService,
+            [Substitute, Frozen] OrderingContext orderingContext,
             OrderingIntegrationEventService sut,
-            IntegrationEvent evt)
+            IntegrationEvent evt,
+            IDbContextTransaction transaction)
         {
             // Arrange
+
+            orderingContext.GetCurrentTransaction()
+                .Returns(transaction);
 
             //Act
 
@@ -82,7 +89,7 @@ public class OrderingIntegrationEventServiceUnitTests
 
             //Assert
 
-            await eventLogService.SaveEventAsync(evt, Arg.Any<Guid>(), default);
+            await eventLogService.Received().SaveEventAsync(evt, Arg.Any<Guid>(), default);
         }
     }
 }

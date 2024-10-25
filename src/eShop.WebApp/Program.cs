@@ -1,5 +1,4 @@
-﻿using eShop.WebApp.Components;
-using eShop.ServiceDefaults;
+using eShop.WebApp.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

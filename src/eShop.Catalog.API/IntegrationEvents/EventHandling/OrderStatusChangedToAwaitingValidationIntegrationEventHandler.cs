@@ -1,10 +1,10 @@
-using eShop.Shared.Data;
+using eShop.Catalog.API.Application.Commands.AssessStockItemsForOrder;
+using MediatR;
 
 namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
 
 public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
-    IRepository<CatalogItem> repository,
-    ICatalogIntegrationEventService catalogIntegrationEventService,
+    IMediator mediator,
     ILogger<OrderStatusChangedToAwaitingValidationIntegrationEventHandler> logger)
         : IIntegrationEventHandler<OrderStatusChangedToAwaitingValidationIntegrationEvent>
 {
@@ -12,22 +12,6 @@ public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        List<ConfirmedOrderStockItem> confirmedOrderStockItems = [];
-
-        foreach (OrderStockItem orderStockItem in @event.OrderStockItems)
-        {
-            CatalogItem? catalogItem = await repository.GetByIdAsync(orderStockItem.ProductId, cancellationToken);
-            bool hasStock = catalogItem!.AvailableStock >= orderStockItem.Units;
-            ConfirmedOrderStockItem confirmedOrderStockItem = new(catalogItem.Id, hasStock);
-
-            confirmedOrderStockItems.Add(confirmedOrderStockItem);
-        }
-
-        IntegrationEvent confirmedIntegrationEvent = confirmedOrderStockItems.Any(c => !c.HasStock)
-            ? new OrderStockRejectedIntegrationEvent(@event.OrderId, confirmedOrderStockItems)
-            : new OrderStockConfirmedIntegrationEvent(@event.OrderId);
-
-        await catalogIntegrationEventService.SaveEventAndDbChangesAsync(repository, confirmedIntegrationEvent, null, cancellationToken);
-        await catalogIntegrationEventService.PublishThroughEventBusAsync(confirmedIntegrationEvent, cancellationToken);
+        await mediator.Send(new AssessStockItemsForOrderCommand(@event.OrderId, @event.OrderStockItems), cancellationToken);
     }
 }

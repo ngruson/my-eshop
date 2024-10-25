@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using eShop.WebAppComponents.Catalog;
 using eShop.WebAppComponents.Services;
+using eShop.Ordering.Contracts.CreateOrder;
+using eShop.WebApp.Extensions;
 
 namespace eShop.WebApp.Services;
 
@@ -38,7 +40,7 @@ public class BasketState(
         for (int i = 0; i < items.Count; i++)
         {
             BasketQuantity existing = items[i];
-            if (existing.ProductId == item.Id)
+            if (existing.ProductId == item.ObjectId)
             {
                 items[i] = existing with { Quantity = existing.Quantity + 1 };
                 found = true;
@@ -48,7 +50,7 @@ public class BasketState(
 
         if (!found)
         {
-            items.Add(new BasketQuantity(item.Id, 1));
+            items.Add(new BasketQuantity(item.ObjectId, 1));
         }
 
         this._cachedBasket = null;
@@ -56,7 +58,7 @@ public class BasketState(
         await this.NotifyChangeSubscribersAsync();
     }
 
-    public async Task SetQuantityAsync(int productId, int quantity)
+    public async Task SetQuantityAsync(Guid productId, int quantity)
     {
         List<BasketItem> existingItems = [.. (await this.FetchBasketItemsAsync())];
         if (existingItems.FirstOrDefault(row => row.ProductId == productId) is { } row)
@@ -87,10 +89,12 @@ public class BasketState(
         string userName = await authenticationStateProvider.GetUserNameAsync() ?? throw new InvalidOperationException("User does not have a user name");
 
         // Get details for the items in the basket
-        IReadOnlyCollection<BasketItem> orderItems = await this.FetchBasketItemsAsync();
+        IReadOnlyCollection<BasketItem> basketItems = await this.FetchBasketItemsAsync();
+        IEnumerable<OrderItemDto> orderItems = basketItems.Select(_ => new OrderItemDto(
+            _.ProductId, _.ProductName, _.UnitPrice, 0, _.Quantity, _.PictureUrl));
 
         // Call into Ordering.API to create the order using those details
-        CreateOrderRequest request = new(
+        CreateOrderDto request = new(
             UserId: buyerId,
             UserName: userName,
             City: checkoutInfo.City!,
@@ -102,7 +106,7 @@ public class BasketState(
             CardHolderName: "TESTUSER",
             CardExpiration: DateTime.UtcNow.AddYears(1),
             CardSecurityNumber: "111",
-            CardTypeId: checkoutInfo.CardTypeId,
+            CardType: checkoutInfo.CardTypeId,
             Buyer: buyerId,
             Items: [.. orderItems]);
         await orderingService.CreateOrder(request, checkoutInfo.RequestId);
@@ -129,18 +133,19 @@ public class BasketState(
 
             // Get details for the items in the basket
             List<BasketItem> basketItems = [];
-            IEnumerable<int> productIds = quantities.Select(row => row.ProductId);
-            Dictionary<int, CatalogItem> catalogItems = (await catalogService.GetCatalogItems(productIds)).ToDictionary(k => k.Id, v => v);
+            IEnumerable<Guid> productIds = quantities.Select(row => row.ProductId);
+            Dictionary<Guid, CatalogItem> catalogItems = (await catalogService.GetCatalogItems(productIds)).ToDictionary(k => k.ObjectId, v => v);
             foreach (BasketQuantity item in quantities)
             {
                 CatalogItem catalogItem = catalogItems[item.ProductId];
                 BasketItem orderItem = new()
                 {
                     Id = Guid.NewGuid().ToString(), // TODO: this value is meaningless, use ProductId instead.
-                    ProductId = catalogItem.Id,
+                    ProductId = catalogItem.ObjectId,
                     ProductName = catalogItem.Name,
                     UnitPrice = catalogItem.Price,
                     Quantity = item.Quantity,
+                    PictureUrl = catalogItem.PictureUrl
                 };
                 basketItems.Add(orderItem);
             }
@@ -155,19 +160,3 @@ public class BasketState(
         public void Dispose() => Owner._changeSubscriptions.Remove(this);
     }
 }
-
-public record CreateOrderRequest(
-    string UserId,
-    string UserName,
-    string City,
-    string Street,
-    string State,
-    string Country,
-    string ZipCode,
-    string CardNumber,
-    string CardHolderName,
-    DateTime CardExpiration,
-    string CardSecurityNumber,
-    int CardTypeId,
-    string Buyer,
-    List<BasketItem> Items);

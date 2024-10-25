@@ -9,7 +9,6 @@ namespace eShop.Catalog.API.Infrastructure;
 
 public partial class CatalogSeed : IDbSeeder
 {
-    private readonly IWebHostEnvironment _env;
     private readonly ICatalogAI _catalogAI;
     private readonly ILogger<CatalogSeed> _logger;    
 
@@ -17,7 +16,6 @@ public partial class CatalogSeed : IDbSeeder
         ICatalogAI catalogAI,
         ILogger<CatalogSeed> logger)
     {
-        this._env = env;
         this._catalogAI = catalogAI;
         this._logger = logger;
 
@@ -39,32 +37,28 @@ public partial class CatalogSeed : IDbSeeder
         {
             await catalogBrandRepository.DeleteRangeAsync(await catalogBrandRepository.ListAsync());
             await catalogBrandRepository.AddRangeAsync(this.SourceItems!.Select(x => x.Brand).Distinct()
-                .Select(brandName => new CatalogBrand { Brand = brandName }));
+                .Select(brandName => new CatalogBrand(Guid.NewGuid(), brandName)));
             IEnumerable<CatalogBrand> addedBrands = await catalogBrandRepository.ListAsync();
             this._logger.LogInformation("Seeded catalog with {NumBrands} brands", addedBrands.Count());
 
             await catalogTypeRepository.DeleteRangeAsync(await catalogTypeRepository.ListAsync());
             await catalogTypeRepository.AddRangeAsync(this.SourceItems!.Select(x => x.Type).Distinct()
-                .Select(typeName => new CatalogType { Type = typeName }));
+                .Select(typeName => new CatalogType(Guid.NewGuid(), typeName)));
             IEnumerable<CatalogType> addedTypes = await catalogTypeRepository.ListAsync();
             this._logger.LogInformation("Seeded catalog with {NumTypes} types", addedTypes.Count());
 
-            var brandIdsByName = addedBrands.ToDictionary(x => x.Brand, x => x.Id);
-            var typeIdsByName = addedTypes.ToDictionary(x => x.Type, x => x.Id);
-
-            CatalogItem[] catalogItems = this.SourceItems!.Select(source => new CatalogItem
-            {
-                Id = source.Id,
-                Name = source.Name,
-                Description = source.Description,
-                Price = source.Price,
-                CatalogBrandId = brandIdsByName[source.Brand],
-                CatalogTypeId = typeIdsByName[source.Type],
-                AvailableStock = 100,
-                MaxStockThreshold = 200,
-                RestockThreshold = 10,
-                PictureFileName = $"{source.Id}.webp",
-            }).ToArray();
+            CatalogItem[] catalogItems = this.SourceItems!.Select(source => new CatalogItem(
+                Guid.NewGuid(),
+                source.Name,
+                source.Description,
+                source.Price,
+                $"{source.Id}.webp",
+                addedTypes.Single(x => x.Type == source.Type),
+                addedBrands.Single(x => x.Brand == source.Brand),
+                100,
+                10,
+                200))
+            .ToArray();
 
             if (this._catalogAI.IsEnabled)
             {

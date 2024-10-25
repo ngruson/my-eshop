@@ -1,5 +1,4 @@
 using eShop.Shared.Data;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace eShop.Ordering.API.Application.Commands;
 

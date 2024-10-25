@@ -38,7 +38,7 @@ public sealed class RabbitMQEventBus(
             logger.LogTrace("Creating RabbitMQ channel to publish event: {EventId} ({EventName})", @event.Id, routingKey);
         }
 
-        using var channel = _rabbitMQConnection?.CreateModel() ?? throw new InvalidOperationException("RabbitMQ connection is not open");
+        using var channel = this._rabbitMQConnection?.CreateModel() ?? throw new InvalidOperationException("RabbitMQ connection is not open");
 
         if (logger.IsEnabled(LogLevel.Trace))
         {
@@ -213,7 +213,7 @@ public sealed class RabbitMQEventBus(
     private IntegrationEvent? DeserializeMessage(string message, Type eventType)
     {
 
-        return JsonSerializer.Deserialize(message, eventType, _subscriptionInfo.JsonSerializerOptions) as IntegrationEvent;
+        return JsonSerializer.Deserialize(message, eventType, this._subscriptionInfo.JsonSerializerOptions) as IntegrationEvent;
     }
 
     [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
@@ -228,7 +228,7 @@ public sealed class RabbitMQEventBus(
     {
         // Messaging is async so we don't need to wait for it to complete. On top of this
         // the APIs are blocking, so we need to run this on a background thread.
-        _ = Task.Factory.StartNew(() =>
+        Task.Factory.StartNew(() =>
         {
             try
             {
@@ -255,7 +255,7 @@ public sealed class RabbitMQEventBus(
                 this._consumerChannel.ExchangeDeclare(exchange: ExchangeName,
                                         type: "direct");
 
-                this._consumerChannel.QueueDeclare(queue: _queueName,
+                this._consumerChannel.QueueDeclare(queue: this._queueName,
                                      durable: true,
                                      exclusive: false,
                                      autoDelete: false,
@@ -282,6 +282,8 @@ public sealed class RabbitMQEventBus(
                         exchange: ExchangeName,
                         routingKey: eventName);
                 }
+
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception ex)
             {

@@ -10,6 +10,7 @@ using NSubstitute.ExceptionExtensions;
 using Microsoft.AspNetCore.Routing;
 using eShop.Ordering.API.Apis;
 using eShop.Ordering.Contracts.CreateOrder;
+using eShop.Ordering.Contracts.GetCardTypes;
 
 public class OrdersApiUnitTests
 {
@@ -290,7 +291,7 @@ public class OrdersApiUnitTests
     [Theory, AutoNSubstituteData]
     public async Task Get_cardTypes_success(
         [Substitute, Frozen] IOrderQueries orderQueries,
-        IEnumerable<CardType> cardTypes)
+        IEnumerable<CardTypeDto> cardTypes)
     {
         // Arrange
         
@@ -298,10 +299,11 @@ public class OrdersApiUnitTests
             .Returns(Task.FromResult(cardTypes));
 
         // Act
-        var result = await OrdersApi.GetCardTypesAsync(orderQueries);
+
+        Ok<IEnumerable<CardTypeDto>> result = await OrdersApi.GetCardTypesAsync(orderQueries);
 
         // Assert
-        Assert.IsType<Ok<IEnumerable<CardType>>>(result);
+
         Assert.Equal(cardTypes, result.Value);
     }
 }

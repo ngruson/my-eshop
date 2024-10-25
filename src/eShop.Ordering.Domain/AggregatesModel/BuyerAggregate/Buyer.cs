@@ -22,6 +22,7 @@ public class Buyer : Entity, IAggregateRoot
 
     public Buyer(string identity, string name) : this()
     {
+        this.ObjectId = Guid.NewGuid();
         this.IdentityGuid = !string.IsNullOrWhiteSpace(identity) ? identity : throw new ArgumentNullException(nameof(identity));
         this.Name = !string.IsNullOrWhiteSpace(name) ? name : throw new ArgumentNullException(nameof(name));
     }

@@ -694,7 +694,7 @@ public class CreateOrderCommandValidatorUnitTests
             command.CardHolderName,
             DateTime.Now.AddYears(1),
             cardSecurityNumber,
-            ""
+            Guid.Empty
         );
 
         // Act

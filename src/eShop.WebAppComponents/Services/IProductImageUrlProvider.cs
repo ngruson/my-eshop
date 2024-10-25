@@ -5,7 +5,7 @@ namespace eShop.WebAppComponents.Services;
 public interface IProductImageUrlProvider
 {
     string GetProductImageUrl(CatalogItem item)
-        => this.GetProductImageUrl(item.Id);
+        => this.GetProductImageUrl(item.ObjectId);
 
-    string GetProductImageUrl(int productId);
+    string GetProductImageUrl(Guid productId);
 }

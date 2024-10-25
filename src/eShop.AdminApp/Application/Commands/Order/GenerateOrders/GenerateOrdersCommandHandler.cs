@@ -9,6 +9,7 @@ using eShop.Identity.Contracts;
 using eShop.Identity.Contracts.GetUsers;
 using eShop.Ordering.Contracts;
 using eShop.Ordering.Contracts.CreateOrder;
+using eShop.Ordering.Contracts.GetCardTypes;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.GenerateOrders;
@@ -50,6 +51,9 @@ internal partial class GenerateOrdersCommandHandler(
             CatalogItemDto[] catalogItems = await this.catalogApi.GetCatalogItems();
             this.WriteProgress(request, (0, "Received {Count} catalog items"), catalogItems.Length);
 
+            IEnumerable<CardTypeDto> cardTypes = await this.orderingApi.GetCardTypes();
+            CardTypeDto cardType = cardTypes.First(_ => _.Name == "Amex");
+
             Random random = new();
 
             for (int i = 0; i < request.OrdersToCreate; i++)
@@ -65,12 +69,12 @@ internal partial class GenerateOrdersCommandHandler(
                     CatalogItemDto catalogItem = catalogItems[random.Next(catalogItems.Length)];
 
                     orderItems[j] = new(
-                        catalogItem.Id,
+                        catalogItem.ObjectId,
                         catalogItem.Name,
                         catalogItem.Price,
                         0,
                         random.Next(1, 6),
-                        $"{this.catalogApiUrl}/api/catalog/items/{catalogItem.Id}/pic");
+                        $"{this.catalogApiUrl}/api/catalog/items/{catalogItem.ObjectId}/pic");
                 }
 
                 CreateOrderDto order = new(
@@ -85,7 +89,7 @@ internal partial class GenerateOrdersCommandHandler(
                     CardHolderName: "TESTUSER",
                     CardExpiration: DateTime.UtcNow.AddYears(1),
                     CardSecurityNumber: "111",
-                    "Amex",
+                    cardType.ObjectId,
                     user.Id,
                     orderItems);
 

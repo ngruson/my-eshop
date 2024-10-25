@@ -6,6 +6,8 @@ public class GetCatalogItemsStartingWithNameSpecification : Specification<Catalo
 {
     public GetCatalogItemsStartingWithNameSpecification(string name)
     {
-        this.Query.Where(c => c.Name.StartsWith(name));
+        this.Query
+            .Where(c => c.Name!.StartsWith(name) && c.IsDeleted == false)
+            .OrderBy(c => c.Name);
     }
 }

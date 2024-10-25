@@ -1,6 +1,6 @@
 using eShop.Ordering.API.Application.Specifications;
+using eShop.Ordering.Contracts.GetCardTypes;
 using eShop.Shared.Data;
-using BuyerAggregate = eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 using OrderAggregate = eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
 namespace eShop.Ordering.API.Application.Queries;
@@ -54,8 +54,9 @@ public class OrderQueries(
             });
     }
 
-    public async Task<IEnumerable<CardType>> GetCardTypesAsync()
+    public async Task<IEnumerable<CardTypeDto>> GetCardTypesAsync()
     {
-        return await this.cardTypeRepository.ListAsync();
-    }        
+        List<CardType> cardTypes = await this.cardTypeRepository.ListAsync();
+        return cardTypes.Select(ct => new CardTypeDto(ct.ObjectId, ct.Name));
+    }  
 }

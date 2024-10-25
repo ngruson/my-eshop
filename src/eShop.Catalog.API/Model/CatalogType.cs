@@ -3,10 +3,14 @@ using eShop.Shared.Data;
 
 namespace eShop.Catalog.API.Model;
 
-public class CatalogType : IAggregateRoot
-{
-    public int Id { get; set; }
+public class CatalogType : Entity, IAggregateRoot
+{    
+    public CatalogType(Guid objectId, string type)
+    {
+        this.ObjectId = objectId;
+        this.Type = type;
+    }
 
     [Required]
-    public required string Type { get; set; }
+    public string Type { get; set; }
 }

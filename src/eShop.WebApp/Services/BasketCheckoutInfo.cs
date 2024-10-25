@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace eShop.WebApp.Services;
 
@@ -27,7 +27,7 @@ public class BasketCheckoutInfo
 
     public DateTime? CardExpiration { get; set; }
 
-    public int CardTypeId { get; set; }
+    public Guid CardTypeId { get; set; }
 
     public string? Buyer { get; set; }
     public Guid RequestId { get; set; }

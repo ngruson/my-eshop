@@ -15,16 +15,16 @@
         <DataAnnotationsValidator />
         <FluentCard>
             <div>
-                <FluentTextField Label="Card Number" Value="@Customer.CardNumber" ReadOnly Appearance="@textFieldAppearance" />
+                <FluentTextField Label="Card Number" Value="@Customer?.CardNumber" ReadOnly Appearance="@textFieldAppearance" />
             </div>
             <div>
-                <FluentTextField Label="Expiration" Value="@Customer.Expiration" ReadOnly Appearance="@textFieldAppearance" />
+                <FluentTextField Label="Expiration" Value="@Customer?.Expiration" ReadOnly Appearance="@textFieldAppearance" />
             </div>
             <div>
-                <FluentTextField Label="Cardholder Name" Value="@Customer.CardHolderName" ReadOnly Appearance="@textFieldAppearance" />
+                <FluentTextField Label="Cardholder Name" Value="@Customer?.CardHolderName" ReadOnly Appearance="@textFieldAppearance" />
             </div>
             <div>
-                <FluentTextField Label="Card Type" Value="@Customer.CardType" ReadOnly Appearance="@textFieldAppearance" />
+                <FluentTextField Label="Card Type" Value="@Customer?.CardType" ReadOnly Appearance="@textFieldAppearance" />
             </div>
         </FluentCard>
     </EditForm>
@@ -41,10 +41,8 @@ else
 
     private EditContext editContext { get; set; } = null!;
     private ValidationMessageStore? messageStore;
-    private bool isEditing;
 
     private FluentInputAppearance textFieldAppearance = FluentInputAppearance.Filled;
-    private Appearance selectListAppearance = Appearance.Filled;
 
     protected override void OnParametersSet()
     {

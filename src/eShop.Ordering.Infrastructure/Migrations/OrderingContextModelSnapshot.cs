@@ -77,6 +77,10 @@ namespace Ordering.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "buyerseq");
 
+                    b.Property<Guid>("ObjectId")
+                        .IsRequired()
+                        .HasColumnType("uuid");
+
                     b.Property<string>("IdentityGuid")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -85,7 +89,7 @@ namespace Ordering.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id");                    
 
                     b.HasIndex("IdentityGuid")
                         .IsUnique();
@@ -122,6 +126,10 @@ namespace Ordering.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "paymentseq");
+
+                    b.Property<Guid>("ObjectId")
+                        .IsRequired()
+                        .HasColumnType("uuid");
 
                     b.Property<int>("BuyerId")
                         .HasColumnType("integer");
@@ -218,8 +226,8 @@ namespace Ordering.Infrastructure.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("_discount")
                         .HasColumnType("numeric")

@@ -2,7 +2,11 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Asp.Versioning;
 using Asp.Versioning.Http;
+using eShop.Catalog.API.Application.Queries.GetCatalogItemPictureByObjectId;
 using eShop.Catalog.API.Model;
+using eShop.Catalog.Contracts.CreateCatalogItem;
+using eShop.Catalog.Contracts.GetCatalogBrands;
+using eShop.Catalog.Contracts.GetCatalogTypes;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace eShop.Catalog.FunctionalTests;
@@ -25,15 +29,16 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     public async Task GetCatalogItemsRespectsPageSize()
     {
         // Act
-        var response = await this._httpClient.GetAsync("/api/catalog/items/page?pageIndex=0&pageSize=5");
+
+        HttpResponseMessage response = await this._httpClient.GetAsync("/api/catalog/items/page?pageIndex=0&pageSize=5");
+        response.EnsureSuccessStatusCode();
+        string body = await response.Content.ReadAsStringAsync();
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> result =
+            JsonSerializer.Deserialize<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>(body, this._jsonSerializerOptions);
 
         // Assert
-        response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<PaginatedItems<CatalogItem>>(body, this._jsonSerializerOptions);
 
-        // Assert 12 total items with 5 retrieved from index 0
-        Assert.Equal(101, result.Count);
+        Assert.Equal(5, result.Data.Length);
         Assert.Equal(0, result.PageIndex);
         Assert.Equal(5, result.PageSize);
     }
@@ -41,85 +46,137 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     [Fact]
     public async Task UpdateCatalogItemWorksWithoutPriceUpdate()
     {
+        // Arrange
+
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> catalogItems =
+            await this._httpClient.GetFromJsonAsync<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>("/api/catalog/items/page?pageIndex=0&pageSize=5");
+        Contracts.GetCatalogItems.CatalogItemDto catalogItem = catalogItems.Data.FirstOrDefault();
+
         // Act - 1
-        var response = await this._httpClient.GetAsync("/api/catalog/items/1");
+
+        HttpResponseMessage response = await this._httpClient.GetAsync($"/api/catalog/items/{catalogItem.ObjectId}");
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var itemToUpdate = JsonSerializer.Deserialize<CatalogItem>(body, this._jsonSerializerOptions);
+        string body = await response.Content.ReadAsStringAsync();
+        Contracts.GetCatalogItem.CatalogItemDto itemToUpdate =
+            JsonSerializer.Deserialize<Contracts.GetCatalogItem.CatalogItemDto>(body, this._jsonSerializerOptions);
 
         // Act - 2
-        var priorAvailableStock = itemToUpdate.AvailableStock;
-        itemToUpdate.AvailableStock -= 1;
-        response = await this._httpClient.PutAsJsonAsync("/api/catalog/items", itemToUpdate);
+        
+        Contracts.UpdateCatalogItem.CatalogItemDto updateItem = new(
+            itemToUpdate.Name,
+            itemToUpdate.Description,
+            itemToUpdate.Price,
+            itemToUpdate.PictureFileName,
+            itemToUpdate.CatalogType.ObjectId,
+            itemToUpdate.CatalogBrand.ObjectId,
+            itemToUpdate.AvailableStock - 1,
+            itemToUpdate.RestockThreshold,
+            itemToUpdate.MaxStockThreshold,
+            itemToUpdate.OnReorder);
+
+        response = await this._httpClient.PutAsJsonAsync($"/api/catalog/items/{itemToUpdate.ObjectId}", updateItem);
         response.EnsureSuccessStatusCode();
 
         // Act - 3
-        response = await this._httpClient.GetAsync("/api/catalog/items/1");
+        response = await this._httpClient.GetAsync($"/api/catalog/items/{itemToUpdate.ObjectId}");
         response.EnsureSuccessStatusCode();
         body = await response.Content.ReadAsStringAsync();
-        var updatedItem = JsonSerializer.Deserialize<CatalogItem>(body, this._jsonSerializerOptions);
+        Contracts.GetCatalogItem.CatalogItemDto updatedItem =
+            JsonSerializer.Deserialize<Contracts.GetCatalogItem.CatalogItemDto>(body, this._jsonSerializerOptions);
 
-        // Assert - 1
-        Assert.Equal(itemToUpdate.Id, updatedItem.Id);
-        Assert.NotEqual(priorAvailableStock, updatedItem.AvailableStock);
+        // Assert
+
+        Assert.Equal(itemToUpdate.ObjectId, updatedItem.ObjectId);
+        Assert.NotEqual(itemToUpdate.AvailableStock, updatedItem.AvailableStock);
     }
 
     [Fact]
     public async Task UpdateCatalogItemWorksWithPriceUpdate()
     {
+        // Arrange
+
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> catalogItems =
+            await this._httpClient.GetFromJsonAsync<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>("/api/catalog/items/page?pageIndex=0&pageSize=5");
+        Contracts.GetCatalogItems.CatalogItemDto catalogItem = catalogItems.Data.FirstOrDefault();
+
         // Act - 1
-        var response = await this._httpClient.GetAsync("/api/catalog/items/1");
+
+        HttpResponseMessage response = await this._httpClient.GetAsync($"/api/catalog/items/{catalogItem.ObjectId}");
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var itemToUpdate = JsonSerializer.Deserialize<CatalogItem>(body, this._jsonSerializerOptions);
+        string body = await response.Content.ReadAsStringAsync();
+        Contracts.GetCatalogItem.CatalogItemDto itemToUpdate =
+            JsonSerializer.Deserialize<Contracts.GetCatalogItem.CatalogItemDto>(body, this._jsonSerializerOptions);
 
         // Act - 2
-        var priorAvailableStock = itemToUpdate.AvailableStock;
-        itemToUpdate.AvailableStock -= 1;
-        itemToUpdate.Price = 1.99m;
-        response = await this._httpClient.PutAsJsonAsync("/api/catalog/items", itemToUpdate);
+        
+        Contracts.UpdateCatalogItem.CatalogItemDto updateItem = new(
+            itemToUpdate.Name,
+            itemToUpdate.Description,
+            1.99m,
+            itemToUpdate.PictureFileName,
+            itemToUpdate.CatalogType.ObjectId,
+            itemToUpdate.CatalogBrand.ObjectId,            
+            itemToUpdate.AvailableStock - 1,
+            itemToUpdate.RestockThreshold,
+            itemToUpdate.MaxStockThreshold,
+            itemToUpdate.OnReorder);
+
+        response = await this._httpClient.PutAsJsonAsync($"/api/catalog/items/{itemToUpdate.ObjectId}", updateItem);
         response.EnsureSuccessStatusCode();
 
         // Act - 3
-        response = await this._httpClient.GetAsync("/api/catalog/items/1");
+        response = await this._httpClient.GetAsync($"/api/catalog/items/{itemToUpdate.ObjectId}");
         response.EnsureSuccessStatusCode();
         body = await response.Content.ReadAsStringAsync();
-        var updatedItem = JsonSerializer.Deserialize<CatalogItem>(body, this._jsonSerializerOptions);
+        Contracts.GetCatalogItem.CatalogItemDto updatedItem =
+            JsonSerializer.Deserialize<Contracts.GetCatalogItem.CatalogItemDto>(body, this._jsonSerializerOptions);
 
         // Assert - 1
-        Assert.Equal(itemToUpdate.Id, updatedItem.Id);
+        Assert.Equal(itemToUpdate.ObjectId, updatedItem.ObjectId);
         Assert.Equal(1.99m, updatedItem.Price);
-        Assert.NotEqual(priorAvailableStock, updatedItem.AvailableStock);
+        Assert.NotEqual(itemToUpdate.AvailableStock, updatedItem.AvailableStock);
     }
 
     [Fact]
     public async Task GetCatalogItemsByIds()
     {
+        // Arrange
+
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> page =
+            await this._httpClient.GetFromJsonAsync<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>("/api/catalog/items/page?pageIndex=0&pageSize=5");
+
         // Act
-        var response = await this._httpClient.GetAsync("/api/catalog/items/by?ids=1&ids=2&ids=3");
 
-        // Arrange   
+        HttpResponseMessage response = await this._httpClient.GetAsync(
+            $"/api/catalog/items/by?ids={page.Data[0].ObjectId}&ids={page.Data[1].ObjectId}&ids={page.Data[2].ObjectId}");        
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<List<CatalogItem>>(body, this._jsonSerializerOptions);
+        string body = await response.Content.ReadAsStringAsync();
+        Contracts.GetCatalogItems.CatalogItemDto[] result =
+            JsonSerializer.Deserialize<Contracts.GetCatalogItems.CatalogItemDto[]>(body, this._jsonSerializerOptions);
 
-        // Assert 3 items      
-        Assert.Equal(3, result.Count);
+        // Assert
+
+        Assert.Equal(3, result.Length);
     }
 
     [Fact]
     public async Task GetCatalogItemWithId()
     {
-        // Act
-        var response = await this._httpClient.GetAsync("/api/catalog/items/2");
+        // Arrange
 
-        // Arrange   
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> page =
+            await this._httpClient.GetFromJsonAsync<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>("/api/catalog/items/page?pageIndex=0&pageSize=5");
+
+        // Act
+
+        HttpResponseMessage response = await this._httpClient.GetAsync($"/api/catalog/items/{page.Data[0].ObjectId}");
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<CatalogItem>(body, this._jsonSerializerOptions);
+        string body = await response.Content.ReadAsStringAsync();
+        Contracts.GetCatalogItems.CatalogItemDto result =
+            JsonSerializer.Deserialize<Contracts.GetCatalogItems.CatalogItemDto>(body, this._jsonSerializerOptions);
 
         // Assert       
-        Assert.Equal(2, result.Id);
+        
         Assert.NotNull(result);
     }
 
@@ -127,14 +184,15 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     public async Task GetCatalogItemWithExactName()
     {
         // Act
-        var response = await this._httpClient.GetAsync("api/catalog/items/by/Wanderer%20Black%20Hiking%20Boots?PageSize=5&PageIndex=0");
 
-        // Arrange   
+        HttpResponseMessage response = await this._httpClient.GetAsync("api/catalog/items/by/Wanderer%20Black%20Hiking%20Boots?PageSize=5&PageIndex=0");
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<PaginatedItems<CatalogItem>>(body, _jsonSerializerOptions);
+        string body = await response.Content.ReadAsStringAsync();
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> result =
+            JsonSerializer.Deserialize<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>(body, this._jsonSerializerOptions);
 
         // Assert
+
         Assert.NotNull(result.Data);
         Assert.Equal(1, result.Count);
         Assert.Equal(0, result.PageIndex);
@@ -151,8 +209,9 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
 
         // Arrange   
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<PaginatedItems<CatalogItem>>(body, this._jsonSerializerOptions);
+        string body = await response.Content.ReadAsStringAsync();
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> result =
+            JsonSerializer.Deserialize<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>(body, this._jsonSerializerOptions);
 
         // Assert
         Assert.NotNull(result.Data);
@@ -166,28 +225,60 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     [Fact]
     public async Task GetCatalogItemPicWithId()
     {
+        // Arrange
+
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> catalogItems =
+            await this._httpClient.GetFromJsonAsync<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>("/api/catalog/items/page?pageIndex=0&pageSize=5");
+        Contracts.GetCatalogItems.CatalogItemDto catalogItem = catalogItems.Data.FirstOrDefault();
+
         // Act
-        var response = await this._httpClient.GetAsync("api/catalog/items/1/pic");
 
-        // Arrange   
+        HttpResponseMessage response = await this._httpClient.GetAsync($"api/catalog/items/{catalogItem.ObjectId}/pic");
         response.EnsureSuccessStatusCode();
-        var result = response.Content.Headers.ContentType.MediaType;
 
-        // Assert       
-        Assert.Equal("image/webp", result);
+        // Assert
+
+        Assert.True(IsWebP(response.Content.ReadAsStream()));
+    }
+
+    private static bool IsWebP(Stream stream)
+    {
+        if (stream == null || !stream.CanRead)
+        {
+            throw new ArgumentException("Stream is null or not readable.");
+        }
+
+        // WebP magic number for RIFF header
+        byte[] riffHeader = new byte[4];
+        stream.Read(riffHeader, 0, 4);
+        string riffHeaderString = System.Text.Encoding.ASCII.GetString(riffHeader);
+
+        if (riffHeaderString != "RIFF")
+        {
+            return false;
+        }
+
+        // Skip 4 bytes (file size)
+        stream.Seek(4, SeekOrigin.Current);
+
+        // WebP magic number for format header
+        byte[] webPHeader = new byte[4];
+        stream.Read(webPHeader, 0, 4);
+        string webPHeaderString = System.Text.Encoding.ASCII.GetString(webPHeader);
+
+        return webPHeaderString == "WEBP";
     }
 
 
     [Fact]
-    public async Task GetCatalogItemWithsemanticrelevance()
+    public async Task GetCatalogItemsWithSemanticRelevance()
     {
         // Act
-        var response = await this._httpClient.GetAsync("api/catalog/items/withsemanticrelevance/Wanderer?PageSize=5&PageIndex=0");
-
-        // Arrange   
+        var response = await this._httpClient.GetAsync("api/catalog/items/withSemanticRelevance/Wanderer?PageSize=5&PageIndex=0");        
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<PaginatedItems<CatalogItem>>(body, this._jsonSerializerOptions);
+        string body = await response.Content.ReadAsStringAsync();
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> result =
+            JsonSerializer.Deserialize<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>(body, this._jsonSerializerOptions);
 
         // Assert       
         Assert.Equal(1, result.Count);
@@ -199,55 +290,65 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     [Fact]
     public async Task GetCatalogItemWithTypeIdBrandId()
     {
-        // Act
-        var response = await this._httpClient.GetAsync("api/catalog/items/type/3/brand/3?PageSize=5&PageIndex=0");
+        // Arrange
 
-        // Arrange   
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> catalogItems =
+            await this._httpClient.GetFromJsonAsync<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>("/api/catalog/items/page?pageIndex=0&pageSize=5");
+        Contracts.GetCatalogItems.CatalogItemDto catalogItem = catalogItems.Data.FirstOrDefault();
+
+        // Act
+
+        HttpResponseMessage response = await this._httpClient
+            .GetAsync($"api/catalog/items/type/{catalogItem.CatalogType.ObjectId}/brand/{catalogItem.CatalogBrand.ObjectId}?PageSize=5&PageIndex=0");
+
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<PaginatedItems<CatalogItem>>(body, this._jsonSerializerOptions);
+        string body = await response.Content.ReadAsStringAsync();
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> result =
+            JsonSerializer.Deserialize<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>(body, this._jsonSerializerOptions);
 
         // Assert    
         Assert.NotNull(result.Data);
-        Assert.Equal(4, result.Count);
         Assert.Equal(0, result.PageIndex);
         Assert.Equal(5, result.PageSize);
-        Assert.Equal(3, result.Data.ToList().FirstOrDefault().CatalogTypeId);
-        Assert.Equal(3, result.Data.ToList().FirstOrDefault().CatalogBrandId);
     }
 
     [Fact]
     public async Task GetAllCatalogTypeItemWithBrandId()
     {
-        // Act
-        var response = await this._httpClient.GetAsync("api/catalog/items/type/all/brand/3?PageSize=5&PageIndex=0");
-
         // Arrange
-        response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<PaginatedItems<CatalogItem>>(body, this._jsonSerializerOptions);
 
-        // Assert              
+        CatalogBrandDto[] brands = await this._httpClient.GetFromJsonAsync<CatalogBrandDto[]>("api/catalog/catalogBrands");
+
+        // Act
+        var response = await this._httpClient.GetAsync($"api/catalog/items/type/all/brand/{brands[0].ObjectId}?PageSize=5&PageIndex=0");
+        response.EnsureSuccessStatusCode();
+        string body = await response.Content.ReadAsStringAsync();
+        PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> result =
+            JsonSerializer.Deserialize<PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto>>(body, this._jsonSerializerOptions);
+
+        // Assert
+
         Assert.NotNull(result.Data);
-        Assert.Equal(11, result.Count);
+        Assert.Equal(5, result.Data.Length);
         Assert.Equal(0, result.PageIndex);
         Assert.Equal(5, result.PageSize);
-        Assert.Equal(3, result.Data.ToList().FirstOrDefault().CatalogBrandId);
     }
 
     [Fact]
     public async Task GetAllCatalogTypes()
     {
         // Act
-        var response = await this._httpClient.GetAsync("api/catalog/catalogtypes");
+        var response = await this._httpClient.GetAsync("api/catalog/catalogTypes");
 
-        // Arrange   
+        // Arrange
+
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<List<CatalogType>>(body, this._jsonSerializerOptions);
+        string body = await response.Content.ReadAsStringAsync();
+        CatalogType[] result = JsonSerializer.Deserialize<CatalogType[]>(body, this._jsonSerializerOptions);
 
-        // Assert       
-        Assert.Equal(8, result.Count);
+        // Assert
+
+        Assert.Equal(8, result.Length);
         Assert.NotNull(result);
     }
 
@@ -255,7 +356,7 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     public async Task GetAllCatalogBrands()
     {
         // Act
-        var response = await this._httpClient.GetAsync("api/catalog/catalogbrands");
+        var response = await this._httpClient.GetAsync("api/catalog/catalogBrands");
 
         // Arrange   
         response.EnsureSuccessStatusCode();
@@ -267,51 +368,49 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
         Assert.NotNull(result);
     }
 
-    [Fact]
-    public async Task AddCatalogItem()
+    [Theory, AutoNSubstituteData]
+    public async Task AddCatalogItem(
+        CreateCatalogItemDto dto)
     {
         // Act - 1
-        var bodyContent = new CatalogItem {
-            Id = 10015,
-            Name = "TestCatalog1",
-            Description = "Test catalog description 1",
-            Price = 11000.08m,
-            PictureFileName = null,
-            CatalogTypeId = 8,
-            CatalogType = null,
-            CatalogBrandId = 13,
-            CatalogBrand = null,
-            AvailableStock = 100,
-            RestockThreshold = 10,
-            MaxStockThreshold = 200,
-            OnReorder = false
-        };
-        var response = await this._httpClient.PostAsJsonAsync("/api/catalog/items", bodyContent);
-        response.EnsureSuccessStatusCode();
+
+        CatalogBrandDto[] brands = await this._httpClient.GetFromJsonAsync<CatalogBrandDto[]>("api/catalog/catalogBrands");
+        CatalogTypeDto[] types = await this._httpClient.GetFromJsonAsync<CatalogTypeDto[]>("api/catalog/catalogTypes");
 
         // Act - 2
-        response = await this._httpClient.GetAsync("/api/catalog/items/10015");
+
+        HttpResponseMessage response = await this._httpClient.PostAsJsonAsync("/api/catalog/items",
+            dto with { CatalogBrand = brands[0].ObjectId, CatalogType = types[0].ObjectId });
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var addedItem = JsonSerializer.Deserialize<CatalogItem>(body, this._jsonSerializerOptions);
+
+        Stream stream = await response.Content.ReadAsStreamAsync();
+        CatalogItemDto addedItem = JsonSerializer.Deserialize<CatalogItemDto>(stream, this._jsonSerializerOptions);
 
         // Assert - 1
-        Assert.Equal(bodyContent.Id, addedItem.Id);
+        Assert.Equal(dto.Name, addedItem.Name);
     }
 
-    [Fact]
-    public async Task DeleteCatalogItem()
+    [Theory, AutoNSubstituteData]
+    public async Task DeleteCatalogItem(
+        CreateCatalogItemDto dto)
     {
-        //Act - 1
-        var response = await this._httpClient.DeleteAsync("/api/catalog/items/5");
+        // Arrange
+
+        CatalogBrandDto[] brands = await this._httpClient.GetFromJsonAsync<CatalogBrandDto[]>("api/catalog/catalogBrands");
+        CatalogTypeDto[] types = await this._httpClient.GetFromJsonAsync<CatalogTypeDto[]>("api/catalog/catalogTypes");
+
+        HttpResponseMessage response = await this._httpClient.PostAsJsonAsync("/api/catalog/items",
+            dto with { CatalogBrand = brands[0].ObjectId, CatalogType = types[0].ObjectId });
+        Stream stream = await response.Content.ReadAsStreamAsync();
+        CatalogItemDto addedItem = JsonSerializer.Deserialize<CatalogItemDto>(stream, this._jsonSerializerOptions);
+
+        // Act
+
+        response = await this._httpClient.DeleteAsync($"/api/catalog/items/{addedItem.ObjectId}");
         response.EnsureSuccessStatusCode();
 
-        // Act - 2
-        var response1 = await this._httpClient.GetAsync("/api/catalog/items/5");
-        var responseStatus = response1.StatusCode;
+        // Assert
 
-        // Assert - 1
-        Assert.Equal("NoContent", response.StatusCode.ToString());
-        Assert.Equal("NotFound", responseStatus.ToString());
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 }

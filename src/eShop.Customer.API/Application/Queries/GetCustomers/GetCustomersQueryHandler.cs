@@ -19,6 +19,8 @@ internal class GetCustomersQueryHandler(
     {
         try
         {
+            this.logger.LogInformation("Getting customers.");
+
             List<Domain.AggregatesModel.CustomerAggregate.Customer> customers =
                 await this.customerRepository.ListAsync(new GetCustomersSpecification(request.IncludeDeleted), cancellationToken);
 
@@ -28,14 +30,14 @@ internal class GetCustomersQueryHandler(
                 return foundResult;
             }
 
-            this.logger.LogInformation("Returning customers.");
+            this.logger.LogInformation("Retrieved {Count} customers.", customers.Count);
 
             return customers
                 .MapToCustomerDtoList();
         }
         catch (Exception ex)
         {
-            string errorMessage = "Failed to retrieve orders.";
+            string errorMessage = "Failed to retrieve customers.";
             this.logger.LogError(ex, "Error: {Message}", errorMessage);
             return Result.Error(errorMessage);
         }

@@ -1,9 +1,12 @@
 @page "/catalog"
 @using MediatR
+@using eShop.AdminApp.Application.Commands.Catalog.DeleteCatalogItem
 @using eShop.AdminApp.Application.Queries.Catalog.GetCatalogBrands
 @using eShop.AdminApp.Application.Queries.Catalog.GetCatalogItems
 @using eShop.AdminApp.Application.Queries.Catalog.GetCatalogTypes
 @inject IMediator Mediator
+@inject IDialogService DialogService
+@inject NavigationManager Navigation
 
 <PageTitle>Catalog</PageTitle>
 
@@ -12,18 +15,31 @@
         <div class="tw-container tw-p-8">
             <div class="tw-mb-4">
                 <FluentToolbar>
-                    <FluentButton IconStart="@(new Icons.Regular.Size16.ShoppingBagAdd())" Appearance="Appearance.Accent">
-                        Add Catalog Item
-                    </FluentButton>
+                    <FluentIcon Title="Add Catalog Item" Value="@(new Icons.Regular.Size16.ShoppingBagAdd())" OnClick="AddCatalogItem" />
+                    <FluentIcon Title="Delete Selected Catalog Items" Value="@(new Icons.Regular.Size16.Delete())" OnClick="DeleteCatalogItems" />
                 </FluentToolbar>
             </div>
             <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
                 <h3 class="tw-text-2xl tw-font-medium">Catalog Items</h3>
             </div>
             <div>
+                <FluentCheckbox Label="Show deleted" @bind-Value="includeDeleted" @bind-Value:after="@(() => GetCatalogItems())" />
                 <FluentDataGrid TGridItem="CatalogItemViewModel" Items="@catalogItems" ShowHover="true" ResizableColumns=true>
+                    <SelectColumn TGridItem="CatalogItemViewModel"
+                          SelectMode="DataGridSelectMode.Multiple"
+                          SelectFromEntireRow="false"
+                          @bind-SelectedItems="@SelectedItems" />
+                    <TemplateColumn>
+                        <FluentIcon Title="Catalog Item Detail"  Value="@(new Icons.Regular.Size16.ArrowCircleRight())" OnClick="() => NavigateToCatalogItem(context.ObjectId)" />
+                    </TemplateColumn>
                     <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
                     <PropertyColumn Property="@(p => p.Price)" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.CatalogBrand!.Name)" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.CatalogType.Name)" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.AvailableStock)" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.RestockThreshold)" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.MaxStockThreshold)" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.OnReorder)" Sortable="true" />
                 </FluentDataGrid>
             </div>
         </div>
@@ -34,8 +50,8 @@
                 <h3 class="tw-text-2xl tw-font-medium">Catalog Types</h3>
             </div>
             <div>
-                <FluentDataGrid TGridItem="CatalogTypeViewModel" Items="@catalogTypes" ShowHover="true" ResizableColumns=true>
-                    <PropertyColumn Property="@(p => p.Type)" Sortable="true" />
+                <FluentDataGrid TGridItem="eShop.AdminApp.Application.Queries.Catalog.GetCatalogTypes.CatalogTypeViewModel" Items="@catalogTypes" ShowHover="true" ResizableColumns=true>
+                    <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
                 </FluentDataGrid>
             </div>
         </div>
@@ -46,8 +62,8 @@
                 <h3 class="tw-text-2xl tw-font-medium">Catalog Brands</h3>
             </div>
             <div>
-                <FluentDataGrid TGridItem="CatalogBrandViewModel" Items="@catalogBrands" ShowHover="true" ResizableColumns=true>
-                    <PropertyColumn Property="@(p => p.Brand)" Sortable="true" />
+                <FluentDataGrid TGridItem="eShop.AdminApp.Application.Queries.Catalog.GetCatalogBrands.CatalogBrandViewModel" Items="@catalogBrands" ShowHover="true" ResizableColumns=true>
+                    <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
                 </FluentDataGrid>
             </div>
         </div>
@@ -56,8 +72,10 @@
 
 @code {
     private IQueryable<CatalogItemViewModel>? catalogItems;
-    private IQueryable<CatalogTypeViewModel>? catalogTypes;
-    private IQueryable<CatalogBrandViewModel>? catalogBrands;
+    private IQueryable<eShop.AdminApp.Application.Queries.Catalog.GetCatalogTypes.CatalogTypeViewModel>? catalogTypes;
+    private IQueryable<eShop.AdminApp.Application.Queries.Catalog.GetCatalogBrands.CatalogBrandViewModel>? catalogBrands;
+    private IEnumerable<CatalogItemViewModel> SelectedItems = Array.Empty<CatalogItemViewModel>();
+    private bool includeDeleted;
 
     protected override async Task OnInitializedAsync()
     {
@@ -68,8 +86,13 @@
 
     private async Task GetCatalogItems()
     {
-        this.catalogItems = (await Mediator.Send(new GetCatalogItemsQuery()))
+        this.catalogItems = (await Mediator.Send(new GetCatalogItemsQuery(includeDeleted)))
             .Value.AsQueryable();
+    }
+
+    private void AddCatalogItem()
+    {
+        Navigation.NavigateTo("/catalog/new");
     }
 
     private async Task GetCatalogTypes()
@@ -82,5 +105,28 @@
     {
         this.catalogBrands = (await Mediator.Send(new GetCatalogBrandsQuery()))
             .Value.AsQueryable();
+    }
+
+    private void NavigateToCatalogItem(Guid objectId) => Navigation.NavigateTo($"/catalog/{objectId}");
+
+    private async Task DeleteCatalogItems()
+    {
+        if (SelectedItems.Any())
+        {
+            IDialogReference dialog = await DialogService.ShowConfirmationAsync(
+                "Are you sure you want to delete the selected catalog items?",
+                "Yes", "No",
+                "Delete Catalog Items");
+            DialogResult dialogResult = await dialog.Result;
+
+            if (dialogResult.Cancelled == false)
+            {
+                foreach (CatalogItemViewModel catalogItem in SelectedItems)
+                {
+                    await Mediator.Send(new DeleteCatalogItemCommand(catalogItem.ObjectId));
+                }
+                await GetCatalogItems();
+            }
+        }
     }
 }

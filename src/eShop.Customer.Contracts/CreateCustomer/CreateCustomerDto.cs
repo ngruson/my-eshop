@@ -6,7 +6,7 @@ public record CreateCustomerDto(
     string LastName,
     string Street,
     string City,
-    string State,
+    string? State,
     string Country,
     string ZipCode,
     string? CardNumber,

@@ -1,43 +1,46 @@
-using eShop.Shared.Data;
+using eShop.Shared.IntegrationEvents;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace eShop.Catalog.API.IntegrationEvents;
 
-public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEventService> logger,
+public sealed class CatalogIntegrationEventService(
     IEventBus eventBus,
-    //CatalogContext catalogContext,
-    IIntegrationEventLogService integrationEventLogService)
-        : ICatalogIntegrationEventService
+    IIntegrationEventLogService integrationEventLogService,
+    CatalogContext dbContext,
+    ILogger<CatalogIntegrationEventService> logger) : IIntegrationEventService
 {
-    public async Task PublishThroughEventBusAsync(IntegrationEvent evt, CancellationToken cancellationToken)
+    public async Task AddAndSaveEventAsync(IntegrationEvent evt, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            logger.LogInformation("Publishing integration event: {IntegrationEventId_published} - ({@IntegrationEvent})", evt.Id, evt);
+        IDbContextTransaction? transaction = dbContext.GetCurrentTransaction();
 
-            await integrationEventLogService.MarkEventAsInProgressAsync(evt.Id, cancellationToken);
-            await eventBus.PublishAsync(evt, cancellationToken);
-            await integrationEventLogService.MarkEventAsPublishedAsync(evt.Id, cancellationToken);
-        }
-        catch (Exception ex)
+        if (transaction is not null)
         {
-            logger.LogError(ex, "Error Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", evt.Id, evt);
-            await integrationEventLogService.MarkEventAsFailedAsync(evt.Id, cancellationToken);
+            logger.LogInformation("Enqueuing integration event {IntegrationEventId} to repository ({@IntegrationEvent})", evt.Id, evt);
+
+            await integrationEventLogService.SaveEventAsync(evt, transaction.TransactionId, cancellationToken);
         }
     }
 
-    public async Task SaveEventAndDbChangesAsync(IRepository<CatalogItem> repository, IntegrationEvent evt, Func<Task>? func, CancellationToken cancellationToken)
+    public async Task PublishEventsThroughEventBusAsync(Guid transactionId, CancellationToken cancellationToken)
     {
-        logger.LogInformation("CatalogIntegrationEventService - Saving changes and integrationEvent: {IntegrationEventId}", evt.Id);
+        var pendingLogEvents = await integrationEventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId, cancellationToken);
 
-        await repository.ExecuteInTransactionAsync(async (Guid transactionId) =>
+        foreach (var logEvt in pendingLogEvents)
+        {
+            logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", logEvt.EventId, logEvt.IntegrationEvent);
+
+            try
             {
-                // Achieving atomicity between original catalog database operation and the IntegrationEventLog thanks to a local transaction
-                if (func is not null)
-                {
-                    await func();
-                }
-                await integrationEventLogService.SaveEventAsync(evt, transactionId, cancellationToken);
-            },
-            cancellationToken);
+                await integrationEventLogService.MarkEventAsInProgressAsync(logEvt.EventId, cancellationToken);
+                await eventBus.PublishAsync(logEvt.IntegrationEvent!, cancellationToken);
+                await integrationEventLogService.MarkEventAsPublishedAsync(logEvt.EventId, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error publishing integration event: {IntegrationEventId}", logEvt.EventId);
+
+                await integrationEventLogService.MarkEventAsFailedAsync(logEvt.EventId, cancellationToken);
+            }
+        }
     }
 }

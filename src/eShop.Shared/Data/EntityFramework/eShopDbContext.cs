@@ -10,9 +10,7 @@ public abstract class eShopDbContext : DbContext, IUnitOfWork<IDbContextTransact
     private readonly IMediator _mediator;
     private IDbContextTransaction? _currentTransaction;
 
-    //public eShopDbContext(DbContextOptions<eShopDbContext> options) : base(options) { }
-
-    public IDbContextTransaction? GetCurrentTransaction() => this._currentTransaction;
+    public virtual IDbContextTransaction? GetCurrentTransaction() => this._currentTransaction;
 
     public bool HasActiveTransaction => this._currentTransaction != null;
 

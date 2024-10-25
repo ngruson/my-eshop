@@ -4,8 +4,8 @@ namespace eShop.Ordering.API.Application.Specifications;
 
 public class CardTypeSpecification : Specification<CardType>, ISingleResultSpecification<CardType>
 {
-    public CardTypeSpecification(string name)
+    public CardTypeSpecification(Guid objectId)
     {
-        this.Query.Where(x => x.Name == name);
+        this.Query.Where(x => x.ObjectId == objectId);
     }
 }

@@ -3,6 +3,7 @@ using AutoFixture.Xunit2;
 using eShop.Catalog.API.IntegrationEvents.EventHandling;
 using eShop.Catalog.API.IntegrationEvents.Events;
 using eShop.Catalog.API.Model;
+using eShop.Catalog.API.Specifications;
 using eShop.Shared.Data;
 using NSubstitute;
 
@@ -25,7 +26,7 @@ public class OrderStatusChangedToPaidIntegrationEventHandlerUnitTests
             catalogItem.AvailableStock = integrationEvent.OrderStockItems.Max(_ => _.Units);
         }
 
-        repository.GetByIdAsync(Arg.Any<int>(), default)
+        repository.SingleOrDefaultAsync(Arg.Any<GetCatalogItemByObjectIdSpecification>(), default)
             .Returns(
                 _ => catalogItems[0],
                 _ => catalogItems[1],

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using Asp.Versioning;
@@ -6,6 +7,7 @@ using Asp.Versioning.Http;
 using eShop.Ordering.API.Application.Commands;
 using eShop.Ordering.API.Application.Queries;
 using eShop.Ordering.Contracts.CreateOrder;
+using eShop.Ordering.Contracts.GetCardTypes;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace eShop.Ordering.FunctionalTests;
@@ -137,10 +139,13 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         OrderItemDto orderItem)
     {
         // Act
-        
+
+        IEnumerable<CardTypeDto> cardTypes = await this._httpClient.GetFromJsonAsync<IEnumerable<CardTypeDto>>("api/orders/cardTypes");
+        CardTypeDto cardType = cardTypes.First(_ => _.Name == "Amex");
+
         var cardExpirationDate = DateTime.Now.AddYears(1);
         var orderRequest = new CreateOrderDto(order.UserId, order.UserName, null, null, null, null, null,
-            order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, "Amex", null, [orderItem]);
+            order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, cardType.ObjectId, null, [orderItem]);
         var content = new StringContent(JsonSerializer.Serialize(orderRequest), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }

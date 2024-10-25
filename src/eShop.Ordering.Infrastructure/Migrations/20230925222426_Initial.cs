@@ -43,6 +43,7 @@ namespace Ordering.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false),
+                    ObjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     IdentityGuid = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true)
                 },
@@ -98,6 +99,7 @@ namespace Ordering.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false),
+                    ObjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     CardTypeId = table.Column<int>(type: "integer", nullable: false),
                     BuyerId = table.Column<int>(type: "integer", nullable: false),
                     Alias = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
@@ -174,7 +176,7 @@ namespace Ordering.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false),
                     ObjectId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uuid", nullable: false),
                     OrderId = table.Column<int>(type: "integer", nullable: false),
                     Discount = table.Column<decimal>(type: "numeric", nullable: false),
                     PictureUrl = table.Column<string>(type: "text", nullable: true),

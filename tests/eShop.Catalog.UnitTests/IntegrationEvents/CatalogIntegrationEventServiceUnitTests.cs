@@ -1,15 +1,16 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using eShop.Catalog.API.Infrastructure;
 using eShop.Catalog.API.IntegrationEvents;
-using eShop.Catalog.API.Model;
 using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
+using eShop.IntegrationEventLogEF;
 using eShop.IntegrationEventLogEF.Services;
-using eShop.Shared.Data;
+using Microsoft.EntityFrameworkCore.Storage;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
-namespace eShop.Catalog.API.UnitTests.IntegrationEvents;
+namespace eShop.Catalog.UnitTests.IntegrationEvents;
 public class CatalogIntegrationEventServiceUnitTests
 {
     public class PublishThroughEventBus
@@ -19,22 +20,26 @@ public class CatalogIntegrationEventServiceUnitTests
             [Substitute, Frozen] IIntegrationEventLogService integrationEventLogService,
             [Substitute, Frozen] IEventBus eventBus,
             CatalogIntegrationEventService sut,
-            IntegrationEvent integrationEvent
+            Guid transactionId,
+            IEnumerable<IntegrationEventLogEntry> pendingLogEvents
         )
         {
             // Arrange
 
-            // Act
+            integrationEventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId, default)
+                .Returns(pendingLogEvents);
 
-            await sut.PublishThroughEventBusAsync(integrationEvent, default);
+            // Act            
+
+            await sut.PublishEventsThroughEventBusAsync(transactionId, default);
 
             // Assert
 
-            await integrationEventLogService.Received().MarkEventAsInProgressAsync(integrationEvent.Id, default);
-            await eventBus.Received().PublishAsync(integrationEvent, default);
-            await integrationEventLogService.Received().MarkEventAsPublishedAsync(integrationEvent.Id, default);
+            await integrationEventLogService.Received(pendingLogEvents.Count()).MarkEventAsInProgressAsync(Arg.Any<Guid>(), default);
+            await eventBus.Received(pendingLogEvents.Count()).PublishAsync(Arg.Any<IntegrationEvent>(), default);
+            await integrationEventLogService.Received(pendingLogEvents.Count()).MarkEventAsPublishedAsync(Arg.Any<Guid>(), default);
 
-            await integrationEventLogService.DidNotReceive().MarkEventAsFailedAsync(integrationEvent.Id, default);
+            await integrationEventLogService.DidNotReceive().MarkEventAsFailedAsync(Arg.Any<Guid>(), default);
         }
 
         [Theory, AutoNSubstituteData]
@@ -42,47 +47,73 @@ public class CatalogIntegrationEventServiceUnitTests
             [Substitute, Frozen] IIntegrationEventLogService integrationEventLogService,
             [Substitute, Frozen] IEventBus eventBus,
             CatalogIntegrationEventService sut,
+            Guid transactionId,
+            IEnumerable<IntegrationEventLogEntry> pendingLogEvents
+        )
+        {
+            // Arrange
+
+            integrationEventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId, default)
+                .Returns(pendingLogEvents);
+
+            integrationEventLogService.MarkEventAsInProgressAsync(Arg.Any<Guid>(), default)
+                .ThrowsAsync<Exception>();
+
+            // Act
+
+            await sut.PublishEventsThroughEventBusAsync(transactionId, default);
+
+            // Assert
+
+            await integrationEventLogService.Received(pendingLogEvents.Count()).MarkEventAsInProgressAsync(Arg.Any<Guid>(), default);
+            await eventBus.DidNotReceive().PublishAsync(Arg.Any<IntegrationEvent>(), default);
+            await integrationEventLogService.DidNotReceive().MarkEventAsPublishedAsync(Arg.Any<Guid>(), default);
+
+            await integrationEventLogService.Received(pendingLogEvents.Count()).MarkEventAsFailedAsync(Arg.Any<Guid>(), default);
+        }
+    }
+
+    public class AddAndSaveEvent
+    {
+        [Theory, AutoNSubstituteData]
+        internal async Task add_event_ok(
+            [Substitute, Frozen] IIntegrationEventLogService integrationEventLogService,
+            [Substitute, Frozen] CatalogContext catalogContext,
+            CatalogIntegrationEventService sut,
+            IntegrationEvent integrationEvent,
+            IDbContextTransaction transaction
+        )
+        {
+            // Arrange
+
+            catalogContext.GetCurrentTransaction()
+                .Returns(transaction);
+
+            // Act
+
+            await sut.AddAndSaveEventAsync(integrationEvent, default);
+
+            // Assert
+
+            await integrationEventLogService.SaveEventAsync(integrationEvent, Arg.Any<Guid>(), default);
+        }
+
+        [Theory, AutoNSubstituteData]
+        internal async Task do_not_save_event_when_not_in_transaction(
+            [Substitute, Frozen] IIntegrationEventLogService integrationEventLogService,
+            CatalogIntegrationEventService sut,
             IntegrationEvent integrationEvent
         )
         {
             // Arrange
 
-            eventBus.PublishAsync(integrationEvent, default)
-                .ThrowsAsync<Exception>();
-
             // Act
 
-            await sut.PublishThroughEventBusAsync(integrationEvent, default);
+            await sut.AddAndSaveEventAsync(integrationEvent, default);
 
             // Assert
 
-            await integrationEventLogService.Received().MarkEventAsInProgressAsync(integrationEvent.Id, default);
-            await eventBus.Received().PublishAsync(integrationEvent, default);
-            await integrationEventLogService.DidNotReceive().MarkEventAsPublishedAsync(integrationEvent.Id, default);
-
-            await integrationEventLogService.Received().MarkEventAsFailedAsync(integrationEvent.Id, default);
-        }
-    }
-
-    public class SaveEventAndDbChanges
-    {
-        [Theory, AutoNSubstituteData]
-        internal async Task save_event_ok(
-            [Substitute, Frozen] IRepository<CatalogItem> repository,
-            CatalogIntegrationEventService sut,
-            IntegrationEvent integrationEvent,
-            Func<Task> func
-        )
-        {
-            // Arrange
-
-            // Act
-
-            await sut.SaveEventAndDbChangesAsync(repository, integrationEvent, func, default);
-
-            // Assert
-
-            await repository.Received().ExecuteInTransactionAsync(Arg.Any<Func<Guid, Task>>(), default);
+            await integrationEventLogService.DidNotReceive().SaveEventAsync(integrationEvent, Arg.Any<Guid>(), default);
         }
     }
 }

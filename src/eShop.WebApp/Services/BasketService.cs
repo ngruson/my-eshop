@@ -1,4 +1,4 @@
-﻿using eShop.Basket.API.Grpc;
+using eShop.Basket.API.Grpc;
 using GrpcBasketItem = eShop.Basket.API.Grpc.BasketItem;
 using GrpcBasketClient = eShop.Basket.API.Grpc.Basket.BasketClient;
 
@@ -25,7 +25,7 @@ public class BasketService(GrpcBasketClient basketClient)
         {
             var updateItem = new GrpcBasketItem
             {
-                ProductId = item.ProductId,
+                ProductId = item.ProductId.ToString(),
                 Quantity = item.Quantity,
             };
             updatePayload.Items.Add(updateItem);
@@ -39,11 +39,11 @@ public class BasketService(GrpcBasketClient basketClient)
         var result = new List<BasketQuantity>();
         foreach (var item in response.Items)
         {
-            result.Add(new BasketQuantity(item.ProductId, item.Quantity));
+            result.Add(new BasketQuantity(Guid.Parse(item.ProductId), item.Quantity));
         }
 
         return result;
     }
 }
 
-public record BasketQuantity(int ProductId, int Quantity);
+public record BasketQuantity(Guid ProductId, int Quantity);

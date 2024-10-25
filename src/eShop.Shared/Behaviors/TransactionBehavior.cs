@@ -28,7 +28,7 @@ public class TransactionBehavior<TRequest, TResponse>(eShopDbContext dbContext,
                 return await next();
             }
 
-            var strategy = this._dbContext.Database.CreateExecutionStrategy();
+            IExecutionStrategy strategy = this._dbContext.Database.CreateExecutionStrategy();
 
             await strategy.ExecuteAsync(async () =>
             {

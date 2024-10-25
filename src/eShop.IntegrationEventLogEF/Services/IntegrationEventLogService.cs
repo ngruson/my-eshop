@@ -27,7 +27,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         List<IntegrationEventLogEntry> result = await this._repository.ListAsync(
             new GetPendingEventLogsSpecification(transactionId, this._eventTypes), cancellationToken);
 
-        if (result.Count > 0)
+        if (result.Count > 0 && this._eventTypes.Length > 0)
         {
             return result
                 .Select(e => e.DeserializeJsonContent(this._eventTypes.FirstOrDefault(t => t.Name == e.EventTypeShortName)!))

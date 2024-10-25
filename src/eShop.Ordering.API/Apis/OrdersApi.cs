@@ -1,6 +1,7 @@
 using Ardalis.Result.AspNetCore;
 using eShop.Ordering.API.Application.Queries.GetOrders;
 using eShop.Ordering.Contracts.CreateOrder;
+using eShop.Ordering.Contracts.GetCardTypes;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Order = eShop.Ordering.API.Application.Queries.Order;
 
@@ -106,7 +107,7 @@ public static class OrdersApi
         return TypedResults.Ok(orders);
     }
 
-    public static async Task<Ok<IEnumerable<CardType>>> GetCardTypesAsync(IOrderQueries orderQueries)
+    public static async Task<Ok<IEnumerable<CardTypeDto>>> GetCardTypesAsync(IOrderQueries orderQueries)
     {
         var cardTypes = await orderQueries.GetCardTypesAsync();
         return TypedResults.Ok(cardTypes);

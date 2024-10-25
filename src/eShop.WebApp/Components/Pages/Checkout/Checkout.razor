@@ -5,9 +5,12 @@
 @using System.Security.Claims
 @using eShop.Customer.Contracts
 @using eShop.Customer.Contracts.GetCustomer
+@using eShop.Ordering.Contracts
+@using eShop.Ordering.Contracts.GetCardTypes
 @inject BasketState Basket
 @inject NavigationManager Nav
 @inject ICustomerApi CustomerApi
+@inject IOrderingApi OrderingApi
 @attribute [Authorize]
 
 <PageTitle>Checkout | AdventureWorks</PageTitle>
@@ -128,9 +131,16 @@
 
     private async Task HandleValidSubmitAsync()
     {
-        Info.CardTypeId = 1;
+        Info.CardTypeId = await GetCardType();
         await Basket.CheckoutAsync(Info);
         Nav.NavigateTo("user/orders");
+    }
+
+    private async Task<Guid> GetCardType()
+    {
+        IEnumerable<CardTypeDto> cardTypes= await OrderingApi.GetCardTypes();
+        CardTypeDto cardType = cardTypes.First(x => x.Name == "Amex");
+        return cardType.ObjectId;
     }
 
     private async Task PerformCustomValidationAsync()

@@ -8,7 +8,7 @@ namespace eShop.Catalog.API.Infrastructure;
 ///
 /// dotnet ef migrations add --context CatalogContext [migration-name]
 /// </remarks>
-public class CatalogContext(DbContextOptions options, IMediator mediator) : eShopDbContext(options, mediator)
+public class CatalogContext(DbContextOptions<CatalogContext> options, IMediator mediator) : eShopDbContext(options, mediator)
 {
     protected override void OnModelCreating(ModelBuilder builder)
     {

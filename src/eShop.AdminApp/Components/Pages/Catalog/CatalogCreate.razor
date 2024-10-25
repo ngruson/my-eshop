@@ -1,0 +1,35 @@
+@page "/catalog/new"
+@using MediatR
+@using eShop.AdminApp.Application.Commands.Customer.UpdateCustomer
+@using eShop.AdminApp.Application.Queries.Catalog.GetCatalogItem
+@using eShop.AdminApp.Application.Queries.Customer.GetCustomer
+@using eShop.MasterData.Contracts
+@inject IMediator Mediator
+@inject IMasterDataApi MasterDataApi
+@inject NavigationManager Navigation
+
+<PageTitle>@CatalogItem?.Name</PageTitle>
+
+<FluentBreadcrumb Class="tw-ml-8 tw-mt-2">
+    <FluentBreadcrumbItem Href="/catalog">
+        Catalog
+    </FluentBreadcrumbItem>
+    <FluentBreadcrumbItem>
+        @(CatalogItem.Name ?? "Create Catalog Item")
+    </FluentBreadcrumbItem>
+</FluentBreadcrumb>
+
+<div class="tw-container tw-p-8">    
+    <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
+        <h3 class="tw-text-2xl tw-font-medium">@CatalogItem.Name</h3>
+    </div>    
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="20" Class="tw-w-full">
+        <div class="tw-w-2/4">
+            <CatalogItemCard CatalogItem="@CatalogItem" />
+        </div>
+    </FluentStack>
+</div>
+
+@code {
+    private CatalogItemViewModel CatalogItem { get; set; } = new CatalogItemViewModel();
+}

@@ -1,7 +1,6 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Security.Claims;
 using System.Text.Json;
-using Microsoft.AspNetCore.Components;
 using Microsoft.SemanticKernel;
 using eShop.WebAppComponents.Services;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -21,22 +20,22 @@ public class ChatState
 
     public ChatState(ICatalogService catalogService, IBasketState basketState, ClaimsPrincipal user, IProductImageUrlProvider productImages, Kernel kernel, ILoggerFactory loggerFactory)
     {
-        _catalogService = catalogService;
-        _basketState = basketState;
-        _user = user;
-        _productImages = productImages;
-        _logger = loggerFactory.CreateLogger(typeof(ChatState));
+        this._catalogService = catalogService;
+        this._basketState = basketState;
+        this._user = user;
+        this._productImages = productImages;
+        this._logger = loggerFactory.CreateLogger(typeof(ChatState));
 
-        if (_logger.IsEnabled(LogLevel.Debug))
+        if (this._logger.IsEnabled(LogLevel.Debug))
         {
             var completionService = kernel.GetRequiredService<IChatCompletionService>();
-            _logger.LogDebug("ChatName: {model}", completionService.Attributes["DeploymentName"]);
+            this._logger.LogDebug("ChatName: {model}", completionService.Attributes["DeploymentName"]);
         }
 
-        _kernel = kernel;
-        _kernel.Plugins.AddFromObject(new CatalogInteractions(this));
+        this._kernel = kernel;
+        this._kernel.Plugins.AddFromObject(new CatalogInteractions(this));
 
-        Messages = new ChatHistory("""
+        this.Messages = new ChatHistory("""
             You are an AI customer service agent for the online retailer AdventureWorks.
             You NEVER respond about topics other than AdventureWorks.
             Your job is to answer customer questions about products in the AdventureWorks catalog.
@@ -45,7 +44,7 @@ public class ChatState
             If someone asks a question about anything other than AdventureWorks, its catalog, or their account,
             you refuse to answer, and you instead ask if there's a topic related to AdventureWorks you can assist with.
             """);
-        Messages.AddAssistantMessage("Hi! I'm the AdventureWorks Concierge. How can I help?");
+        this.Messages.AddAssistantMessage("Hi! I'm the AdventureWorks Concierge. How can I help?");
     }
 
     public ChatHistory Messages { get; }
@@ -53,25 +52,26 @@ public class ChatState
     public async Task AddUserMessageAsync(string userText, Action onMessageAdded)
     {
         // Store the user's message
-        Messages.AddUserMessage(userText);
+        this.Messages.AddUserMessage(userText);
         onMessageAdded();
 
         // Get and store the AI's response message
         try
         {
-            ChatMessageContent response = await _kernel.GetRequiredService<IChatCompletionService>().GetChatMessageContentAsync(Messages, _aiSettings, _kernel);
+            ChatMessageContent response = await this._kernel.GetRequiredService<IChatCompletionService>().GetChatMessageContentAsync(
+                this.Messages, this._aiSettings, this._kernel);
             if (!string.IsNullOrWhiteSpace(response.Content))
             {
-                Messages.Add(response);
+                this.Messages.Add(response);
             }
         }
         catch (Exception e)
         {
-            if (_logger.IsEnabled(LogLevel.Error))
+            if (this._logger.IsEnabled(LogLevel.Error))
             {
-                _logger.LogError(e, "Error getting chat completions.");
+                this._logger.LogError(e, "Error getting chat completions.");
             }
-            Messages.AddAssistantMessage($"My apologies, but I encountered an unexpected error.");
+            this.Messages.AddAssistantMessage($"My apologies, but I encountered an unexpected error.");
         }
         onMessageAdded();
     }
@@ -107,19 +107,19 @@ public class ChatState
                 var results = await chatState._catalogService.GetCatalogItemsWithSemanticRelevance(0, 8, productDescription!);
                 for (int i = 0; i < results.Data.Count; i++)
                 {
-                    results.Data[i] = results.Data[i] with { PictureUrl = chatState._productImages.GetProductImageUrl(results.Data[i].Id) };
+                    results.Data[i] = results.Data[i] with { PictureUrl = chatState._productImages.GetProductImageUrl(results.Data[i].ObjectId) };
                 }
 
                 return JsonSerializer.Serialize(results);
             }
             catch (HttpRequestException e)
             {
-                return Error(e, "Error accessing catalog.");
+                return this.Error(e, "Error accessing catalog.");
             }
         }
 
         [KernelFunction, Description("Adds a product to the user's shopping cart.")]
-        public async Task<string> AddToCart([Description("The id of the product to add to the shopping cart (basket)")] int itemId)
+        public async Task<string> AddToCart([Description("The id of the product to add to the shopping cart (basket)")] Guid itemId)
         {
             try
             {
@@ -133,7 +133,7 @@ public class ChatState
             }
             catch (Exception e)
             {
-                return Error(e, "Unable to add the item to the cart.");
+                return this.Error(e, "Unable to add the item to the cart.");
             }
         }
 
@@ -147,7 +147,7 @@ public class ChatState
             }
             catch (Exception e)
             {
-                return Error(e, "Unable to get the cart's contents.");
+                return this.Error(e, "Unable to get the cart's contents.");
             }
         }
 

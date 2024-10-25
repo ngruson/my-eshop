@@ -12,6 +12,7 @@ using eShop.Catalog.Contracts;
 using eShop.Identity.Contracts.GetUsers;
 using eShop.Catalog.Contracts.GetCatalogItems;
 using eShop.AdminApp.Application.Commands.Order.GenerateOrders;
+using eShop.Ordering.Contracts.GetCardTypes;
 
 namespace eShop.AdminApp.UnitTests.Application.Commands;
 
@@ -27,7 +28,8 @@ public class GenerateOrdersCommandUnitTests
         GenerateOrdersCommandHandler sut,
         CustomerDto[] customers,
         UserDto[] users,
-        CatalogItemDto[] catalogItems)
+        CatalogItemDto[] catalogItems,
+        CardTypeDto[] cardTypes)
     {
         // Arrange
 
@@ -50,6 +52,11 @@ public class GenerateOrdersCommandUnitTests
 
         catalogApi.GetCatalogItems()
             .Returns(catalogItems);
+
+        cardTypes[0] = cardTypes[0] with { Name = "Amex" };
+
+        orderingApi.GetCardTypes()
+            .Returns(cardTypes);
 
         // Act
 

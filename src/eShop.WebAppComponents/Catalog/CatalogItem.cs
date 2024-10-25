@@ -1,7 +1,7 @@
-﻿namespace eShop.WebAppComponents.Catalog;
+namespace eShop.WebAppComponents.Catalog;
 
 public record CatalogItem(
-    int Id,
+    Guid ObjectId,
     string Name,
     string Description,
     decimal Price,

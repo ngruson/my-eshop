@@ -1,3 +1,4 @@
+using eShop.Catalog.API.Specifications;
 using eShop.Shared.Data;
 
 namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
@@ -14,7 +15,9 @@ public class OrderStatusChangedToPaidIntegrationEventHandler(
         //we're not blocking stock/inventory
         foreach (var orderStockItem in @event.OrderStockItems)
         {
-            CatalogItem? catalogItem = await repository.GetByIdAsync(orderStockItem.ProductId, cancellationToken);
+            CatalogItem? catalogItem = await repository.SingleOrDefaultAsync(
+                new GetCatalogItemByObjectIdSpecification(orderStockItem.ProductId),
+                cancellationToken);
 
             catalogItem!.RemoveStock(orderStockItem.Units);
 

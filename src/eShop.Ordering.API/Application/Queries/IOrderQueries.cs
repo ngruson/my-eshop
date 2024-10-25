@@ -1,4 +1,6 @@
-﻿namespace eShop.Ordering.API.Application.Queries;
+using eShop.Ordering.Contracts.GetCardTypes;
+
+namespace eShop.Ordering.API.Application.Queries;
 
 public interface IOrderQueries
 {
@@ -6,5 +8,5 @@ public interface IOrderQueries
 
     Task<IEnumerable<OrderSummary>> GetOrdersFromUserAsync(string userId);
 
-    Task<IEnumerable<CardType>> GetCardTypesAsync();
+    Task<IEnumerable<CardTypeDto>> GetCardTypesAsync();
 }

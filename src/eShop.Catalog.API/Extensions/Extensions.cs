@@ -1,6 +1,8 @@
 using eShop.Catalog.API.Services;
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;
+using eShop.Shared.Data.EntityFramework;
+using eShop.Shared.IntegrationEvents;
 using Microsoft.SemanticKernel;
 
 namespace eShop.Catalog.API.Extensions;
@@ -16,6 +18,7 @@ public static class Extensions
                 builder.UseVector();
             });
         });
+        builder.Services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<CatalogContext>());
 
         // REVIEW: This is done for development ease but shouldn't be here in production
         builder.Services.AddMigration<CatalogContext>(typeof(CatalogSeed));
@@ -25,8 +28,7 @@ public static class Extensions
 
         // Add the integration services that consume the DbContext
         builder.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService>();
-
-        builder.Services.AddTransient<ICatalogIntegrationEventService, CatalogIntegrationEventService>();
+        builder.Services.AddTransient<IIntegrationEventService, CatalogIntegrationEventService>();
 
         // Configure Mediator
         builder.Services.AddMediatR(cfg =>

@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using eShop.Basket.API.Repositories;
-using eShop.Basket.API.Extensions;
 using eShop.Basket.API.Model;
 
 namespace eShop.Basket.API.Grpc;
@@ -82,7 +81,7 @@ public class BasketService(
         {
             response.Items.Add(new BasketItem()
             {
-                ProductId = item.ProductId,
+                ProductId = item.ProductId.ToString(),
                 Quantity = item.Quantity,
             });
         }
@@ -101,7 +100,7 @@ public class BasketService(
         {
             response.Items.Add(new()
             {
-                ProductId = item.ProductId,
+                ProductId = Guid.Parse(item.ProductId),
                 Quantity = item.Quantity,
             });
         }

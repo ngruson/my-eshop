@@ -6,6 +6,6 @@ public record UpdateCustomerDto(
     string LastName,
     string Street,
     string City,
-    string State,
+    string? State,
     string Country,
     string ZipCode);

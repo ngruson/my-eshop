@@ -31,6 +31,7 @@ public partial class Initial : Migration
             columns: table => new
             {
                 Id = table.Column<int>(type: "integer", nullable: false),
+                ObjectId = table.Column<string>(type: "uuid", nullable: false),
                 Brand = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
             },
             constraints: table =>
@@ -43,6 +44,7 @@ public partial class Initial : Migration
             columns: table => new
             {
                 Id = table.Column<int>(type: "integer", nullable: false),
+                ObjectId = table.Column<string>(type: "uuid", nullable: false),
                 Type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
             },
             constraints: table =>
@@ -55,6 +57,7 @@ public partial class Initial : Migration
             columns: table => new
             {
                 Id = table.Column<int>(type: "integer", nullable: false),
+                ObjectId = table.Column<string>(type: "uuid", nullable: false),
                 Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                 Description = table.Column<string>(type: "text", nullable: true),
                 Price = table.Column<decimal>(type: "numeric", nullable: false),
@@ -65,7 +68,9 @@ public partial class Initial : Migration
                 RestockThreshold = table.Column<int>(type: "integer", nullable: false),
                 MaxStockThreshold = table.Column<int>(type: "integer", nullable: false),
                 Embedding = table.Column<Vector>(type: "vector(384)", nullable: true),
-                OnReorder = table.Column<bool>(type: "boolean", nullable: false)
+                OnReorder = table.Column<bool>(type: "boolean", nullable: false),
+                IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                DeletedAtUtc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
             },
             constraints: table =>
             {

@@ -8,7 +8,7 @@ internal static class MapperExtensions
     {
         return catalogTypes.Select(catalogType =>
             new CatalogTypeViewModel(
-                catalogType.Id,
-                catalogType.Type)).ToArray();
+                catalogType.ObjectId.ToString(),
+                catalogType.Name)).ToArray();
     }
 }

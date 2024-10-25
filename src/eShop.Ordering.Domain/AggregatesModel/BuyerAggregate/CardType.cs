@@ -5,12 +5,11 @@ namespace eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 public class CardType
         : Entity, IAggregateRoot
 {
-    public string? Name { get; private set; }
-
-    protected CardType() { }
+    public string? Name { get; set; }
 
     public CardType(string name)
     {
-        this.Name = !string.IsNullOrWhiteSpace(name) ? name : throw new ArgumentNullException(nameof(name));
+        this.Name = name;
+        this.ObjectId = Guid.NewGuid();
     }
 }

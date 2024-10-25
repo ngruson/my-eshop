@@ -22,11 +22,11 @@ public class CreateOrderCommandUnitTests
             .Returns(cardType);
 
         OrderItemDto[] orderItems = command.OrderItems.Select(
-            x => new OrderItemDto(x.ProductId, x.ProductName, x.UnitPrice, 0, x.Units, x.PictureUrl)).ToArray();
+            x => new OrderItemDto(x.ProductId, x.ProductName, Math.Abs(x.UnitPrice), 0, x.Units, x.PictureUrl)).ToArray();
 
         //Act
 
-        await sut.Handle(command with { CardType = cardType.Name}, default);
+        await sut.Handle(command with { CardType = cardType.ObjectId }, default);
 
         //Assert
 

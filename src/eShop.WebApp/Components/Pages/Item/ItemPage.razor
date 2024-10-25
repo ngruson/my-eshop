@@ -1,4 +1,4 @@
-﻿@page "/item/{itemId:int}"
+@page "/item/{itemId}"
 @using System.Net
 @inject CatalogService CatalogService
 @inject BasketState BasketState
@@ -67,7 +67,7 @@ else if (notFound)
     private bool notFound;
 
     [Parameter]
-    public int ItemId { get; set; }
+    public required string ItemId { get; set; }
 
     [CascadingParameter]
     public HttpContext? HttpContext { get; set; }
@@ -77,7 +77,7 @@ else if (notFound)
         try
         {
             isLoggedIn = HttpContext?.User.Identity?.IsAuthenticated == true;
-            item = await CatalogService.GetCatalogItem(ItemId);
+            item = await CatalogService.GetCatalogItem(Guid.Parse(ItemId));
             await UpdateNumInCartAsync();
         }
         catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -105,6 +105,6 @@ else if (notFound)
     private async Task UpdateNumInCartAsync()
     {
         var items = await BasketState.GetBasketItemsAsync();
-        numInCart = items.FirstOrDefault(row => row.ProductId == ItemId)?.Quantity ?? 0;
+        numInCart = items.FirstOrDefault(row => row.ProductId == Guid.Parse(ItemId))?.Quantity ?? 0;
     }
 }

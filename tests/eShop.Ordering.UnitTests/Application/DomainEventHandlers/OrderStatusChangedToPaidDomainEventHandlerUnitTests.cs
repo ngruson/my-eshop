@@ -22,8 +22,8 @@ public class OrderStatusChangedToPaidDomainEventHandlerUnitTests
 
         List<OrderItem> orderItems =
         [
-            new OrderItem(1, "Product 1", 25, 0, null),
-            new OrderItem(1, "Product 2", 30, 0, null),
+            new OrderItem(Guid.NewGuid(), "Product 1", 25, 0, null),
+            new OrderItem(Guid.NewGuid(), "Product 2", 30, 0, null),
         ];
 
 

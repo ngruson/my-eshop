@@ -8,9 +8,9 @@ public class CatalogService(HttpClient httpClient) : ICatalogService
 {
     private readonly string remoteServiceBaseUrl = "api/catalog/";
 
-    public Task<CatalogItem?> GetCatalogItem(int id)
+    public Task<CatalogItem?> GetCatalogItem(Guid objectId)
     {
-        string uri = $"{this.remoteServiceBaseUrl}items/{id}";
+        string uri = $"{this.remoteServiceBaseUrl}items/{objectId}";
         return httpClient.GetFromJsonAsync<CatalogItem>(uri);
     }
 
@@ -28,7 +28,7 @@ public class CatalogService(HttpClient httpClient) : ICatalogService
         return result!;
     }
 
-    public async Task<CatalogItem[]> GetCatalogItems(IEnumerable<int> ids)
+    public async Task<CatalogItem[]> GetCatalogItems(IEnumerable<Guid> ids)
     {
         string uri = $"{this.remoteServiceBaseUrl}items/by?ids={string.Join("&ids=", ids)}";
         CatalogItem[]? result = await httpClient.GetFromJsonAsync<CatalogItem[]>(uri);

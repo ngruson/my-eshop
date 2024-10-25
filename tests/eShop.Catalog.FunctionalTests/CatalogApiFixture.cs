@@ -7,7 +7,9 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
     private readonly IHost _app;
 
     public IResourceBuilder<PostgresServerResource> Postgres { get; private set; }
-    private string _connectionString;
+    public IResourceBuilder<RabbitMQServerResource> RabbitMq { get; private set; }
+    private string _dbConnectionString;
+    private string _rabbitMqConnectionString;
 
     public CatalogApiFixture()
     {
@@ -16,6 +18,8 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
         this.Postgres = appBuilder.AddPostgres("CatalogDB")
             .WithImage("ankane/pgvector")
             .WithImageTag("latest");
+
+        this.RabbitMq = appBuilder.AddRabbitMQ("eventbus");
 
         this._app = appBuilder.Build();
     }
@@ -26,24 +30,12 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
         {
             config.AddInMemoryCollection(new Dictionary<string, string>
             {
-                { $"ConnectionStrings:{this.Postgres.Resource.Name.ToLower()}", this._connectionString }
+                { $"ConnectionStrings:{this.Postgres.Resource.Name.ToLower()}", this._dbConnectionString },
+                { $"ConnectionStrings:{this.RabbitMq.Resource.Name.ToLower()}", this._rabbitMqConnectionString },
+                { "MediatR:UseTransactionBehavior", bool.FalseString }
             });
-
-            Console.WriteLine($"ConnectionStrings:{this.Postgres.Resource.Name.ToLower()}={this._connectionString}");
         });
         return base.CreateHost(builder);
-    }
-
-    protected override TestServer CreateServer(IWebHostBuilder builder)
-    {
-        builder.ConfigureAppConfiguration(config =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { $"ConnectionStrings:{this.Postgres.Resource.Name.ToLower()}", this._connectionString },
-                });
-        });
-        return base.CreateServer(builder);
     }
 
     public new async Task DisposeAsync()
@@ -63,6 +55,7 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
     public async Task InitializeAsync()
     {
         await this._app.StartAsync();
-        this._connectionString = await this.Postgres.Resource.GetConnectionStringAsync();
+        this._dbConnectionString = await this.Postgres.Resource.GetConnectionStringAsync();
+        this._rabbitMqConnectionString = await this.RabbitMq.Resource.ConnectionStringExpression.GetValueAsync(default);
     }
 }

@@ -1,0 +1,35 @@
+@page "/catalog/{objectId:guid}"
+@using MediatR
+@using eShop.AdminApp.Application.Commands.Customer.UpdateCustomer
+@using eShop.AdminApp.Application.Queries.Catalog.GetCatalogItem
+@inject IMediator Mediator
+
+<PageTitle>@CatalogItem?.Name</PageTitle>
+
+<FluentBreadcrumb Class="tw-ml-8 tw-mt-2">
+    <FluentBreadcrumbItem Href="/catalog">
+        Catalog
+    </FluentBreadcrumbItem>
+    <FluentBreadcrumbItem>
+        @CatalogItem?.Name
+    </FluentBreadcrumbItem>
+</FluentBreadcrumb>
+
+<div class="tw-p-8">
+    <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
+        <h3 class="tw-text-2xl tw-font-medium">@CatalogItem?.Name</h3>
+    </div>
+    <CatalogItemCard CatalogItem="@CatalogItem" />
+</div>
+
+@code {
+    [Parameter]
+    public Guid ObjectId { get; set; } = default!;
+
+    private CatalogItemViewModel? CatalogItem { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        CatalogItem = await Mediator.Send(new GetCatalogItemQuery(ObjectId));
+    }
+}

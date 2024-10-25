@@ -4,6 +4,6 @@ namespace eShop.Shared.IntegrationEvents;
 
 public interface IIntegrationEventService
 {
-    Task PublishEventsThroughEventBusAsync(Guid transactionId, CancellationToken cancellationToken);
-    Task AddAndSaveEventAsync(IntegrationEvent evt, CancellationToken cancellationToken);
+    Task PublishEventsThroughEventBusAsync(Guid transactionId, CancellationToken cancellationToken = default);
+    Task AddAndSaveEventAsync(IntegrationEvent evt, CancellationToken cancellationToken = default);
 }

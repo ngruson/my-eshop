@@ -1,4 +1,4 @@
-﻿@page "/cart"
+@page "/cart"
 @inject NavigationManager Nav
 @inject BasketState Basket
 @inject IProductImageUrlProvider ProductImages
@@ -86,7 +86,7 @@
     private IReadOnlyCollection<BasketItem>? basketItems;
 
     [SupplyParameterFromForm]
-    public int? UpdateQuantityId { get; set; }
+    public Guid? UpdateQuantityId { get; set; }
 
     [SupplyParameterFromForm]
     public int? UpdateQuantityValue { get; set; }
@@ -101,8 +101,8 @@
 
     // While an update post is in process, we want to show the pending quantity, not the one
     // that is committed to the cart (otherwise the UI briefly shows the old data)
-    private int CurrentOrPendingQuantity(int productId, int cartQuantity)
-        => UpdateQuantityId.GetValueOrDefault(-1) == productId
+    private int CurrentOrPendingQuantity(Guid productId, int cartQuantity)
+        => UpdateQuantityId.GetValueOrDefault(Guid.Empty) == productId
         ? UpdateQuantityValue!.Value
         : cartQuantity;
 

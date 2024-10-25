@@ -1,4 +1,3 @@
-using eShop.WebApp;
 using eShop.WebAppComponents.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -7,12 +6,14 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.SemanticKernel;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents;
-using eShop.Basket.API.Grpc;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.EventHandling;
 using Refit;
 using System.Security.Claims;
 using eShop.Customer.Contracts;
+using eShop.Ordering.Contracts;
+
+namespace eShop.WebApp.Extensions;
 
 public static class Extensions
 {
@@ -34,7 +35,7 @@ public static class Extensions
         builder.AddAIServices();
 
         // HTTP and GRPC client registrations
-        builder.Services.AddGrpcClient<Basket.BasketClient>(o => o.Address = new("http://basket-api"))
+        builder.Services.AddGrpcClient<Basket.API.Grpc.Basket.BasketClient>(o => o.Address = new("http://basket-api"))
             .AddAuthToken();
 
         builder.Services.AddHttpClient<CatalogService>(o => o.BaseAddress = new("http://catalog-api"))
@@ -49,6 +50,12 @@ public static class Extensions
             .AddRefitClient<ICustomerApi>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri($"{builder.Configuration["services:customer-api:http:0"]}"))
+            .AddAuthToken();
+
+        builder.Services
+            .AddRefitClient<IOrderingApi>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri("http://ordering-api"))
             .AddAuthToken();
     }
 

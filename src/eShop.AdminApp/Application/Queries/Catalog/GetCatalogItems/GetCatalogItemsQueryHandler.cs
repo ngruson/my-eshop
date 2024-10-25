@@ -18,7 +18,7 @@ public class GetCatalogItemsQueryHandler(
         {
             this.logger.LogInformation("Retrieving catalog items.");
 
-            CatalogItemDto[] catalogItems = await this.catalogApi.GetCatalogItems();
+            CatalogItemDto[] catalogItems = await this.catalogApi.GetCatalogItems(request.IncludeDeleted);
 
             this.logger.LogInformation("Catalog items retrieved: {Count}", catalogItems.Length);
 

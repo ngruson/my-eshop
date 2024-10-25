@@ -20,7 +20,7 @@ public static class RabbitMqDependencyInjectionExtensions
 
         builder.AddRabbitMQClient(connectionName, configureConnectionFactory: factory =>
         {
-            ((ConnectionFactory)factory).DispatchConsumersAsync = true;
+            factory.DispatchConsumersAsync = true;
         });
 
         // RabbitMQ.Client doesn't have built-in support for OpenTelemetry, so we need to add it ourselves

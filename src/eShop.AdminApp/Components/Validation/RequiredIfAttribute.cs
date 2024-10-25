@@ -14,7 +14,7 @@ public class RequiredIfAttribute : ValidationAttribute
         this.conditionValue = conditionValue;
     }
 
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         PropertyInfo? property = validationContext.ObjectType.GetProperty(conditionProperty);
         if (property == null)
