@@ -1,4 +1,6 @@
 using eShop.Catalog.API.Services;
+using eShop.EventBus.Extensions;
+using eShop.EventBusRabbitMQ;
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;
 using eShop.Shared.Data.EntityFramework;

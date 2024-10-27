@@ -1,4 +1,7 @@
-﻿internal static class Extensions
+﻿using eShop.EventBus.Extensions;
+using eShop.EventBusRabbitMQ;
+
+internal static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {

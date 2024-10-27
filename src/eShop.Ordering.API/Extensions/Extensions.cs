@@ -1,3 +1,7 @@
+using Dapr.Client;
+using eShop.EventBus.Dapr;
+using eShop.EventBusRabbitMQ;
+using eShop.Ordering.API.Configuration;
 using eShop.Ordering.Infrastructure.Repositories;
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;
@@ -30,8 +34,17 @@ internal static class Extensions
 
         services.AddTransient<IIntegrationEventService, OrderingIntegrationEventService>();
 
-        builder.AddRabbitMqEventBus("eventBus")
-               .AddEventBusSubscriptions();
+        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+        if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+        {
+            services.AddDaprClient();
+            services.AddSingleton<IEventBus, DaprEventBus>();
+        }
+        else
+        {
+            builder.AddRabbitMqEventBus("eventBus")
+                .AddEventBusSubscriptions();
+        }
 
         services.AddHttpContextAccessor();
         services.AddTransient<IIdentityService, IdentityService>();

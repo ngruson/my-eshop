@@ -1,3 +1,6 @@
+using System.Collections.Immutable;
+using Aspire.Hosting;
+using Aspire.Hosting.Dapr;
 using eShop.AppHost;
 using Microsoft.Extensions.Configuration;
 
@@ -5,16 +8,19 @@ IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(ar
 builder.AddForwardedHeaders();
 
 IResourceBuilder<RedisResource> redis = builder.AddRedis("redis");
-IResourceBuilder<RabbitMQServerResource> rabbitMq = builder.AddRabbitMQ("eventbus");
-IResourceBuilder<PostgresServerResource> postgres = builder.AddPostgres("postgres")
+
+//IResourceBuilder<ParameterResource> rabbitMqPassword = builder.AddParameter("rabbitMqDefaultPassword");
+IResourceBuilder<RabbitMQServerResource> rabbitMq = builder.AddRabbitMQ(
+    "eventbus", null, null, 5672);
+IResourceBuilder<PostgresServerResource> pg = builder.AddPostgres("postgres")
     .WithImage("ankane/pgvector")
     .WithImageTag("latest");
 
-IResourceBuilder<PostgresDatabaseResource> catalogDb = postgres.AddDatabase("catalogdb");
-IResourceBuilder<PostgresDatabaseResource> customerDb = postgres.AddDatabase("customerdb");
-IResourceBuilder<PostgresDatabaseResource> identityDb = postgres.AddDatabase("identitydb");
-IResourceBuilder<PostgresDatabaseResource> orderDb = postgres.AddDatabase("orderingdb");
-IResourceBuilder<PostgresDatabaseResource> webhooksDb = postgres.AddDatabase("webhooksdb");
+IResourceBuilder<PostgresDatabaseResource> catalogDb = pg.AddDatabase("catalogdb");
+IResourceBuilder<PostgresDatabaseResource> customerDb = pg.AddDatabase("customerdb");
+IResourceBuilder<PostgresDatabaseResource> identityDb = pg.AddDatabase("identitydb");
+IResourceBuilder<PostgresDatabaseResource> orderDb = pg.AddDatabase("orderingdb");
+IResourceBuilder<PostgresDatabaseResource> webhooksDb = pg.AddDatabase("webhooksdb");
 
 string launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
 
@@ -38,7 +44,14 @@ IResourceBuilder<ProjectResource> customerApi = builder.AddProject<Projects.eSho
     .WithReference(customerDb)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
+//IResourceBuilder<IDaprComponentResource> pubSub = builder.AddDaprPubSub("pubSub")
+    //.WaitFor(rabbitMq);
+
 IResourceBuilder<ProjectResource> orderingApi = builder.AddProject<Projects.eShop_Ordering_API>("ordering-api")
+    .WithDaprSidecar(new DaprSidecarOptions
+    {
+        ResourcesPaths = ImmutableHashSet.Create("./components")
+    })
     .WithReference(rabbitMq)
     .WithReference(orderDb)
     .WithEnvironment("Identity__Url", identityEndpoint);
