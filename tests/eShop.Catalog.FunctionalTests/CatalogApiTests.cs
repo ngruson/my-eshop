@@ -250,7 +250,7 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
 
         // WebP magic number for RIFF header
         byte[] riffHeader = new byte[4];
-        stream.Read(riffHeader, 0, 4);
+        stream.ReadExactly(riffHeader, 0, 4);
         string riffHeaderString = System.Text.Encoding.ASCII.GetString(riffHeader);
 
         if (riffHeaderString != "RIFF")
@@ -263,7 +263,7 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
 
         // WebP magic number for format header
         byte[] webPHeader = new byte[4];
-        stream.Read(webPHeader, 0, 4);
+        stream.ReadExactly(webPHeader, 0, 4);
         string webPHeaderString = System.Text.Encoding.ASCII.GetString(webPHeader);
 
         return webPHeaderString == "WEBP";
