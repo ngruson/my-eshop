@@ -12,6 +12,8 @@ using Refit;
 using System.Security.Claims;
 using eShop.Customer.Contracts;
 using eShop.Ordering.Contracts;
+using eShop.EventBus.Extensions;
+using eShop.EventBusRabbitMQ;
 
 namespace eShop.WebApp.Extensions;
 

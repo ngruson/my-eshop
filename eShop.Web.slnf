@@ -11,6 +11,7 @@
       "src\\eShop.Customer.Contracts\\eShop.Customer.Contracts.csproj",
       "src\\eShop.Customer.Domain\\eShop.Customer.Domain.csproj",
       "src\\eShop.Customer.Infrastructure\\eShop.Customer.Infrastructure.csproj",
+      "src\\eShop.EventBus.Dapr\\eShop.EventBus.Dapr.csproj",
       "src\\eShop.EventBusRabbitMQ\\eShop.EventBusRabbitMQ.csproj",
       "src\\eShop.EventBus\\eShop.EventBus.csproj",
       "src\\eShop.Identity.API\\eShop.Identity.API.csproj",

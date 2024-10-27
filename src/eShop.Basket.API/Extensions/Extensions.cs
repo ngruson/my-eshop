@@ -2,6 +2,8 @@
 using eShop.Basket.API.Repositories;
 using eShop.Basket.API.IntegrationEvents.EventHandling;
 using eShop.Basket.API.IntegrationEvents.EventHandling.Events;
+using eShop.EventBus.Extensions;
+using eShop.EventBusRabbitMQ;
 
 namespace eShop.Basket.API.Extensions;
 

@@ -1,9 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using eShop.EventBus.Abstractions;
-using eShop.EventBus.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace eShop.EventBus.Extensions;
 
 public static class EventBusBuilderExtensions
 {
