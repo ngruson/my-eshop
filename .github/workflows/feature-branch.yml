@@ -1,6 +1,7 @@
 name: eShop Feature Branch Build
 
 on:
+  workflow_dispatch:
   push:
     branches-ignore:
       - main
