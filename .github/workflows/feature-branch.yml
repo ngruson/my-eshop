@@ -1,6 +1,7 @@
 name: eShop Feature Branch Build
 
 on:
+  workflow_dispatch:
   push:
     branches-ignore:
       - main
@@ -9,6 +10,7 @@ on:
       - 'src/eShop.ClientApp/**'
       - 'tests/eShop.ClientApp.UnitTests/**'
       - '.github/workflows/pr-validation-maui.yml'
+  
 jobs:
   build:
     runs-on: ubuntu-latest
