@@ -16,10 +16,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup .NET (global.json)
         uses: actions/setup-dotnet@v3
-      - name: Update Workloads
-        run: dotnet workload update
-      - name: Install Workloads
-        run: dotnet workload install aspire
+        with:
+          dotnet-version: 9.0.x
+      # - name: Update Workloads
+      #   run: dotnet workload update
+      # - name: Install Workloads
+      #   run: dotnet workload install aspire
       - name: Build
         env:
           DOTNET_NUGET_SIGNATURE_VERIFICATION: false
