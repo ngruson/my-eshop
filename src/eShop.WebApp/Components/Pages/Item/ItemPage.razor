@@ -1,6 +1,8 @@
 @page "/item/{itemId}"
 @using System.Net
-@inject CatalogService CatalogService
+@using eShop.Catalog.Contracts.GetCatalogItem
+@using eShop.WebAppComponents.Services.ViewModels
+@inject ICatalogService CatalogService
 @inject BasketState BasketState
 @inject NavigationManager Nav
 @inject IProductImageUrlProvider ProductImages
@@ -9,14 +11,14 @@
 {
     <PageTitle>@item.Name | AdventureWorks</PageTitle>
     <SectionContent SectionName="page-header-title">@item.Name</SectionContent>
-    <SectionContent SectionName="page-header-subtitle">@item.CatalogBrand?.Brand</SectionContent>
+    <SectionContent SectionName="page-header-subtitle">@item.CatalogBrand?.Name</SectionContent>
 
     <div class="item-details">
         <img alt="@item.Name" src="@ProductImages.GetProductImageUrl(item)" />
         <div class="description">
             <p>@item.Description</p>
             <p>
-                Brand: <strong>@item.CatalogBrand?.Brand</strong>
+                Brand: <strong>@item.CatalogBrand?.Name</strong>
             </p>
             <form class="add-to-cart" method="post" @formname="add-to-cart" @onsubmit="@AddToCartAsync" data-enhance="@isLoggedIn">
                 <AntiforgeryToken />
@@ -61,7 +63,7 @@ else if (notFound)
 }
 
 @code {
-    private CatalogItem? item;
+    private CatalogItemViewModel? item;
     private int numInCart;
     private bool isLoggedIn;
     private bool notFound;

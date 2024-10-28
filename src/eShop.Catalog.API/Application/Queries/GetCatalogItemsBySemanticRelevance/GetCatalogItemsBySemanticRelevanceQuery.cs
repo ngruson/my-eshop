@@ -1,5 +1,6 @@
 using Ardalis.Result;
 using eShop.Catalog.Contracts.GetCatalogItems;
+using eShop.Shared.Data;
 using MediatR;
 
 namespace eShop.Catalog.API.Application.Queries.GetCatalogItemsBySemanticRelevance;

@@ -1,6 +1,10 @@
 @page "/"
+@using eShop.Catalog.Contracts
+@using eShop.Catalog.Contracts.GetCatalogItems
+@using eShop.Shared.Data
+@using eShop.WebAppComponents.Services.ViewModels
 @inject NavigationManager Nav
-@inject CatalogService CatalogService
+@inject ICatalogService CatalogService
 @attribute [StreamRendering]
 
 <PageTitle>AdventureWorks</PageTitle>
@@ -41,22 +45,22 @@
     public int? Page { get; set; }
 
     [SupplyParameterFromQuery(Name = "brand")]
-    public int? BrandId { get; set; }
+    public Guid? BrandId { get; set; }
 
     [SupplyParameterFromQuery(Name = "type")]
-    public int? ItemTypeId { get; set; }
+    public Guid? ItemTypeId { get; set; }
 
-    CatalogResult? catalogResult;
+    PaginatedItems<CatalogItemViewModel>? catalogResult;
 
-    static IEnumerable<int> GetVisiblePageIndexes(CatalogResult result)
+    static IEnumerable<int> GetVisiblePageIndexes(PaginatedItems<CatalogItemViewModel> result)
         => Enumerable.Range(1, (int)Math.Ceiling(1.0 * result.Count / PageSize));
 
     protected override async Task OnInitializedAsync()
     {
         catalogResult = await CatalogService.GetPaginatedCatalogItems(
-            Page.GetValueOrDefault(1) - 1,
-            PageSize,
+            ItemTypeId,
             BrandId,
-            ItemTypeId);
+            Page.GetValueOrDefault(1) - 1,
+            PageSize);
     }
 }

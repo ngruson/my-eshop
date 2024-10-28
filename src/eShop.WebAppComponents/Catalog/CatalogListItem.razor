@@ -1,4 +1,5 @@
-﻿@using eShop.WebAppComponents.Item
+@using eShop.WebAppComponents.Item
+@using eShop.WebAppComponents.Services.ViewModels
 @inject IProductImageUrlProvider ProductImages
 
 <div class="catalog-item">
@@ -15,7 +16,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public required CatalogItem Item { get; set; }
+    public required CatalogItemViewModel Item { get; set; }
 
     [Parameter]
     public bool IsLoggedIn { get; set; }

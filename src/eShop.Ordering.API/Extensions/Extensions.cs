@@ -1,11 +1,10 @@
-using Dapr.Client;
 using eShop.EventBus.Dapr;
 using eShop.EventBusRabbitMQ;
-using eShop.Ordering.API.Configuration;
 using eShop.Ordering.Infrastructure.Repositories;
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;
 using eShop.Shared.Data.EntityFramework;
+using eShop.Shared.Features;
 using eShop.Shared.IntegrationEvents;
 
 internal static class Extensions

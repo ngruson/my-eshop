@@ -1,15 +1,17 @@
-using eShop.WebAppComponents.Catalog;
+using eShop.Catalog.Contracts.GetCatalogBrands;
+using eShop.Catalog.Contracts.GetCatalogTypes;
+using eShop.Shared.Data;
+using eShop.WebAppComponents.Services.ViewModels;
 
-namespace eShop.WebAppComponents.Services
+namespace eShop.WebAppComponents.Services;
+
+public interface ICatalogService
 {
-    public interface ICatalogService
-    {
-        Task<CatalogItem?> GetCatalogItem(Guid objectId);
-        Task<CatalogItem[]> GetCatalogItems();
-        Task<CatalogResult> GetPaginatedCatalogItems(int pageIndex, int pageSize, int? brand, int? type);
-        Task<CatalogItem[]> GetCatalogItems(IEnumerable<Guid> ids);
-        Task<CatalogResult> GetCatalogItemsWithSemanticRelevance(int page, int take, string text);
-        Task<CatalogBrand[]> GetBrands();
-        Task<CatalogItemType[]> GetTypes();
-    }
+    Task<CatalogItemViewModel> GetCatalogItem(Guid objectId);
+    Task<eShop.Catalog.Contracts.GetCatalogItems.CatalogItemDto[]> GetCatalogItems();
+    Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItems(Guid? catalogType, Guid? catalogBrand, int pageIndex, int pageSize);
+    Task<CatalogItemViewModel[]> GetCatalogItems(Guid[] ids);
+    Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItemsWithSemanticRelevance(string text, int pageSize, int pageIndex);
+    Task<CatalogBrandDto[]> GetBrands();
+    Task<CatalogTypeDto[]> GetTypes();
 }

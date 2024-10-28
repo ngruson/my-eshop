@@ -1,4 +1,6 @@
-﻿@inject CatalogService CatalogService
+@using eShop.Catalog.Contracts.GetCatalogBrands
+@using eShop.Catalog.Contracts.GetCatalogTypes
+@inject ICatalogService CatalogService
 @inject NavigationManager Nav
 
 @if (catalogBrands is not null && catalogItemTypes is not null)
@@ -18,9 +20,9 @@
                     </a>
                     @foreach (var brand in catalogBrands)
                     {
-                        <a href="@BrandUri(brand.Id)"
-                        class="catalog-search-tag @(BrandId == brand.Id ? "active " : "")">
-                            @brand.Brand
+                        <a href="@BrandUri(brand.ObjectId)"
+                        class="catalog-search-tag @(BrandId == brand.ObjectId ? "active " : "")">
+                            @brand.Name
                         </a>
                     }
                 </div>
@@ -35,9 +37,9 @@
                     </a>
                     @foreach (var itemType in catalogItemTypes)
                     {
-                        <a href="@TypeUri(itemType.Id)"
-                        class="catalog-search-tag @(ItemTypeId == itemType.Id ? "active " : "")">
-                            @itemType.Type
+                        <a href="@TypeUri(itemType.ObjectId)"
+                        class="catalog-search-tag @(ItemTypeId == itemType.ObjectId ? "active " : "")">
+                            @itemType.Name
                         </a>
                     }
                 </div>
@@ -47,10 +49,10 @@
 }
 
 @code {
-    IEnumerable<CatalogBrand>? catalogBrands;
-    IEnumerable<CatalogItemType>? catalogItemTypes;
-    [Parameter] public int? BrandId { get; set; }
-    [Parameter] public int? ItemTypeId { get; set; }
+    IEnumerable<CatalogBrandDto>? catalogBrands;
+    IEnumerable<CatalogTypeDto>? catalogItemTypes;
+    [Parameter] public Guid? BrandId { get; set; }
+    [Parameter] public Guid? ItemTypeId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,13 +63,13 @@
         catalogItemTypes = itemTypesTask.Result;
     }
 
-    private string BrandUri(int? brandId) => Nav.GetUriWithQueryParameters(new Dictionary<string, object?>()
+    private string BrandUri(Guid? brandId) => Nav.GetUriWithQueryParameters(new Dictionary<string, object?>()
     {
         { "page", null },
         { "brand", brandId },
     });
 
-    private string TypeUri(int? typeId) => Nav.GetUriWithQueryParameters(new Dictionary<string, object?>()
+    private string TypeUri(Guid? typeId) => Nav.GetUriWithQueryParameters(new Dictionary<string, object?>()
     {
         { "page", null },
         { "type", typeId },

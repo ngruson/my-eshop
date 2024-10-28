@@ -1,4 +1,4 @@
-﻿namespace Webhooks.API.Model;
+namespace Webhooks.API.Model;
 
 public class WebhookSubscription
 {
@@ -8,7 +8,7 @@ public class WebhookSubscription
     public DateTime Date { get; set; }
     [Required]
     public string DestUrl { get; set; }
-    public string Token { get; set; }
+    public string? Token { get; set; }
     [Required]
     public string UserId { get; set; }
 }

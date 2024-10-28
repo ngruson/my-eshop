@@ -14,6 +14,9 @@ using eShop.Customer.Contracts;
 using eShop.Ordering.Contracts;
 using eShop.EventBus.Extensions;
 using eShop.EventBusRabbitMQ;
+using eShop.Shared.Features;
+using eShop.WebAppComponents.Services.Refit;
+using eShop.Catalog.Contracts;
 
 namespace eShop.WebApp.Extensions;
 
@@ -40,9 +43,22 @@ public static class Extensions
         builder.Services.AddGrpcClient<Basket.API.Grpc.Basket.BasketClient>(o => o.Address = new("http://basket-api"))
             .AddAuthToken();
 
-        builder.Services.AddHttpClient<CatalogService>(o => o.BaseAddress = new("http://catalog-api"))
-            .AddApiVersion(1.0)
-            .AddAuthToken();
+        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+
+        if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Refit)
+        {
+            builder.Services
+                .AddRefitClient<ICatalogApi>()
+                .ConfigureHttpClient(c =>
+                    c.BaseAddress = new Uri($"{builder.Configuration["services:catalog-api:http:0"]}"))
+                .AddAuthToken();
+
+            builder.Services.AddScoped<ICatalogService, RefitCatalogService>();
+
+            //builder.Services.AddHttpClient<RefitCatalogService>(o => o.BaseAddress = new("http://catalog-api"))
+            //    .AddApiVersion(1.0)
+            //    .AddAuthToken();
+        }
 
         builder.Services.AddHttpClient<OrderingService>(o => o.BaseAddress = new("http://ordering-api"))
             .AddApiVersion(1.0)

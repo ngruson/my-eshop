@@ -1,16 +1,17 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using eShop.WebAppComponents.Catalog;
 using eShop.WebAppComponents.Services;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.WebApp.Extensions;
+using eShop.Catalog.Contracts.GetCatalogItems;
+using eShop.WebAppComponents.Services.ViewModels;
 
 namespace eShop.WebApp.Services;
 
 public class BasketState(
     BasketService basketService,
-    CatalogService catalogService,
+    ICatalogService catalogService,
     OrderingService orderingService,
     AuthenticationStateProvider authenticationStateProvider) : IBasketState
 {
@@ -32,7 +33,7 @@ public class BasketState(
         return subscription;
     }
 
-    public async Task AddAsync(CatalogItem item)
+    public async Task AddAsync(CatalogItemViewModel item)
     {
         List<BasketQuantity> items = (await this.FetchBasketItemsAsync())
             .Select(i => new BasketQuantity(i.ProductId, i.Quantity)).ToList();
@@ -133,11 +134,11 @@ public class BasketState(
 
             // Get details for the items in the basket
             List<BasketItem> basketItems = [];
-            IEnumerable<Guid> productIds = quantities.Select(row => row.ProductId);
-            Dictionary<Guid, CatalogItem> catalogItems = (await catalogService.GetCatalogItems(productIds)).ToDictionary(k => k.ObjectId, v => v);
+            Guid[] productIds = quantities.Select(row => row.ProductId).ToArray();
+            Dictionary<Guid, CatalogItemViewModel> catalogItems = (await catalogService.GetCatalogItems(productIds)).ToDictionary(k => k.ObjectId, v => v);
             foreach (BasketQuantity item in quantities)
             {
-                CatalogItem catalogItem = catalogItems[item.ProductId];
+                CatalogItemViewModel catalogItem = catalogItems[item.ProductId];
                 BasketItem orderItem = new()
                 {
                     Id = Guid.NewGuid().ToString(), // TODO: this value is meaningless, use ProductId instead.

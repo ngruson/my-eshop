@@ -16,4 +16,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\eShop.Catalog.Contracts\eShop.Catalog.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

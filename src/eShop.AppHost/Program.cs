@@ -90,7 +90,9 @@ IResourceBuilder<ProjectResource> webApp = builder.AddProject<Projects.eShop_Web
     .WithReference(customerApi)
     .WithReference(orderingApi)
     .WithReference(rabbitMq)
-    .WithEnvironment("IdentityUrl", identityEndpoint);
+    .WithEnvironment("IdentityUrl", identityEndpoint)
+    .WaitFor(rabbitMq)
+    .WaitFor(catalogApi);
 
 // set to true if you want to use OpenAI
 bool useOpenAI = false;

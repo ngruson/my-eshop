@@ -17,8 +17,6 @@ using eShop.Catalog.Contracts.CreateCatalogItem;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Ardalis.Result;
-using System;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace eShop.Catalog.API.APIs;
 

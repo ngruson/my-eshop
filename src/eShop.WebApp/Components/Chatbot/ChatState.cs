@@ -5,6 +5,8 @@ using Microsoft.SemanticKernel;
 using eShop.WebAppComponents.Services;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.ChatCompletion;
+using eShop.Shared.Data;
+using eShop.WebAppComponents.Services.ViewModels;
 
 namespace eShop.WebApp.Chatbot;
 
@@ -104,8 +106,8 @@ public class ChatState
         {
             try
             {
-                var results = await chatState._catalogService.GetCatalogItemsWithSemanticRelevance(0, 8, productDescription!);
-                for (int i = 0; i < results.Data.Count; i++)
+                PaginatedItems<CatalogItemViewModel> results = await chatState._catalogService.GetPaginatedCatalogItemsWithSemanticRelevance(productDescription!, 8, 0);
+                for (int i = 0; i < results.Data.Length; i++)
                 {
                     results.Data[i] = results.Data[i] with { PictureUrl = chatState._productImages.GetProductImageUrl(results.Data[i].ObjectId) };
                 }
@@ -155,7 +157,7 @@ public class ChatState
         {
             if (chatState._logger.IsEnabled(LogLevel.Error))
             {
-                chatState._logger.LogError(e, message);
+                chatState._logger.LogError(e, "Error message: {ErrorMessage}", message);
             }
 
             return message;
