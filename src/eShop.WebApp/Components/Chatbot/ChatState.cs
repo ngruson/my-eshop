@@ -6,9 +6,9 @@ using eShop.WebAppComponents.Services;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.ChatCompletion;
 using eShop.Shared.Data;
-using eShop.WebAppComponents.Services.ViewModels;
+using eShop.ServiceInvocation.CatalogService;
 
-namespace eShop.WebApp.Chatbot;
+namespace eShop.WebApp.Components.Chatbot;
 
 public class ChatState
 {

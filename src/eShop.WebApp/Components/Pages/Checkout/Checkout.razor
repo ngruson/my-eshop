@@ -7,10 +7,12 @@
 @using eShop.Customer.Contracts.GetCustomer
 @using eShop.Ordering.Contracts
 @using eShop.Ordering.Contracts.GetCardTypes
+@using eShop.ServiceInvocation.CustomerService
+@using eShop.ServiceInvocation.OrderingService
 @inject BasketState Basket
 @inject NavigationManager Nav
-@inject ICustomerApi CustomerApi
-@inject IOrderingApi OrderingApi
+@inject ICustomerService CustomerService
+@inject IOrderingService OrderingService
 @attribute [Authorize]
 
 <PageTitle>Checkout | AdventureWorks</PageTitle>
@@ -103,7 +105,7 @@
         string lastName = ReadClaim(ClaimTypes.Surname)!;
         string name = $"{firstName} {lastName}";
 
-        CustomerDto customer = await CustomerApi.GetCustomer(name);
+        CustomerDto customer = await CustomerService.GetCustomer(name);
 
         Info = new BasketCheckoutInfo
         {
@@ -138,7 +140,7 @@
 
     private async Task<Guid> GetCardType()
     {
-        IEnumerable<CardTypeDto> cardTypes= await OrderingApi.GetCardTypes();
+        IEnumerable<CardTypeDto> cardTypes = await OrderingService.GetCardTypes();
         CardTypeDto cardType = cardTypes.First(x => x.Name == "Amex");
         return cardType.ObjectId;
     }

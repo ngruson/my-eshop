@@ -15,8 +15,13 @@ using eShop.Ordering.Contracts;
 using eShop.EventBus.Extensions;
 using eShop.EventBusRabbitMQ;
 using eShop.Shared.Features;
-using eShop.WebAppComponents.Services.Refit;
 using eShop.Catalog.Contracts;
+using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CatalogService.Refit;
+using eShop.ServiceInvocation.OrderingService;
+using eShop.ServiceInvocation.OrderingService.Refit;
+using eShop.ServiceInvocation.CustomerService;
+using eShop.ServiceInvocation.CustomerService.Refit;
 
 namespace eShop.WebApp.Extensions;
 
@@ -47,34 +52,33 @@ public static class Extensions
 
         if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Refit)
         {
-            builder.Services
+            builder.Services.AddRefitServices();
+        }
+    }
+
+    private static void AddRefitServices(this IServiceCollection services)
+    {
+        services
                 .AddRefitClient<ICatalogApi>()
                 .ConfigureHttpClient(c =>
-                    c.BaseAddress = new Uri($"{builder.Configuration["services:catalog-api:http:0"]}"))
+                    c.BaseAddress = new Uri("http://catalog-api"))
                 .AddAuthToken();
 
-            builder.Services.AddScoped<ICatalogService, RefitCatalogService>();
-
-            //builder.Services.AddHttpClient<RefitCatalogService>(o => o.BaseAddress = new("http://catalog-api"))
-            //    .AddApiVersion(1.0)
-            //    .AddAuthToken();
-        }
-
-        builder.Services.AddHttpClient<OrderingService>(o => o.BaseAddress = new("http://ordering-api"))
-            .AddApiVersion(1.0)
-            .AddAuthToken();
-
-        builder.Services
+        services
             .AddRefitClient<ICustomerApi>()
             .ConfigureHttpClient(c =>
-                c.BaseAddress = new Uri($"{builder.Configuration["services:customer-api:http:0"]}"))
+                c.BaseAddress = new Uri("http://customer-api"))
             .AddAuthToken();
 
-        builder.Services
+        services
             .AddRefitClient<IOrderingApi>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri("http://ordering-api"))
             .AddAuthToken();
+
+        services.AddScoped<ICatalogService, CatalogService>();
+        services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<IOrderingService, OrderingService>();
     }
 
     public static void AddEventBusSubscriptions(this IEventBusBuilder eventBus)

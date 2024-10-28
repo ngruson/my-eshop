@@ -1,4 +1,4 @@
-namespace eShop.WebAppComponents.Services.ViewModels;
+namespace eShop.ServiceInvocation.CatalogService;
 
 public record CatalogItemViewModel(
     Guid ObjectId,
