@@ -27,6 +27,7 @@
       "src\\eShop.Ordering.Infrastructure\\eShop.Ordering.Infrastructure.csproj",
       "src\\eShop.PaymentProcessor\\eShop.PaymentProcessor.csproj",
       "src\\eShop.ServiceDefaults\\eShop.ServiceDefaults.csproj",
+      "src\\eShop.ServiceInvocation\\eShop.ServiceInvocation.csproj",
       "src\\eShop.Shared\\eShop.Shared.csproj",
       "src\\eShop.WebAppComponents\\eShop.WebAppComponents.csproj",
       "src\\eShop.WebApp\\eShop.WebApp.csproj",

@@ -1,4 +1,4 @@
-using eShop.WebAppComponents.Services.ViewModels;
+using eShop.ServiceInvocation.CatalogService;
 
 namespace eShop.WebAppComponents.Services;
 

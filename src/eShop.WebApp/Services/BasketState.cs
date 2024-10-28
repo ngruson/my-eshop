@@ -1,18 +1,17 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using eShop.WebAppComponents.Services;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.WebApp.Extensions;
-using eShop.Catalog.Contracts.GetCatalogItems;
-using eShop.WebAppComponents.Services.ViewModels;
+using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.OrderingService;
 
 namespace eShop.WebApp.Services;
 
 public class BasketState(
     BasketService basketService,
     ICatalogService catalogService,
-    OrderingService orderingService,
+    IOrderingService orderingService,
     AuthenticationStateProvider authenticationStateProvider) : IBasketState
 {
     private Task<IReadOnlyCollection<BasketItem>>? _cachedBasket;
@@ -110,7 +109,7 @@ public class BasketState(
             CardType: checkoutInfo.CardTypeId,
             Buyer: buyerId,
             Items: [.. orderItems]);
-        await orderingService.CreateOrder(request, checkoutInfo.RequestId);
+        await orderingService.CreateOrder(checkoutInfo.RequestId, request);
         await this.DeleteBasketAsync();
     }
 

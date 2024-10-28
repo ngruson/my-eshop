@@ -1,11 +1,10 @@
 using eShop.Shared.Data;
-using eShop.WebAppComponents.Services.ViewModels;
 
-namespace eShop.WebAppComponents.Services;
+namespace eShop.ServiceInvocation.CatalogService;
 
 internal static class MapperExtensions
 {
-    internal static PaginatedItems<CatalogItemViewModel> Map(this PaginatedItems<eShop.Catalog.Contracts.GetCatalogItems.CatalogItemDto> paginatedItems)
+    internal static PaginatedItems<CatalogItemViewModel> Map(this PaginatedItems<Catalog.Contracts.GetCatalogItems.CatalogItemDto> paginatedItems)
     {
         return new PaginatedItems<CatalogItemViewModel>(
             paginatedItems.PageIndex,
@@ -22,7 +21,7 @@ internal static class MapperExtensions
             .ToArray());
     }
 
-    internal static CatalogItemViewModel[] Map(this eShop.Catalog.Contracts.GetCatalogItems.CatalogItemDto[] catalogItems)
+    internal static CatalogItemViewModel[] Map(this Catalog.Contracts.GetCatalogItems.CatalogItemDto[] catalogItems)
     {
         return catalogItems.Select(_ => new CatalogItemViewModel(
             _.ObjectId,
@@ -35,7 +34,7 @@ internal static class MapperExtensions
             .ToArray();
     }
 
-    internal static CatalogItemViewModel Map(this eShop.Catalog.Contracts.GetCatalogItem.CatalogItemDto catalogItem)
+    internal static CatalogItemViewModel Map(this Catalog.Contracts.GetCatalogItem.CatalogItemDto catalogItem)
     {
         return new CatalogItemViewModel(
             catalogItem.ObjectId,

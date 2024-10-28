@@ -2,26 +2,25 @@ using eShop.Catalog.Contracts;
 using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;
 using eShop.Shared.Data;
-using eShop.WebAppComponents.Services.ViewModels;
 
-namespace eShop.WebAppComponents.Services.Refit;
+namespace eShop.ServiceInvocation.CatalogService.Refit;
 
-public class RefitCatalogService(ICatalogApi catalogApi) : ICatalogService
+public class CatalogService(ICatalogApi catalogApi) : ICatalogService
 {
     public async Task<CatalogItemViewModel> GetCatalogItem(Guid objectId)
     {
-        eShop.Catalog.Contracts.GetCatalogItem.CatalogItemDto dto = await catalogApi.GetCatalogItem(objectId);
+        Catalog.Contracts.GetCatalogItem.CatalogItemDto dto = await catalogApi.GetCatalogItem(objectId);
         return dto.Map();
     }
 
-    public async Task<eShop.Catalog.Contracts.GetCatalogItems.CatalogItemDto[]> GetCatalogItems()
+    public async Task<Catalog.Contracts.GetCatalogItems.CatalogItemDto[]> GetCatalogItems()
     {
         return await catalogApi.GetCatalogItems();
     }
 
     public async Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItems(Guid? catalogType, Guid? catalogBrand, int pageIndex, int pageSize)
     {
-        PaginatedItems<eShop.Catalog.Contracts.GetCatalogItems.CatalogItemDto> paginatedItems;
+        PaginatedItems<Catalog.Contracts.GetCatalogItems.CatalogItemDto> paginatedItems;
 
         if (catalogType.HasValue)
         {
@@ -41,13 +40,13 @@ public class RefitCatalogService(ICatalogApi catalogApi) : ICatalogService
 
     public async Task<CatalogItemViewModel[]> GetCatalogItems(Guid[] ids)
     {
-        eShop.Catalog.Contracts.GetCatalogItems.CatalogItemDto[] items = await catalogApi.GetCatalogItemsByIds(ids);
+        Catalog.Contracts.GetCatalogItems.CatalogItemDto[] items = await catalogApi.GetCatalogItemsByIds(ids);
         return items.Map();
     }
 
     public async Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItemsWithSemanticRelevance(string text, int pageSize, int pageIndex)
     {
-        PaginatedItems<eShop.Catalog.Contracts.GetCatalogItems.CatalogItemDto> paginatedItems =
+        PaginatedItems<Catalog.Contracts.GetCatalogItems.CatalogItemDto> paginatedItems =
             await catalogApi.GetPaginatedCatalogItemsWithSemanticRelevance(text, pageSize, pageIndex);
 
         return paginatedItems.Map();
