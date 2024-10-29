@@ -47,7 +47,7 @@ internal static class MapperExtensions
             catalogItem.Name,
             catalogItem.Description,
             catalogItem.Price,
-            catalogItem.PictureFileName,
+            catalogItem.PictureUrl,
             new CatalogTypeViewModel(catalogItem.CatalogType.ObjectId, catalogItem.CatalogType.Name),
             new CatalogBrandViewModel(catalogItem.CatalogBrand.ObjectId, catalogItem.CatalogBrand.Name),
             catalogItem.AvailableStock,

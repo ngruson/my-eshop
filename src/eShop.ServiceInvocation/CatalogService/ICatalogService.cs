@@ -10,7 +10,7 @@ public interface ICatalogService
     Task DeleteCatalogItem(Guid objectId);
     Task<CatalogItemViewModel> GetCatalogItem(Guid objectId);
     Task<Catalog.Contracts.GetCatalogItems.CatalogItemDto[]> GetCatalogItems(bool includeDeleted = false);
-    Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItems(Guid? catalogType, Guid? catalogBrand, int pageIndex, int pageSize);
+    Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItems(Guid? catalogType, Guid? catalogBrand, int pageSize, int pageIndex);
     Task<CatalogItemViewModel[]> GetCatalogItems(Guid[] ids);
     Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItemsWithSemanticRelevance(string text, int pageSize, int pageIndex);
     Task<CatalogBrandDto[]> GetBrands();

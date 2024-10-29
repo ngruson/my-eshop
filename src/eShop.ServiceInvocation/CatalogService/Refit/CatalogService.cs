@@ -19,7 +19,7 @@ public class CatalogService(ICatalogApi catalogApi) : ICatalogService
         return await catalogApi.GetCatalogItems(includeDeleted);
     }
 
-    public async Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItems(Guid? catalogType, Guid? catalogBrand, int pageIndex, int pageSize)
+    public async Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItems(Guid? catalogType, Guid? catalogBrand, int pageSize, int pageIndex)
     {
         PaginatedItems<Catalog.Contracts.GetCatalogItems.CatalogItemDto> paginatedItems;
 
