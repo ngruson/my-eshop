@@ -1,16 +1,17 @@
 using Ardalis.Result;
 using eShop.Catalog.Contracts;
+using eShop.ServiceInvocation.CatalogService;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.Catalog.CreateCatalogItem;
 
 internal class CreateCatalogItemCommandHandler(
     ILogger<CreateCatalogItemCommandHandler> logger,
-    ICatalogApi catalogApi)
+    ICatalogService catalogService)
         : IRequestHandler<CreateCatalogItemCommand, Result>
 {
     private readonly ILogger<CreateCatalogItemCommandHandler> logger = logger;
-    private readonly ICatalogApi catalogApi = catalogApi;
+    private readonly ICatalogService catalogService = catalogService;
 
     public async Task<Result> Handle(CreateCatalogItemCommand request, CancellationToken cancellationToken)
     {
@@ -18,7 +19,7 @@ internal class CreateCatalogItemCommandHandler(
         {
             this.logger.LogInformation("Creating catalog item...");
 
-            await this.catalogApi.CreateCatalogItem(request.Dto);
+            await this.catalogService.CreateCatalogItem(request.Dto);
 
             this.logger.LogInformation("Catalog item created");
 

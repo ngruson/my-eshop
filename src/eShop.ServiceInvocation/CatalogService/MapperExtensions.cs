@@ -15,10 +15,13 @@ internal static class MapperExtensions
                 _.Name,
                 _.Description,
                 _.Price,
-                _.PictureFileName,
+                _.PictureUrl,
                 new CatalogTypeViewModel(_.CatalogType.ObjectId, _.CatalogType.Name),
-                new CatalogBrandViewModel(_.CatalogBrand.ObjectId, _.CatalogBrand.Name)))
-            .ToArray());
+                new CatalogBrandViewModel(_.CatalogBrand.ObjectId, _.CatalogBrand.Name),
+                _.AvailableStock,
+                _.RestockThreshold,
+                _.MaxStockThreshold,
+                _.OnReorder)).ToArray());
     }
 
     internal static CatalogItemViewModel[] Map(this Catalog.Contracts.GetCatalogItems.CatalogItemDto[] catalogItems)
@@ -28,10 +31,13 @@ internal static class MapperExtensions
             _.Name,
             _.Description,
             _.Price,
-            _.PictureFileName,
+            _.PictureUrl,
             new CatalogTypeViewModel(_.CatalogType.ObjectId, _.CatalogType.Name),
-            new CatalogBrandViewModel(_.CatalogBrand.ObjectId, _.CatalogBrand.Name)))
-            .ToArray();
+            new CatalogBrandViewModel(_.CatalogBrand.ObjectId, _.CatalogBrand.Name),
+            _.AvailableStock,
+            _.RestockThreshold,
+            _.MaxStockThreshold,
+            _.OnReorder)).ToArray();
     }
 
     internal static CatalogItemViewModel Map(this Catalog.Contracts.GetCatalogItem.CatalogItemDto catalogItem)
@@ -43,6 +49,10 @@ internal static class MapperExtensions
             catalogItem.Price,
             catalogItem.PictureFileName,
             new CatalogTypeViewModel(catalogItem.CatalogType.ObjectId, catalogItem.CatalogType.Name),
-            new CatalogBrandViewModel(catalogItem.CatalogBrand.ObjectId, catalogItem.CatalogBrand.Name));
+            new CatalogBrandViewModel(catalogItem.CatalogBrand.ObjectId, catalogItem.CatalogBrand.Name),
+            catalogItem.AvailableStock,
+            catalogItem.RestockThreshold,
+            catalogItem.MaxStockThreshold,
+            catalogItem.OnReorder);
     }
 }

@@ -6,14 +6,14 @@ namespace eShop.AdminApp.Application.Queries.Catalog.GetCatalogItem;
 
 internal static class MapperExtensions
 {
-    internal static CatalogItemViewModel MapToCatalogItemViewModel(this eShop.Catalog.Contracts.GetCatalogItem.CatalogItemDto catalogItem)
+    internal static CatalogItemViewModel MapToCatalogItemViewModel(this ServiceInvocation.CatalogService.CatalogItemViewModel catalogItem)
     {
         return new CatalogItemViewModel(
             catalogItem.ObjectId,
             catalogItem.Name,
             catalogItem.Description,
             catalogItem.Price,
-            catalogItem.PictureFileName,
+            catalogItem.PictureUrl,
             catalogItem.CatalogType.ObjectId.ToString(),
             catalogItem.CatalogBrand.ObjectId.ToString(),
             catalogItem.AvailableStock,

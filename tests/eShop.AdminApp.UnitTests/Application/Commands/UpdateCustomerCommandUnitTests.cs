@@ -1,10 +1,10 @@
 using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
-using eShop.Customer.Contracts;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using eShop.AdminApp.Application.Commands.Customer.UpdateCustomer;
+using eShop.ServiceInvocation.CustomerService;
 
 namespace eShop.AdminApp.UnitTests.Application.Commands;
 
@@ -13,7 +13,7 @@ public class UpdateCustomerCommandUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCustomerUpdated(
         UpdateCustomerCommand command,
-        [Substitute, Frozen] ICustomerApi customerApi,
+        [Substitute, Frozen] ICustomerService customerService,
         UpdateCustomerCommandHandler sut)
     {
         // Arrange
@@ -26,18 +26,18 @@ public class UpdateCustomerCommandUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await customerApi.Received().UpdateCustomer(command.ObjectId, command.Dto);
+        await customerService.Received().UpdateCustomer(command.ObjectId, command.Dto);
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         UpdateCustomerCommand command,
-        [Substitute, Frozen] ICustomerApi customerApi,
+        [Substitute, Frozen] ICustomerService customerService,
         UpdateCustomerCommandHandler sut)
     {
         // Arrange
 
-        customerApi.UpdateCustomer(command.ObjectId, command.Dto)
+        customerService.UpdateCustomer(command.ObjectId, command.Dto)
             .ThrowsAsync<Exception>();
 
         // Act
@@ -48,6 +48,6 @@ public class UpdateCustomerCommandUnitTests
 
         Assert.True(result.IsError());
 
-        await customerApi.Received().UpdateCustomer(command.ObjectId, command.Dto);
+        await customerService.Received().UpdateCustomer(command.ObjectId, command.Dto);
     }
 }

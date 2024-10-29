@@ -2,8 +2,8 @@ using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Queries.Catalog.GetCatalogTypes;
-using eShop.Catalog.Contracts;
 using eShop.Catalog.Contracts.GetCatalogTypes;
+using eShop.ServiceInvocation.CatalogService;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -14,45 +14,47 @@ public class GetCatalogTypesQueryUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCatalogTypesExist(
         GetCatalogTypesQuery query,
-        [Substitute, Frozen] ICatalogApi catalogApi,
+        [Substitute, Frozen] ICatalogService catalogService,
         GetCatalogTypesQueryHandler sut,
         CatalogTypeDto[] catalogTypes)
     {
         // Arrange
 
-        catalogApi.GetCatalogTypes()
+        catalogService.GetTypes()
             .Returns(catalogTypes);
 
         // Act
 
-        Result<CatalogTypeViewModel[]> result = await sut.Handle(query, CancellationToken.None);
+        Result<AdminApp.Application.Queries.Catalog.GetCatalogTypes.CatalogTypeViewModel[]> result =
+            await sut.Handle(query, CancellationToken.None);
 
         // Assert
 
         Assert.True(result.IsSuccess);
 
-        await catalogApi.Received().GetCatalogTypes();
+        await catalogService.Received().GetTypes();
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         GetCatalogTypesQuery query,
-        [Substitute, Frozen] ICatalogApi catalogApi,
+        [Substitute, Frozen] ICatalogService catalogService,
         GetCatalogTypesQueryHandler sut)
     {
         // Arrange
 
-        catalogApi.GetCatalogTypes()
+        catalogService.GetTypes()
             .ThrowsAsync<Exception>();
 
         // Act
 
-        Result<CatalogTypeViewModel[]> result = await sut.Handle(query, CancellationToken.None);
+        Result<AdminApp.Application.Queries.Catalog.GetCatalogTypes.CatalogTypeViewModel[]> result =
+            await sut.Handle(query, CancellationToken.None);
 
         // Assert
 
         Assert.True(result.IsError());
 
-        await catalogApi.Received().GetCatalogTypes();
+        await catalogService.Received().GetTypes();
     }
 }

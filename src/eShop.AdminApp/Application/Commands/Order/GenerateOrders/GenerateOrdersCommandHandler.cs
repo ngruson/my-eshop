@@ -1,15 +1,16 @@
 using System.Text.RegularExpressions;
 using Ardalis.Result;
 using eShop.AdminApp.Application.Commands.Order.GenerateOrders;
-using eShop.Catalog.Contracts;
 using eShop.Catalog.Contracts.GetCatalogItems;
-using eShop.Customer.Contracts;
 using eShop.Customer.Contracts.GetCustomers;
 using eShop.Identity.Contracts;
 using eShop.Identity.Contracts.GetUsers;
-using eShop.Ordering.Contracts;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Contracts.GetCardTypes;
+using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CustomerService;
+using eShop.ServiceInvocation.IdentityService;
+using eShop.ServiceInvocation.OrderingService;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.GenerateOrders;
@@ -17,16 +18,16 @@ namespace eShop.AdminApp.Application.Commands.GenerateOrders;
 internal partial class GenerateOrdersCommandHandler(
     ILogger<GenerateOrdersCommandHandler> logger,
     IConfiguration config,
-    ICustomerApi customerApi,
-    IIdentityApi identityApi,
-    ICatalogApi catalogApi,
-    IOrderingApi orderingApi) : IRequestHandler<GenerateOrdersCommand, Result>
+    ICustomerService customerService,
+    IIdentityService identityService,
+    ICatalogService catalogService,
+    IOrderingService orderingService) : IRequestHandler<GenerateOrdersCommand, Result>
 {
     private readonly ILogger<GenerateOrdersCommandHandler> logger = logger;
-    private readonly ICustomerApi customerApi = customerApi;
-    private readonly IIdentityApi identityApi = identityApi;
-    private readonly ICatalogApi catalogApi = catalogApi;
-    private readonly IOrderingApi orderingApi = orderingApi;
+    private readonly ICustomerService customerService = customerService;
+    private readonly IIdentityService identityService = identityService;
+    private readonly ICatalogService catalogService = catalogService;
+    private readonly IOrderingService orderingService = orderingService;
 
     private readonly string catalogApiUrl = config["services:catalog-api:http:0"]!;
 
@@ -37,21 +38,21 @@ internal partial class GenerateOrdersCommandHandler(
             // Get all customers
 
             this.WriteProgress(request, (0, "Getting customers..."));
-            CustomerDto[] customers = await this.customerApi.GetCustomers();
+            CustomerDto[] customers = await this.customerService.GetCustomers();
             this.WriteProgress(request, (0, "Received {Count} customers"), customers.Length);
 
             // Get all users
 
             this.WriteProgress(request, (0, "Getting users..."));
-            UserDto[] users = await this.identityApi.GetUsers();
+            UserDto[] users = await this.identityService.GetUsers();
             this.WriteProgress(request, (0, "Received {Count} users"), users.Length);
 
             // Get all products
             this.WriteProgress(request, (0, "Getting catalog items..."));
-            CatalogItemDto[] catalogItems = await this.catalogApi.GetCatalogItems();
+            CatalogItemDto[] catalogItems = await this.catalogService.GetCatalogItems();
             this.WriteProgress(request, (0, "Received {Count} catalog items"), catalogItems.Length);
 
-            IEnumerable<CardTypeDto> cardTypes = await this.orderingApi.GetCardTypes();
+            IEnumerable<CardTypeDto> cardTypes = await this.orderingService.GetCardTypes();
             CardTypeDto cardType = cardTypes.First(_ => _.Name == "Amex");
 
             Random random = new();
@@ -95,7 +96,7 @@ internal partial class GenerateOrdersCommandHandler(
 
                 this.WriteProgress(request, (i, "Creating order {Counter}..."), i);
 
-                await this.orderingApi.CreateOrder(Guid.NewGuid(), order);
+                await this.orderingService.CreateOrder(Guid.NewGuid(), order);
 
                 this.WriteProgress(request, (i, "Order {Counter} created"), i);
             }

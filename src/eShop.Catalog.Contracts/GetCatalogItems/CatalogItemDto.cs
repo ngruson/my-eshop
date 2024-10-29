@@ -5,7 +5,7 @@ public record CatalogItemDto(
     string Name,
     string Description,
     decimal Price,
-    string PictureFileName,
+    string PictureUrl,
     CatalogTypeDto CatalogType,
     CatalogBrandDto CatalogBrand,
     int AvailableStock,

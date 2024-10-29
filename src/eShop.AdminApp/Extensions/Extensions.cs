@@ -4,6 +4,17 @@ using eShop.Identity.Contracts;
 using eShop.MasterData.Contracts;
 using eShop.Ordering.Contracts;
 using eShop.ServiceDefaults;
+using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CatalogService.Refit;
+using eShop.ServiceInvocation.CustomerService;
+using eShop.ServiceInvocation.CustomerService.Refit;
+using eShop.ServiceInvocation.IdentityService;
+using eShop.ServiceInvocation.IdentityService.Refit;
+using eShop.ServiceInvocation.MasterDataService;
+using eShop.ServiceInvocation.MasterDataService.Refit;
+using eShop.ServiceInvocation.OrderingService;
+using eShop.ServiceInvocation.OrderingService.Refit;
+using eShop.Shared.Features;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -23,16 +34,31 @@ internal static class Extensions
         builder.Services.AddRazorPages()
             .AddMicrosoftIdentityUI();
 
+        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+
+        if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Refit)
+        {
+            builder.AddRefitServices();
+        }        
+
+        builder.Services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblyContaining<Program>();
+        });
+    }
+
+    private static void AddRefitServices(this IHostApplicationBuilder builder)
+    {
         builder.Services
             .AddRefitClient<ICatalogApi>()
             .ConfigureHttpClient(c =>
-                c.BaseAddress = new Uri($"{builder.Configuration["services:catalog-api:http:0"]}"))
+                c.BaseAddress = new Uri("http://catalog-api"))
             .AddAuthToken();
 
         builder.Services
             .AddRefitClient<ICustomerApi>()
             .ConfigureHttpClient(c =>
-                c.BaseAddress = new Uri($"{builder.Configuration["services:customer-api:http:0"]}"))
+                c.BaseAddress = new Uri("http://customer-api"))
             .AddAuthToken();
 
         builder.Services
@@ -44,19 +70,20 @@ internal static class Extensions
         builder.Services
             .AddRefitClient<IMasterDataApi>()
             .ConfigureHttpClient(c =>
-                c.BaseAddress = new Uri($"{builder.Configuration["services:masterData-api:http:0"]}"))
+                c.BaseAddress = new Uri("http://masterdata-api"))
             .AddAuthToken();
 
         builder.Services
             .AddRefitClient<IOrderingApi>()
             .ConfigureHttpClient(c =>
-                c.BaseAddress = new Uri($"{builder.Configuration["services:ordering-api:http:0"]}"))
+                c.BaseAddress = new Uri("http://ordering-api"))
             .AddAuthToken();
 
-        builder.Services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
-        });
+        builder.Services.AddScoped<ICatalogService, CatalogService>();
+        builder.Services.AddScoped<ICustomerService, CustomerService>();
+        builder.Services.AddScoped<IIdentityService, IdentityService>();
+        builder.Services.AddScoped<IMasterDataService, MasterDataService>();
+        builder.Services.AddScoped<IOrderingService, OrderingService>();
     }
 
     public static void AddAuthenticationServices(this IHostApplicationBuilder builder)

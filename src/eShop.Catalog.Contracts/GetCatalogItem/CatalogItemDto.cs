@@ -11,5 +11,4 @@ public record CatalogItemDto(
     int AvailableStock,
     int RestockThreshold,
     int MaxStockThreshold,
-    bool OnReorder
-);
+    bool OnReorder);

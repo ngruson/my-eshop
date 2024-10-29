@@ -1,22 +1,22 @@
 using Ardalis.Result;
-using eShop.Ordering.Contracts;
 using eShop.Ordering.Contracts.GetOrders;
+using eShop.ServiceInvocation.OrderingService;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Queries.Order.GetOrders;
 
 internal class GetOrdersQueryHandler(
     ILogger<GetOrdersQueryHandler> logger,
-    IOrderingApi orderingApi) : IRequestHandler<GetOrdersQuery, Result<List<OrderViewModel>>>
+    IOrderingService orderingService) : IRequestHandler<GetOrdersQuery, Result<List<OrderViewModel>>>
 {
     private readonly ILogger<GetOrdersQueryHandler> logger = logger;
-    private readonly IOrderingApi orderingApi = orderingApi;
+    private readonly IOrderingService orderingService = orderingService;
 
     public async Task<Result<List<OrderViewModel>>> Handle(GetOrdersQuery request, CancellationToken cancellationToken)
     {
         try
         {
-            OrderDto[] orders = await this.orderingApi.GetOrders();
+            OrderDto[] orders = await this.orderingService.GetOrders();
 
             return orders
                 .ToList()

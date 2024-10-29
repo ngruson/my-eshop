@@ -7,5 +7,9 @@ public record CatalogItemViewModel(
     decimal Price,
     string PictureUrl,
     CatalogTypeViewModel CatalogType,
-    CatalogBrandViewModel CatalogBrand
+    CatalogBrandViewModel CatalogBrand,
+    int AvailableStock,
+    int RestockThreshold,
+    int MaxStockThreshold,
+    bool OnReorder
 );

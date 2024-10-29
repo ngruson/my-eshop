@@ -1,26 +1,26 @@
 using Ardalis.Result;
 using eShop.AdminApp.Application.Queries.MasterData.GetCountries;
 using eShop.AdminApp.Application.Queries.MasterData.GetStates;
-using eShop.Customer.Contracts;
 using eShop.Customer.Contracts.GetCustomers;
+using eShop.ServiceInvocation.CustomerService;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Queries.Customer.GetCustomers;
 
 public class GetCustomersQueryHandler(
     ILogger<GetCustomersQueryHandler> logger,
-    ICustomerApi customerApi,
+    ICustomerService customerService,
     IMediator mediator) : IRequestHandler<GetCustomersQuery, Result<List<CustomerViewModel>>>
 {
     private readonly ILogger<GetCustomersQueryHandler> logger = logger;
-    private readonly ICustomerApi customerApi = customerApi;
+    private readonly ICustomerService customerService = customerService;
     private readonly IMediator mediator = mediator;
 
     public async Task<Result<List<CustomerViewModel>>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
     {
         try
         {
-            CustomerDto[] customers = await this.customerApi.GetCustomers(request.ShowDeleted);
+            CustomerDto[] customers = await this.customerService.GetCustomers(request.IncludeDeleted);
 
             Result<CountryViewModel[]> countries = await this.mediator.Send(new GetCountriesQuery(), cancellationToken);
             Result<StateViewModel[]> states = await this.mediator.Send(new GetStatesQuery(), cancellationToken);
