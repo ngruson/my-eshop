@@ -1,4 +1,5 @@
 using eShop.Catalog.Contracts;
+using eShop.Catalog.Contracts.CreateCatalogItem;
 using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;
 using eShop.Shared.Data;
@@ -13,12 +14,12 @@ public class CatalogService(ICatalogApi catalogApi) : ICatalogService
         return dto.Map();
     }
 
-    public async Task<Catalog.Contracts.GetCatalogItems.CatalogItemDto[]> GetCatalogItems()
+    public async Task<Catalog.Contracts.GetCatalogItems.CatalogItemDto[]> GetCatalogItems(bool includeDeleted = false)
     {
-        return await catalogApi.GetCatalogItems();
+        return await catalogApi.GetCatalogItems(includeDeleted);
     }
 
-    public async Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItems(Guid? catalogType, Guid? catalogBrand, int pageIndex, int pageSize)
+    public async Task<PaginatedItems<CatalogItemViewModel>> GetPaginatedCatalogItems(Guid? catalogType, Guid? catalogBrand, int pageSize, int pageIndex)
     {
         PaginatedItems<Catalog.Contracts.GetCatalogItems.CatalogItemDto> paginatedItems;
 
@@ -60,5 +61,20 @@ public class CatalogService(ICatalogApi catalogApi) : ICatalogService
     public async Task<CatalogTypeDto[]> GetTypes()
     {
         return await catalogApi.GetCatalogTypes();
+    }
+
+    public async Task CreateCatalogItem(CreateCatalogItemDto dto)
+    {
+        await catalogApi.CreateCatalogItem(dto);
+    }
+
+    public async Task DeleteCatalogItem(Guid objectId)
+    {
+        await catalogApi.DeleteCatalogItem(objectId);
+    }
+
+    public async Task UpdateCatalogItem(Guid objectId, Catalog.Contracts.UpdateCatalogItem.CatalogItemDto dto)
+    {
+        await catalogApi.UpdateCatalogItem(objectId, dto);
     }
 }

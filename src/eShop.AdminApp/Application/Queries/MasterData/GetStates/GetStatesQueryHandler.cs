@@ -1,5 +1,6 @@
 using Ardalis.Result;
 using eShop.MasterData.Contracts;
+using eShop.ServiceInvocation.MasterDataService;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -7,11 +8,11 @@ namespace eShop.AdminApp.Application.Queries.MasterData.GetStates;
 
 public class GetStatesQueryHandler(
     ILogger<GetStatesQueryHandler> logger,
-    IMasterDataApi masterDataApi,
+    IMasterDataService masterDataService,
     IMemoryCache cache) : IRequestHandler<GetStatesQuery, Result<StateViewModel[]>>
 {
     private readonly ILogger<GetStatesQueryHandler> logger = logger;
-    private readonly IMasterDataApi masterDataApi = masterDataApi;
+    private readonly IMasterDataService masterDataService = masterDataService;
     private readonly IMemoryCache cache = cache;
 
     public async Task<Result<StateViewModel[]>> Handle(GetStatesQuery request, CancellationToken cancellationToken)
@@ -27,7 +28,7 @@ public class GetStatesQueryHandler(
                 this.logger.LogInformation("States not found in cache. Retrieving from master data API.");
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetSlidingExpiration(TimeSpan.FromHours(1));
-                StateDto[] dto = await this.masterDataApi.GetStates();
+                StateDto[] dto = await this.masterDataService.GetStates();
                 viewModel = [.. dto.MapToStateViewModels()];
                 this.cache.Set(key, viewModel, cacheEntryOptions);
             }

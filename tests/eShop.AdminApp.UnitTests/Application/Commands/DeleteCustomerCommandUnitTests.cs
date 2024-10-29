@@ -2,7 +2,7 @@ using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Commands.Customer.DeleteCustomer;
-using eShop.Customer.Contracts;
+using eShop.ServiceInvocation.CustomerService;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -13,7 +13,7 @@ public class DeleteCustomerCommandUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCustomerDeleted(
         DeleteCustomerCommand command,
-        [Substitute, Frozen] ICustomerApi customerApi,
+        [Substitute, Frozen] ICustomerService customerService,
         DeleteCustomerCommandHandler sut)
     {
         // Arrange
@@ -26,18 +26,18 @@ public class DeleteCustomerCommandUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await customerApi.Received().DeleteCustomer(command.ObjectId);
+        await customerService.Received().DeleteCustomer(command.ObjectId);
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         DeleteCustomerCommand command,
-        [Substitute, Frozen] ICustomerApi customerApi,
+        [Substitute, Frozen] ICustomerService customerService,
         DeleteCustomerCommandHandler sut)
     {
         // Arrange
 
-        customerApi.DeleteCustomer(command.ObjectId)
+        customerService.DeleteCustomer(command.ObjectId)
             .ThrowsAsync<Exception>();
 
         // Act
@@ -48,6 +48,6 @@ public class DeleteCustomerCommandUnitTests
 
         Assert.True(result.IsError());
 
-        await customerApi.Received().DeleteCustomer(command.ObjectId);
+        await customerService.Received().DeleteCustomer(command.ObjectId);
     }
 }

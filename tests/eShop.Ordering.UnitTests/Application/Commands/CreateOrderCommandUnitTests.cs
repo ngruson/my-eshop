@@ -26,7 +26,7 @@ public class CreateOrderCommandUnitTests
 
         //Act
 
-        await sut.Handle(command with { CardType = cardType.ObjectId }, default);
+        await sut.Handle(command with { CardType = cardType.ObjectId, OrderItems = orderItems }, default);
 
         //Assert
 

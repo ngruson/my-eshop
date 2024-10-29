@@ -60,7 +60,7 @@
         catalogResult = await CatalogService.GetPaginatedCatalogItems(
             ItemTypeId,
             BrandId,
-            Page.GetValueOrDefault(1) - 1,
-            PageSize);
+            PageSize,
+            Page.GetValueOrDefault(1) - 1);
     }
 }

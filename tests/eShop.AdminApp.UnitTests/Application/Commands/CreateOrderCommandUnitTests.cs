@@ -5,6 +5,7 @@ using eShop.Ordering.Contracts;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using eShop.AdminApp.Application.Commands.Order.CreateOrder;
+using eShop.ServiceInvocation.OrderingService;
 
 namespace eShop.AdminApp.UnitTests.Application.Commands;
 
@@ -13,7 +14,7 @@ public class CreateOrderCommandUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenOrderCreated(
         CreateOrderCommand command,
-        [Substitute, Frozen] IOrderingApi orderingApi,
+        [Substitute, Frozen] IOrderingService orderingService,
         CreateOrderCommandHandler sut)
     {
         // Arrange
@@ -26,18 +27,18 @@ public class CreateOrderCommandUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await orderingApi.Received().CreateOrder(command.RequestId, command.Dto);
+        await orderingService.Received().CreateOrder(command.RequestId, command.Dto);
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         CreateOrderCommand command,
-        [Substitute, Frozen] IOrderingApi orderingApi,
+        [Substitute, Frozen] IOrderingService orderingService,
         CreateOrderCommandHandler sut)
     {
         // Arrange
 
-        orderingApi.CreateOrder(command.RequestId, command.Dto)
+        orderingService.CreateOrder(command.RequestId, command.Dto)
             .ThrowsAsync<Exception>();
 
         // Act
@@ -48,6 +49,6 @@ public class CreateOrderCommandUnitTests
 
         Assert.True(result.IsError());
 
-        await orderingApi.Received().CreateOrder(command.RequestId, command.Dto);
+        await orderingService.Received().CreateOrder(command.RequestId, command.Dto);
     }
 }

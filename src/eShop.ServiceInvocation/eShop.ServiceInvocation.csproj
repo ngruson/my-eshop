@@ -9,6 +9,8 @@
   <ItemGroup>
     <ProjectReference Include="..\eShop.Catalog.Contracts\eShop.Catalog.Contracts.csproj" />
     <ProjectReference Include="..\eShop.Customer.Contracts\eShop.Customer.Contracts.csproj" />
+    <ProjectReference Include="..\eShop.Identity.Contracts\eShop.Identity.Contracts.csproj" />
+    <ProjectReference Include="..\eShop.MasterData.Contracts\eShop.MasterData.Contracts.csproj" />
     <ProjectReference Include="..\eShop.Ordering.Contracts\eShop.Ordering.Contracts.csproj" />
   </ItemGroup>
 

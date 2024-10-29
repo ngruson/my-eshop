@@ -1,17 +1,16 @@
 using Ardalis.Result;
-using eShop.Catalog.Contracts;
-using eShop.Catalog.Contracts.GetCatalogItem;
+using eShop.ServiceInvocation.CatalogService;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Queries.Catalog.GetCatalogItem;
 
 internal class GetCatalogItemQueryHandler(
     ILogger<GetCatalogItemQueryHandler> logger,
-    ICatalogApi catalogApi)
+    ICatalogService catalogService)
         : IRequestHandler<GetCatalogItemQuery, Result<CatalogItemViewModel>>
 {
     private readonly ILogger<GetCatalogItemQueryHandler> logger = logger;
-    private readonly ICatalogApi catalogApi = catalogApi;
+    private readonly ICatalogService catalogService = catalogService;
 
     public async Task<Result<CatalogItemViewModel>> Handle(GetCatalogItemQuery request, CancellationToken cancellationToken)
     {
@@ -19,7 +18,8 @@ internal class GetCatalogItemQueryHandler(
         {
             this.logger.LogInformation("Retrieving catalog item {ObjectId} from API...", request.ObjectId);
 
-            CatalogItemDto catalogItem = await this.catalogApi.GetCatalogItem(request.ObjectId);
+            ServiceInvocation.CatalogService.CatalogItemViewModel catalogItem =
+                await this.catalogService.GetCatalogItem(request.ObjectId);
 
             this.logger.LogInformation("Retrieved catalog item {ObjectId} from API", request.ObjectId);
 
