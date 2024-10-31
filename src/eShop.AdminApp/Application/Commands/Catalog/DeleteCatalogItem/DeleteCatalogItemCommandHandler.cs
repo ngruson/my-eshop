@@ -1,15 +1,15 @@
 using Ardalis.Result;
-using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CatalogApiClient;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.Catalog.DeleteCatalogItem;
 
 public class DeleteCatalogItemCommandHandler(
     ILogger<DeleteCatalogItemCommandHandler> logger,
-    ICatalogService catalogService) : IRequestHandler<DeleteCatalogItemCommand, Result>
+    ICatalogApiClient catalogApiClient) : IRequestHandler<DeleteCatalogItemCommand, Result>
 {
     private readonly ILogger<DeleteCatalogItemCommandHandler> logger = logger;
-    private readonly ICatalogService catalogService = catalogService;
+    private readonly ICatalogApiClient catalogApiClient = catalogApiClient;
 
     public async Task<Result> Handle(DeleteCatalogItemCommand request, CancellationToken cancellationToken)
     {
@@ -17,7 +17,7 @@ public class DeleteCatalogItemCommandHandler(
         {
             this.logger.LogInformation("Deleting catalog item {ObjectId}...", request.ObjectId);
 
-            await this.catalogService.DeleteCatalogItem(request.ObjectId);
+            await this.catalogApiClient.DeleteCatalogItem(request.ObjectId);
 
             this.logger.LogInformation("Catalog item deleted");
 

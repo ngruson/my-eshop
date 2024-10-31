@@ -1,7 +1,7 @@
 @using eShop.Catalog.Contracts.GetCatalogBrands
 @using eShop.Catalog.Contracts.GetCatalogTypes
-@using eShop.ServiceInvocation.CatalogService
-@inject ICatalogService CatalogService
+@using eShop.ServiceInvocation.CatalogApiClient
+@inject ICatalogApiClient CatalogApiClient
 @inject NavigationManager Nav
 
 @if (catalogBrands is not null && catalogItemTypes is not null)
@@ -57,8 +57,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var brandsTask = CatalogService.GetBrands();
-        var itemTypesTask = CatalogService.GetTypes();
+        var brandsTask = CatalogApiClient.GetBrands();
+        var itemTypesTask = CatalogApiClient.GetTypes();
         await Task.WhenAll(brandsTask, itemTypesTask);
         catalogBrands = brandsTask.Result;
         catalogItemTypes = itemTypesTask.Result;

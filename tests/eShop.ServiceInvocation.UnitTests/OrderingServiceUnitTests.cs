@@ -15,7 +15,7 @@ public class OrderingServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_orders(
             [Substitute, Frozen] IOrderingApi orderingApi,
-            OrderingService.Refit.OrderingService sut,
+            OrderingApiClient.Refit.OrderingApiClient sut,
             OrderDto[] orders
         )
         {
@@ -38,7 +38,7 @@ public class OrderingServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_orders(
             [Substitute, Frozen] IOrderingApi orderingApi,
-            OrderingService.Refit.OrderingService sut,
+            OrderingApiClient.Refit.OrderingApiClient sut,
             Guid requestId,
             CreateOrderDto request
         )
@@ -60,7 +60,7 @@ public class OrderingServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_cardTypes(
             [Substitute, Frozen] IOrderingApi orderingApi,
-            OrderingService.Refit.OrderingService sut,
+            OrderingApiClient.Refit.OrderingApiClient sut,
             CardTypeDto[] cardTypes
         )
         {

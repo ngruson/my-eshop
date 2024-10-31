@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using eShop.MasterData.Contracts;
-using eShop.ServiceInvocation.MasterDataService;
+using eShop.ServiceInvocation.MasterDataApiClient;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -8,11 +8,11 @@ namespace eShop.AdminApp.Application.Queries.MasterData.GetCountries;
 
 public class GetCountriesQueryHandler(
     ILogger<GetCountriesQueryHandler> logger,
-    IMasterDataService masterDataService,
+    IMasterDataApiClient masterDataApiClient,
     IMemoryCache cache) : IRequestHandler<GetCountriesQuery, Result<CountryViewModel[]>>
 {
     private readonly ILogger<GetCountriesQueryHandler> logger = logger;
-    private readonly IMasterDataService masterDataService = masterDataService;
+    private readonly IMasterDataApiClient masterDataApiClient = masterDataApiClient;
     private readonly IMemoryCache cache = cache;
 
     public async Task<Result<CountryViewModel[]>> Handle(GetCountriesQuery request, CancellationToken cancellationToken)
@@ -28,7 +28,7 @@ public class GetCountriesQueryHandler(
                 this.logger.LogInformation("Countries not found in cache. Retrieving from master data API.");
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetSlidingExpiration(TimeSpan.FromHours(1));
-                CountryDto[] dto = await this.masterDataService.GetCountries();
+                CountryDto[] dto = await this.masterDataApiClient.GetCountries();
                 viewModel = [.. dto.MapToCountryViewModels()];
                 this.cache.Set(key, viewModel, cacheEntryOptions);
             }

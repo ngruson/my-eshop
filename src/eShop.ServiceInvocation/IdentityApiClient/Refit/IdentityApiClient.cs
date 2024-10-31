@@ -1,9 +1,9 @@
 using eShop.Identity.Contracts;
 using eShop.Identity.Contracts.GetUsers;
 
-namespace eShop.ServiceInvocation.IdentityService.Refit;
+namespace eShop.ServiceInvocation.IdentityApiClient.Refit;
 
-public class IdentityService(IIdentityApi identityApi) : IIdentityService
+public class IdentityApiClient(IIdentityApi identityApi) : IIdentityApiClient
 {
     public async Task<UserDto[]> GetUsers()
     {

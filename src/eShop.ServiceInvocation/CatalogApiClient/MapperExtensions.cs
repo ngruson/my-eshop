@@ -1,6 +1,6 @@
 using eShop.Shared.Data;
 
-namespace eShop.ServiceInvocation.CatalogService;
+namespace eShop.ServiceInvocation.CatalogApiClient;
 
 internal static class MapperExtensions
 {

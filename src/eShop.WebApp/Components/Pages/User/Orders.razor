@@ -1,10 +1,9 @@
 @page "/user/orders"
 @using eShop.Ordering.Contracts.GetOrders
-@using eShop.ServiceInvocation.OrderingService
-@using eShop.ServiceInvocation.OrderingService.Refit
+@using eShop.ServiceInvocation.OrderingApiClient
 @attribute [Authorize]
 @attribute [StreamRendering]
-@inject IOrderingService OrderingService
+@inject IOrderingApiClient OrderingApiClient
 
 <PageTitle>Orders | AdventureWorks</PageTitle>
 <SectionContent SectionName="page-header-title">Orders</SectionContent>
@@ -56,6 +55,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        orders = await OrderingService.GetOrders();
+        orders = await OrderingApiClient.GetOrders();
     }
 }

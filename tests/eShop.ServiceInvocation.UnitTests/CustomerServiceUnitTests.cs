@@ -14,7 +14,7 @@ public class CustomerServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItem(
             [Substitute, Frozen] ICustomerApi customerApi,
-            CustomerService.Refit.CustomerService sut,
+            CustomerApiClient.Refit.CustomerApiClient sut,
             CreateCustomerDto dto)
         {
             // Arrange            
@@ -34,7 +34,7 @@ public class CustomerServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItem(
             [Substitute, Frozen] ICustomerApi customerApi,
-            CustomerService.Refit.CustomerService sut,
+            CustomerApiClient.Refit.CustomerApiClient sut,
             Guid objectId)
         {
             // Arrange
@@ -54,7 +54,7 @@ public class CustomerServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItem(
             [Substitute, Frozen] ICustomerApi customerApi,
-            CustomerService.Refit.CustomerService sut,
+            CustomerApiClient.Refit.CustomerApiClient sut,
             Guid objectId,
             Customer.Contracts.GetCustomer.CustomerDto customer)
         {
@@ -77,7 +77,7 @@ public class CustomerServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItem(
             [Substitute, Frozen] ICustomerApi customerApi,
-            CustomerService.Refit.CustomerService sut,
+            CustomerApiClient.Refit.CustomerApiClient sut,
             string name,
             Customer.Contracts.GetCustomer.CustomerDto customer)
         {
@@ -101,7 +101,7 @@ public class CustomerServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItems(
             [Substitute, Frozen] ICustomerApi customerApi,
-            CustomerService.Refit.CustomerService sut,
+            CustomerApiClient.Refit.CustomerApiClient sut,
             Customer.Contracts.GetCustomers.CustomerDto[] customers,
             bool includeDeleted)
         {
@@ -125,7 +125,7 @@ public class CustomerServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItem(
             [Substitute, Frozen] ICustomerApi customerApi,
-            CustomerService.Refit.CustomerService sut,
+            CustomerApiClient.Refit.CustomerApiClient sut,
             Guid objectId,
             UpdateCustomerDto dto)
         {

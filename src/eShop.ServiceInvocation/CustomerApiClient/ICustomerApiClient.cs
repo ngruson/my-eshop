@@ -1,9 +1,9 @@
 using eShop.Customer.Contracts.CreateCustomer;
 using eShop.Customer.Contracts.UpdateCustomerGeneralInfo;
 
-namespace eShop.ServiceInvocation.CustomerService;
+namespace eShop.ServiceInvocation.CustomerApiClient;
 
-public interface ICustomerService
+public interface ICustomerApiClient
 {
     Task CreateCustomer(CreateCustomerDto dto);
     Task UpdateCustomer(Guid objectId, UpdateCustomerDto dto);

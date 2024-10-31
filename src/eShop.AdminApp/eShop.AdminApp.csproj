@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Asp.Versioning.Http.Client" />
+    <PackageReference Include="Dapr.AspNetCore" />
     <PackageReference Include="IdentityModel" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />

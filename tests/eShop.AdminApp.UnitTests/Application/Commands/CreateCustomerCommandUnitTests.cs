@@ -2,7 +2,7 @@ using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Commands.Customer.CreateCustomer;
-using eShop.ServiceInvocation.CustomerService;
+using eShop.ServiceInvocation.CustomerApiClient;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -13,7 +13,7 @@ public class CreateCustomerCommandUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCustomerCreated(
         CreateCustomerCommand command,
-        [Substitute, Frozen] ICustomerService customerService,
+        [Substitute, Frozen] ICustomerApiClient customerApiClient,
         CreateCustomerCommandHandler sut)
     {
         // Arrange
@@ -26,18 +26,18 @@ public class CreateCustomerCommandUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await customerService.Received().CreateCustomer(command.Dto);
+        await customerApiClient.Received().CreateCustomer(command.Dto);
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         CreateCustomerCommand command,
-        [Substitute, Frozen] ICustomerService customerService,
+        [Substitute, Frozen] ICustomerApiClient customerApiClient,
         CreateCustomerCommandHandler sut)
     {
         // Arrange
 
-        customerService.CreateCustomer(command.Dto)
+        customerApiClient.CreateCustomer(command.Dto)
             .ThrowsAsync<Exception>();
 
         // Act
@@ -48,6 +48,6 @@ public class CreateCustomerCommandUnitTests
 
         Assert.True(result.IsError());
 
-        await customerService.Received().CreateCustomer(command.Dto);
+        await customerApiClient.Received().CreateCustomer(command.Dto);
     }
 }

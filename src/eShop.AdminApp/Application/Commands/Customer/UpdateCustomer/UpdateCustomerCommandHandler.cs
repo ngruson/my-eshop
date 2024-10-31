@@ -1,15 +1,15 @@
 using Ardalis.Result;
-using eShop.ServiceInvocation.CustomerService;
+using eShop.ServiceInvocation.CustomerApiClient;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.Customer.UpdateCustomer;
 
 internal class UpdateCustomerCommandHandler(
     ILogger<UpdateCustomerCommandHandler> logger,
-    ICustomerService customerService) : IRequestHandler<UpdateCustomerCommand, Result>
+    ICustomerApiClient customerApiClient) : IRequestHandler<UpdateCustomerCommand, Result>
 {
     private readonly ILogger<UpdateCustomerCommandHandler> logger = logger;
-    private readonly ICustomerService customerService = customerService;
+    private readonly ICustomerApiClient customerApiClient = customerApiClient;
 
     public async Task<Result> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
     {
@@ -17,7 +17,7 @@ internal class UpdateCustomerCommandHandler(
         {
             this.logger.LogInformation("Updating customer...");
 
-            await this.customerService.UpdateCustomer(request.ObjectId, request.Dto);
+            await this.customerApiClient.UpdateCustomer(request.ObjectId, request.Dto);
 
             this.logger.LogInformation("Customer updated");
 

@@ -4,7 +4,7 @@ using eShop.Catalog.Contracts;
 using eShop.Catalog.Contracts.CreateCatalogItem;
 using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;
-using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CatalogApiClient;
 using eShop.Shared.Data;
 using NSubstitute;
 
@@ -17,7 +17,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItem(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             Guid objectId,
             Catalog.Contracts.GetCatalogItem.CatalogItemDto catalogItem)
         {
@@ -41,7 +41,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItems(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             Catalog.Contracts.GetCatalogItems.CatalogItemDto[] catalogItems)
         {
             // Arrange
@@ -63,7 +63,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItems_given_catalogType(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             Guid catalogType,
             Guid catalogBrand,
             PaginatedItems<Catalog.Contracts.GetCatalogItems.CatalogItemDto> catalogItems)
@@ -91,7 +91,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItems_given_catalogBrand(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             Guid catalogBrand,
             PaginatedItems<Catalog.Contracts.GetCatalogItems.CatalogItemDto> catalogItems)
         {
@@ -118,7 +118,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItems_given_no_catalogType_and_no_catalogBrand(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             Guid catalogBrand,
             PaginatedItems<Catalog.Contracts.GetCatalogItems.CatalogItemDto> catalogItems)
         {
@@ -148,7 +148,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItems(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             Guid[] ids,
             Catalog.Contracts.GetCatalogItems.CatalogItemDto[] catalogItems)
         {
@@ -173,7 +173,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItems(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             string text,
             PaginatedItems<Catalog.Contracts.GetCatalogItems.CatalogItemDto> catalogItems)
         {
@@ -201,7 +201,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogBrands(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             CatalogBrandDto[] catalogBrands)
         {
             // Arrange
@@ -225,7 +225,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_catalogTypes(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             CatalogTypeDto[] catalogTypes)
         {
             // Arrange
@@ -249,7 +249,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task create_catalogItem(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             CreateCatalogItemDto dto)
         {
             // Arrange
@@ -269,7 +269,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task update_catalogItem(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             Guid objectId,
             Catalog.Contracts.UpdateCatalogItem.CatalogItemDto dto)
         {
@@ -290,7 +290,7 @@ public class CatalogServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task delete_catalogItem(
             [Substitute, Frozen] ICatalogApi catalogApi,
-            CatalogService.Refit.CatalogService sut,
+            CatalogApiClient.Refit.CatalogApiClient sut,
             Guid objectId)
         {
             // Arrange

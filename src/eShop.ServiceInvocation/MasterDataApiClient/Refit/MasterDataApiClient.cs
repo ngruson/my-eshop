@@ -1,8 +1,8 @@
 using eShop.MasterData.Contracts;
 
-namespace eShop.ServiceInvocation.MasterDataService.Refit;
+namespace eShop.ServiceInvocation.MasterDataApiClient.Refit;
 
-public class MasterDataService(IMasterDataApi masterDataApi) : IMasterDataService
+public class MasterDataApiClient(IMasterDataApi masterDataApi) : IMasterDataApiClient
 {
     public async Task<CountryDto[]> GetCountries()
     {

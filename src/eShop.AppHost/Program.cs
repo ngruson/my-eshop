@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-using Aspire.Hosting;
 using Aspire.Hosting.Dapr;
 using eShop.AppHost;
 using Microsoft.Extensions.Configuration;
@@ -26,37 +24,52 @@ string launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
 
 // Services
 IResourceBuilder<ProjectResource> identityApi = builder.AddProject<Projects.eShop_Identity_API>("identity-api", launchProfileName)
+    .WithDaprSidecar(new DaprSidecarOptions
+    {
+        AppProtocol = launchProfileName
+    })
     .WithExternalHttpEndpoints()
-    .WithReference(identityDb);
+    .WithReference(identityDb)
+    .WaitFor(identityDb);
 
 EndpointReference identityEndpoint = identityApi.GetEndpoint(launchProfileName);
 
 IResourceBuilder<ProjectResource> basketApi = builder.AddProject<Projects.eShop_Basket_API>("basket-api")
     .WithReference(redis)
     .WithReference(rabbitMq)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WaitFor(redis)
+    .WaitFor(rabbitMq)
+    .WaitFor(identityApi);
 
 IResourceBuilder<ProjectResource> catalogApi = builder.AddProject<Projects.eShop_Catalog_API>("catalog-api")
+    .WithDaprSidecar()
     .WithReference(rabbitMq)
-    .WithReference(catalogDb);
+    .WithReference(catalogDb)
+    .WaitFor(rabbitMq)
+    .WaitFor(catalogDb);
 
 IResourceBuilder<ProjectResource> customerApi = builder.AddProject<Projects.eShop_Customer_API>("customer-api")
+    .WithDaprSidecar()
     .WithReference(customerDb)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WaitFor(customerDb);
 
 //IResourceBuilder<IDaprComponentResource> pubSub = builder.AddDaprPubSub("pubSub")
     //.WaitFor(rabbitMq);
 
 IResourceBuilder<ProjectResource> orderingApi = builder.AddProject<Projects.eShop_Ordering_API>("ordering-api")
-    .WithDaprSidecar(new DaprSidecarOptions
-    {
-        ResourcesPaths = ImmutableHashSet.Create("./components")
-    })
+    //.WithDaprSidecar(new DaprSidecarOptions
+    //{
+    //    ResourcesPaths = ImmutableHashSet.Create("./components")
+    //})
+    .WithDaprSidecar()
     .WithReference(rabbitMq)
     .WithReference(orderDb)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
 IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eShop_MasterData_API>("masterData-api")
+    .WithDaprSidecar()
     .WithEnvironment("Identity__Url", identityEndpoint);
 
 builder.AddProject<Projects.eShop_OrderProcessor>("order-processor")
@@ -84,6 +97,7 @@ IResourceBuilder<ProjectResource> webhooksClient = builder.AddProject<Projects.e
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
 IResourceBuilder<ProjectResource> webApp = builder.AddProject<Projects.eShop_WebApp>("webapp", launchProfileName)
+    .WithDaprSidecar()
     .WithExternalHttpEndpoints()
     .WithReference(basketApi)
     .WithReference(catalogApi)
@@ -135,12 +149,17 @@ if (useOpenAI)
 }
 
 var adminApp = builder.AddProject<Projects.eShop_AdminApp>("admin-app")
+    .WithDaprSidecar()
     .WithExternalHttpEndpoints()
     .WithReference(catalogApi)
     .WithReference(customerApi)
     .WithReference(orderingApi)
     .WithReference(masterDataApi)
-    .WithEnvironment("IdentityUrl", identityEndpoint);
+    .WithEnvironment("IdentityUrl", identityEndpoint)
+    .WaitFor(catalogApi)
+    .WaitFor(customerApi)
+    .WaitFor(orderingApi)
+    .WaitFor(masterDataApi);
 
 // Wire up the callback urls (self referencing)
 webApp.WithEnvironment("CallBackUrl", webApp.GetEndpoint(launchProfileName));

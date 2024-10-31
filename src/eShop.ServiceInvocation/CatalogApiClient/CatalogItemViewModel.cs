@@ -1,4 +1,4 @@
-namespace eShop.ServiceInvocation.CatalogService;
+namespace eShop.ServiceInvocation.CatalogApiClient;
 
 public record CatalogItemViewModel(
     Guid ObjectId,

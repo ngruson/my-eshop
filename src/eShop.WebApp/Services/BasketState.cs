@@ -3,15 +3,15 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.WebApp.Extensions;
-using eShop.ServiceInvocation.CatalogService;
-using eShop.ServiceInvocation.OrderingService;
+using eShop.ServiceInvocation.CatalogApiClient;
+using eShop.ServiceInvocation.OrderingApiClient;
 
 namespace eShop.WebApp.Services;
 
 public class BasketState(
     BasketService basketService,
-    ICatalogService catalogService,
-    IOrderingService orderingService,
+    ICatalogApiClient catalogApiClient,
+    IOrderingApiClient orderingApiClient,
     AuthenticationStateProvider authenticationStateProvider) : IBasketState
 {
     private Task<IReadOnlyCollection<BasketItem>>? _cachedBasket;
@@ -109,7 +109,7 @@ public class BasketState(
             CardType: checkoutInfo.CardTypeId,
             Buyer: buyerId,
             Items: [.. orderItems]);
-        await orderingService.CreateOrder(checkoutInfo.RequestId, request);
+        await orderingApiClient.CreateOrder(checkoutInfo.RequestId, request);
         await this.DeleteBasketAsync();
     }
 
@@ -134,7 +134,7 @@ public class BasketState(
             // Get details for the items in the basket
             List<BasketItem> basketItems = [];
             Guid[] productIds = quantities.Select(row => row.ProductId).ToArray();
-            Dictionary<Guid, CatalogItemViewModel> catalogItems = (await catalogService.GetCatalogItems(productIds)).ToDictionary(k => k.ObjectId, v => v);
+            Dictionary<Guid, CatalogItemViewModel> catalogItems = (await catalogApiClient.GetCatalogItems(productIds)).ToDictionary(k => k.ObjectId, v => v);
             foreach (BasketQuantity item in quantities)
             {
                 CatalogItemViewModel catalogItem = catalogItems[item.ProductId];

@@ -3,7 +3,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Queries.Catalog.GetCatalogTypes;
 using eShop.Catalog.Contracts.GetCatalogTypes;
-using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CatalogApiClient;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -14,13 +14,13 @@ public class GetCatalogTypesQueryUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCatalogTypesExist(
         GetCatalogTypesQuery query,
-        [Substitute, Frozen] ICatalogService catalogService,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         GetCatalogTypesQueryHandler sut,
         CatalogTypeDto[] catalogTypes)
     {
         // Arrange
 
-        catalogService.GetTypes()
+        catalogApiClient.GetTypes()
             .Returns(catalogTypes);
 
         // Act
@@ -32,18 +32,18 @@ public class GetCatalogTypesQueryUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await catalogService.Received().GetTypes();
+        await catalogApiClient.Received().GetTypes();
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         GetCatalogTypesQuery query,
-        [Substitute, Frozen] ICatalogService catalogService,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         GetCatalogTypesQueryHandler sut)
     {
         // Arrange
 
-        catalogService.GetTypes()
+        catalogApiClient.GetTypes()
             .ThrowsAsync<Exception>();
 
         // Act
@@ -55,6 +55,6 @@ public class GetCatalogTypesQueryUnitTests
 
         Assert.True(result.IsError());
 
-        await catalogService.Received().GetTypes();
+        await catalogApiClient.Received().GetTypes();
     }
 }

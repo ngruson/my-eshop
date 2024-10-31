@@ -3,21 +3,21 @@ using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Contracts.GetCardTypes;
 using eShop.Ordering.Contracts.GetOrders;
 
-namespace eShop.ServiceInvocation.OrderingService.Refit;
+namespace eShop.ServiceInvocation.OrderingApiClient.Refit;
 
-public class OrderingService(IOrderingApi orderingApi) : IOrderingService
+public class OrderingApiClient(IOrderingApi orderingApi) : IOrderingApiClient
 {
     public Task<OrderDto[]> GetOrders()
     {
         return orderingApi.GetOrders();
     }
 
-    public async Task CreateOrder(Guid requestId, CreateOrderDto request)
+    public async Task CreateOrder(Guid requestId, CreateOrderDto dto)
     {
-        await orderingApi.CreateOrder(requestId, request);
+        await orderingApi.CreateOrder(requestId, dto);
     }
 
-    public async Task<IEnumerable<CardTypeDto>> GetCardTypes()
+    public async Task<CardTypeDto[]> GetCardTypes()
     {
         return await orderingApi.GetCardTypes();
     }

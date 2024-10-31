@@ -11,7 +11,7 @@ public class IdentityServiceUnitTests
     [Theory, AutoNSubstituteData]
     public async Task return_users(
         [Substitute, Frozen] IIdentityApi identityApi,
-        IdentityService.Refit.IdentityService sut,
+        IdentityApiClient.Refit.IdentityApiClient sut,
         UserDto[] users
     )
     {

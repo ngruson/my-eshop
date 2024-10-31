@@ -2,9 +2,9 @@ using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;
 using eShop.Shared.Data;
 
-namespace eShop.ServiceInvocation.CatalogService;
+namespace eShop.ServiceInvocation.CatalogApiClient;
 
-public interface ICatalogService
+public interface ICatalogApiClient
 {
     Task CreateCatalogItem(Catalog.Contracts.CreateCatalogItem.CreateCatalogItemDto dto);
     Task DeleteCatalogItem(Guid objectId);

@@ -4,9 +4,9 @@ using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;
 using eShop.Shared.Data;
 
-namespace eShop.ServiceInvocation.CatalogService.Refit;
+namespace eShop.ServiceInvocation.CatalogApiClient.Refit;
 
-public class CatalogService(ICatalogApi catalogApi) : ICatalogService
+public class CatalogApiClient(ICatalogApi catalogApi) : ICatalogApiClient
 {
     public async Task<CatalogItemViewModel> GetCatalogItem(Guid objectId)
     {

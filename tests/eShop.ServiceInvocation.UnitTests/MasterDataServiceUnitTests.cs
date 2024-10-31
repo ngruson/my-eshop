@@ -12,7 +12,7 @@ public class MasterDataServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_countries(
             [Substitute, Frozen] IMasterDataApi masterDataApi,
-            MasterDataService.Refit.MasterDataService sut,
+            MasterDataApiClient.Refit.MasterDataApiClient sut,
             CountryDto[] countries
         )
         {
@@ -35,7 +35,7 @@ public class MasterDataServiceUnitTests
         [Theory, AutoNSubstituteData]
         public async Task return_states(
             [Substitute, Frozen] IMasterDataApi masterDataApi,
-            MasterDataService.Refit.MasterDataService sut,
+            MasterDataApiClient.Refit.MasterDataApiClient sut,
             StateDto[] states
         )
         {

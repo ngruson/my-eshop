@@ -1,8 +1,8 @@
 using eShop.MasterData.Contracts;
 
-namespace eShop.ServiceInvocation.MasterDataService;
+namespace eShop.ServiceInvocation.MasterDataApiClient;
 
-public interface IMasterDataService
+public interface IMasterDataApiClient
 {
     Task<CountryDto[]> GetCountries();
 

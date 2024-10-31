@@ -1,15 +1,15 @@
 using Ardalis.Result;
-using eShop.ServiceInvocation.CustomerService;
+using eShop.ServiceInvocation.CustomerApiClient;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.Customer.CreateCustomer;
 
 internal class CreateCustomerCommandHandler(
     ILogger<CreateCustomerCommandHandler> logger,
-    ICustomerService customerService) : IRequestHandler<CreateCustomerCommand, Result>
+    ICustomerApiClient customerApiClient) : IRequestHandler<CreateCustomerCommand, Result>
 {
     private readonly ILogger<CreateCustomerCommandHandler> logger = logger;
-    private readonly ICustomerService customerService = customerService;
+    private readonly ICustomerApiClient customerApiClient = customerApiClient;
 
     public async Task<Result> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
     {
@@ -17,7 +17,7 @@ internal class CreateCustomerCommandHandler(
         {
             this.logger.LogInformation("Creating customer...");
 
-            await this.customerService.CreateCustomer(request.Dto);
+            await this.customerApiClient.CreateCustomer(request.Dto);
 
             this.logger.LogInformation("Customer created");
 

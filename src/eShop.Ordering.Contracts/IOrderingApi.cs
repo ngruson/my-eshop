@@ -11,7 +11,7 @@ public interface IOrderingApi
     Task<OrderDto[]> GetOrders();
 
     [Get("/api/orders/cardTypes?api-version=1.0")]
-    Task<IEnumerable<CardTypeDto>> GetCardTypes();
+    Task<CardTypeDto[]> GetCardTypes();
 
     [Post("/api/orders?api-version=1.0")]
     Task CreateOrder([Header("x-requestid")] Guid requestId, CreateOrderDto request);

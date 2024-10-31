@@ -3,7 +3,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Commands.Catalog.CreateCatalogItem;
 using eShop.Catalog.Contracts;
-using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CatalogApiClient;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -14,7 +14,7 @@ public class CreateCatalogItemCommandUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCustomerCreated(
         CreateCatalogItemCommand command,
-        [Substitute, Frozen] ICatalogService catalogService,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         CreateCatalogItemCommandHandler sut)
     {
         // Arrange
@@ -27,18 +27,18 @@ public class CreateCatalogItemCommandUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await catalogService.Received().CreateCatalogItem(command.Dto);
+        await catalogApiClient.Received().CreateCatalogItem(command.Dto);
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         CreateCatalogItemCommand command,
-        [Substitute, Frozen] ICatalogService catalogService,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         CreateCatalogItemCommandHandler sut)
     {
         // Arrange
 
-        catalogService.CreateCatalogItem(command.Dto)
+        catalogApiClient.CreateCatalogItem(command.Dto)
             .ThrowsAsync<Exception>();
 
         // Act
@@ -49,6 +49,6 @@ public class CreateCatalogItemCommandUnitTests
 
         Assert.True(result.IsError());
 
-        await catalogService.Received().CreateCatalogItem(command.Dto);
+        await catalogApiClient.Received().CreateCatalogItem(command.Dto);
     }
 }

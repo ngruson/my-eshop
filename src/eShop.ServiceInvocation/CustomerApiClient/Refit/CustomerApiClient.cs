@@ -3,9 +3,9 @@ using eShop.Customer.Contracts.CreateCustomer;
 using eShop.Customer.Contracts.GetCustomer;
 using eShop.Customer.Contracts.UpdateCustomerGeneralInfo;
 
-namespace eShop.ServiceInvocation.CustomerService.Refit;
+namespace eShop.ServiceInvocation.CustomerApiClient.Refit;
 
-public class CustomerService(ICustomerApi customerApi) : ICustomerService
+public class CustomerApiClient(ICustomerApi customerApi) : ICustomerApiClient
 {
     public async Task CreateCustomer(CreateCustomerDto dto)
     {
