@@ -1,9 +1,8 @@
-﻿using System.Security.Claims;
-using eShop.Webhooks.API.Infrastructure;
+using System.Security.Claims;
+using eShop.Webhooks.API.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Webhooks.API.Extensions;
 
-namespace Webhooks.API;
+namespace eShop.Webhooks.API.Apis;
 
 public static class WebHooksApi
 {
@@ -39,7 +38,7 @@ public static class WebHooksApi
             WebhooksContext context,
             ClaimsPrincipal user) =>
         {
-            var grantOk = await grantUrlTester.TestGrantUrl(request.Url, request.GrantUrl, request.Token ?? string.Empty);
+            var grantOk = await grantUrlTester.TestGrantUrl(request.Url!, request.GrantUrl!, request.Token ?? string.Empty);
 
             if (grantOk)
             {
@@ -48,7 +47,7 @@ public static class WebHooksApi
                     Date = DateTime.UtcNow,
                     DestUrl = request.Url,
                     Token = request.Token,
-                    Type = Enum.Parse<WebhookType>(request.Event, ignoreCase: true),
+                    Type = Enum.Parse<WebhookType>(request.Event!, ignoreCase: true),
                     UserId = user.GetUserId()
                 };
 

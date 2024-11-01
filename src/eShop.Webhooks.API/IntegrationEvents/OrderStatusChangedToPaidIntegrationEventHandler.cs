@@ -1,3 +1,6 @@
+using eShop.Webhooks.API.Model;
+using eShop.Webhooks.API.Services;
+
 namespace eShop.Webhooks.API.IntegrationEvents;
 
 public class OrderStatusChangedToPaidIntegrationEventHandler(

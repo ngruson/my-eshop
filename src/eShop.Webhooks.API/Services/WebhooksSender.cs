@@ -1,4 +1,4 @@
-﻿namespace Webhooks.API.Services;
+namespace eShop.Webhooks.API.Services;
 
 public class WebhooksSender(IHttpClientFactory httpClientFactory, ILogger<WebhooksSender> logger) : IWebhooksSender
 {
@@ -6,7 +6,7 @@ public class WebhooksSender(IHttpClientFactory httpClientFactory, ILogger<Webhoo
     {
         var client = httpClientFactory.CreateClient();
         var json = JsonSerializer.Serialize(data);
-        var tasks = receivers.Select(r => OnSendData(r, json, client));
+        var tasks = receivers.Select(r => this.OnSendData(r, json, client));
         await Task.WhenAll(tasks);
     }
 
@@ -14,7 +14,7 @@ public class WebhooksSender(IHttpClientFactory httpClientFactory, ILogger<Webhoo
     {
         var request = new HttpRequestMessage()
         {
-            RequestUri = new Uri(subs.DestUrl, UriKind.Absolute),
+            RequestUri = new Uri(subs.DestUrl!, UriKind.Absolute),
             Method = HttpMethod.Post,
             Content = new StringContent(jsonData, Encoding.UTF8, "application/json")
         };

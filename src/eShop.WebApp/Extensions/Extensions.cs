@@ -19,6 +19,7 @@ using eShop.Catalog.Contracts;
 using eShop.ServiceInvocation.CustomerApiClient;
 using eShop.ServiceInvocation.CatalogApiClient;
 using eShop.ServiceInvocation.OrderingApiClient;
+using eShop.Shared.Auth;
 
 namespace eShop.WebApp.Extensions;
 
@@ -59,8 +60,9 @@ public static class Extensions
 
     private static void AddDaprServices(this IHostApplicationBuilder builder)
     {
-        builder.Services.AddDaprClient();
+        builder.Services.AddDaprClient();        
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<AccessTokenAccessor>();
 
         builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Dapr.CatalogApiClient>();
         builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Dapr.CustomerApiClient>();

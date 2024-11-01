@@ -1,3 +1,4 @@
+@using eShop.Identity.API.Quickstart.Device
 @model DeviceAuthorizationViewModel
 
 <div class="page-device-confirmation">
@@ -27,7 +28,7 @@
         <input asp-for="UserCode" type="hidden" value="@Model.UserCode" />
         <div class="row">
             <div class="col-sm-8">
-                @if (Model.IdentityScopes.Any())
+                @if (Model.IdentityScopes!.Any())
                 {
                     <div class="form-group">
                         <div class="card">
@@ -36,7 +37,7 @@
                                 Personal Information
                             </div>
                             <ul class="list-group list-group-flush">
-                                @foreach (var scope in Model.IdentityScopes)
+                                @foreach (var scope in Model.IdentityScopes!)
                                 {
                                     <partial name="_ScopeListItem" model="@scope" />
                                 }
@@ -45,7 +46,7 @@
                     </div>
                 }
 
-                @if (Model.ApiScopes.Any())
+                @if (Model.ApiScopes!.Any())
                 {
                     <div class="form-group">
                         <div class="card">
@@ -54,7 +55,7 @@
                                 Application Access
                             </div>
                             <ul class="list-group list-group-flush">
-                                @foreach (var scope in Model.ApiScopes)
+                                @foreach (var scope in Model.ApiScopes!)
                                 {
                                     <partial name="_ScopeListItem" model="scope" />
                                 }

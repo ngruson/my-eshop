@@ -57,6 +57,6 @@ public class OrderQueries(
     public async Task<IEnumerable<CardTypeDto>> GetCardTypesAsync()
     {
         List<CardType> cardTypes = await this.cardTypeRepository.ListAsync();
-        return cardTypes.Select(ct => new CardTypeDto(ct.ObjectId, ct.Name));
+        return cardTypes.Select(ct => new CardTypeDto(ct.ObjectId, ct.Name!));
     }  
 }

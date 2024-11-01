@@ -1,3 +1,3 @@
-﻿namespace Webhooks.API.IntegrationEvents;
+﻿namespace eShop.Webhooks.API.IntegrationEvents;
 
 public record ProductPriceChangedIntegrationEvent(int ProductId, decimal NewPrice, decimal OldPrice) : IntegrationEvent;

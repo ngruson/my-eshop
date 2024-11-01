@@ -1,4 +1,4 @@
-namespace Webhooks.API.Model;
+namespace eShop.Webhooks.API.Model;
 
 public class WebhookSubscription
 {
@@ -7,8 +7,8 @@ public class WebhookSubscription
     public WebhookType Type { get; set; }
     public DateTime Date { get; set; }
     [Required]
-    public string DestUrl { get; set; }
+    public string? DestUrl { get; set; }
     public string? Token { get; set; }
     [Required]
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 }

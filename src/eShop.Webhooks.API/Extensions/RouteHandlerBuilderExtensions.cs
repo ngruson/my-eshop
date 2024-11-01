@@ -1,4 +1,6 @@
-﻿namespace Webhooks.API.Extensions;
+using eShop.Webhooks.API.Model;
+
+namespace eShop.Webhooks.API.Extensions;
 
 public static class RouteHandlerBuilderExtensions
 {
@@ -28,19 +30,19 @@ public static class RouteHandlerBuilderExtensions
     {
         Dictionary<string, string[]> errors = [];
 
-        foreach (var validationResult in validationResults)
+        foreach (ValidationResult validationResult in validationResults)
         {
-            var propertyNames = validationResult.MemberNames.Any() ? validationResult.MemberNames : [string.Empty];
+            IEnumerable<string> propertyNames = validationResult.MemberNames.Any() ? validationResult.MemberNames : [string.Empty];
 
             foreach (string propertyName in propertyNames)
             {
                 if (errors.TryGetValue(propertyName, out var value))
                 {
-                    errors[propertyName] = [..value, validationResult.ErrorMessage];
+                    errors[propertyName] = [.. value, validationResult.ErrorMessage!];
                 }
                 else
                 {
-                    errors.Add(propertyName, [validationResult.ErrorMessage]);  
+                    errors.Add(propertyName, [validationResult.ErrorMessage!]);
                 }
             }
         }

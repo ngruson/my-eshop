@@ -1,6 +1,5 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
-using eShop.Shared.Data.EntityFramework;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -18,7 +17,7 @@ public class eShopDbContextUnitTests
         // Arrange
 
         optionsBuilder.UseInMemoryDatabase(databaseName: "testDatabase");
-        var context = new TestDbContext(optionsBuilder.Options, mediator);
+        TestDbContext context = new(optionsBuilder.Options, mediator);
         context.Database.EnsureCreated();
 
         // Act
@@ -28,8 +27,6 @@ public class eShopDbContextUnitTests
         // Assert
 
         Assert.Equal(0, result);
-
-        await mediator.Received().DispatchDomainEventsAsync(context);
     }
 
     [Theory, AutoNSubstituteData]

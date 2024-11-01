@@ -19,7 +19,21 @@ internal class BasketApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
         await this._app.StartAsync();
     }
 
-    public async Task DisposeAsync()
+    public override async ValueTask DisposeAsync()
+    {
+        await base.DisposeAsync();
+        await this._app.StopAsync();
+        if (this._app is IAsyncDisposable asyncDisposable)
+        {
+            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+        }
+        else
+        {
+            this._app.Dispose();
+        }
+    }
+
+    async Task IAsyncLifetime.DisposeAsync()
     {
         await base.DisposeAsync();
         await this._app.StopAsync();

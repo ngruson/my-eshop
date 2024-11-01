@@ -1,17 +1,10 @@
-﻿namespace Webhooks.API.Model;
+namespace eShop.Webhooks.API.Model;
 
-public class WebhookData
+public class WebhookData(WebhookType hookType, object data)
 {
-    public DateTime When { get; }
+    public DateTime When { get; } = DateTime.UtcNow;
 
-    public string Payload { get; }
+    public string Payload { get; } = JsonSerializer.Serialize(data);
 
-    public string Type { get; }
-
-    public WebhookData(WebhookType hookType, object data)
-    {
-        When = DateTime.UtcNow;
-        Type = hookType.ToString();
-        Payload = JsonSerializer.Serialize(data);
-    }
+    public string Type { get; } = hookType.ToString();
 }

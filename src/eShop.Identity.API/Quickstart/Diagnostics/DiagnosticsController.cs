@@ -1,8 +1,7 @@
 // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-
-namespace IdentityServerHost.Quickstart.UI;
+namespace eShop.Identity.API.Quickstart.Diagnostics;
 
 [SecurityHeaders]
 [Authorize]
@@ -10,13 +9,14 @@ public class DiagnosticsController : Controller
 {
     public async Task<IActionResult> Index()
     {
-        var localAddresses = new string[] { "127.0.0.1", "::1", HttpContext.Connection.LocalIpAddress.ToString() };
-        if (!localAddresses.Contains(HttpContext.Connection.RemoteIpAddress.ToString()))
+        string? localIpAddress = this.HttpContext.Connection?.LocalIpAddress?.ToString();
+        string[] localAddresses = ["127.0.0.1", "::1", localIpAddress ?? string.Empty];
+        if (!localAddresses.Contains(this.HttpContext.Connection?.RemoteIpAddress?.ToString()))
         {
-            return NotFound();
+            return this.NotFound();
         }
 
-        var model = new DiagnosticsViewModel(await HttpContext.AuthenticateAsync());
-        return View(model);
+        var model = new DiagnosticsViewModel(await this.HttpContext.AuthenticateAsync());
+        return this.View(model);
     }
 }

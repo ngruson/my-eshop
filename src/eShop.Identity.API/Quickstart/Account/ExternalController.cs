@@ -1,5 +1,3 @@
-using IdentityServerHost.Quickstart.UI;
-
 namespace eShop.Identity.API.Quickstart.Account;
 
 [SecurityHeaders]

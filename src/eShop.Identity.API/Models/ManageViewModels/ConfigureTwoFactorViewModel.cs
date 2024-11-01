@@ -1,9 +1,9 @@
-﻿namespace eShop.Identity.API.Models.ManageViewModels
+namespace eShop.Identity.API.Models.ManageViewModels
 {
     public record ConfigureTwoFactorViewModel
     {
-        public string SelectedProvider { get; init; }
+        public string? SelectedProvider { get; init; }
 
-        public ICollection<SelectListItem> Providers { get; init; }
+        public ICollection<SelectListItem>? Providers { get; init; }
     }
 }

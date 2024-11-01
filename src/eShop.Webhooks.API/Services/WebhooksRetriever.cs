@@ -1,6 +1,4 @@
-﻿using eShop.Webhooks.API.Infrastructure;
-
-namespace Webhooks.API.Services;
+namespace eShop.Webhooks.API.Services;
 
 public class WebhooksRetriever(WebhooksContext db) : IWebhooksRetriever
 {

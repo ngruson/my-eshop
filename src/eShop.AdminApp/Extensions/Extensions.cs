@@ -9,6 +9,7 @@ using eShop.ServiceInvocation.CustomerApiClient;
 using eShop.ServiceInvocation.IdentityApiClient;
 using eShop.ServiceInvocation.MasterDataApiClient;
 using eShop.ServiceInvocation.OrderingApiClient;
+using eShop.Shared.Auth;
 using eShop.Shared.Features;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -48,8 +49,9 @@ internal static class Extensions
 
     private static void AddDaprServices(this IHostApplicationBuilder builder)
     {
-        builder.Services.AddDaprClient();
+        builder.Services.AddDaprClient();        
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<AccessTokenAccessor>();
 
         builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Dapr.CatalogApiClient>();
         builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Dapr.CustomerApiClient>();
