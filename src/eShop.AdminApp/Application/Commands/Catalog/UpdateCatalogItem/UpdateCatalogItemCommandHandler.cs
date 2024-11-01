@@ -1,16 +1,16 @@
 using Ardalis.Result;
-using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CatalogApiClient;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.Catalog.UpdateCatalogItem;
 
 internal class UpdateCatalogItemCommandHandler(
     ILogger<UpdateCatalogItemCommandHandler> logger,
-    ICatalogService catalogService)
+    ICatalogApiClient catalogApiClient)
         : IRequestHandler<UpdateCatalogItemCommand, Result>
 {
     private readonly ILogger<UpdateCatalogItemCommandHandler> logger = logger;
-    private readonly ICatalogService catalogService = catalogService;
+    private readonly ICatalogApiClient catalogApiClient = catalogApiClient;
 
     public async Task<Result> Handle(UpdateCatalogItemCommand request, CancellationToken cancellationToken)
     {
@@ -18,7 +18,7 @@ internal class UpdateCatalogItemCommandHandler(
         {
             this.logger.LogInformation("Updating catalog item...");
 
-            await this.catalogService.UpdateCatalogItem(request.ObjectId, request.Dto);
+            await this.catalogApiClient.UpdateCatalogItem(request.ObjectId, request.Dto);
 
             this.logger.LogInformation("Catalog item updated");
 

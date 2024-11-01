@@ -6,7 +6,7 @@ namespace eShop.AdminApp.Application.Queries.Catalog.GetCatalogItem;
 
 internal static class MapperExtensions
 {
-    internal static CatalogItemViewModel MapToCatalogItemViewModel(this ServiceInvocation.CatalogService.CatalogItemViewModel catalogItem)
+    internal static CatalogItemViewModel MapToCatalogItemViewModel(this ServiceInvocation.CatalogApiClient.CatalogItemViewModel catalogItem)
     {
         return new CatalogItemViewModel(
             catalogItem.ObjectId,

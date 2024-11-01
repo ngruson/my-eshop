@@ -6,13 +6,13 @@ using eShop.WebAppComponents.Services;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.ChatCompletion;
 using eShop.Shared.Data;
-using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CatalogApiClient;
 
 namespace eShop.WebApp.Components.Chatbot;
 
 public class ChatState
 {
-    private readonly ICatalogService _catalogService;
+    private readonly ICatalogApiClient _catalogApiClient;
     private readonly IBasketState _basketState;
     private readonly ClaimsPrincipal _user;
     private readonly ILogger _logger;
@@ -20,9 +20,9 @@ public class ChatState
     private readonly IProductImageUrlProvider _productImages;
     private readonly OpenAIPromptExecutionSettings _aiSettings = new() { ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions };
 
-    public ChatState(ICatalogService catalogService, IBasketState basketState, ClaimsPrincipal user, IProductImageUrlProvider productImages, Kernel kernel, ILoggerFactory loggerFactory)
+    public ChatState(ICatalogApiClient catalogApiClient, IBasketState basketState, ClaimsPrincipal user, IProductImageUrlProvider productImages, Kernel kernel, ILoggerFactory loggerFactory)
     {
-        this._catalogService = catalogService;
+        this._catalogApiClient = catalogApiClient;
         this._basketState = basketState;
         this._user = user;
         this._productImages = productImages;
@@ -106,7 +106,7 @@ public class ChatState
         {
             try
             {
-                PaginatedItems<CatalogItemViewModel> results = await chatState._catalogService.GetPaginatedCatalogItemsWithSemanticRelevance(productDescription!, 8, 0);
+                PaginatedItems<CatalogItemViewModel> results = await chatState._catalogApiClient.GetPaginatedCatalogItemsWithSemanticRelevance(productDescription!, 8, 0);
                 for (int i = 0; i < results.Data.Length; i++)
                 {
                     results.Data[i] = results.Data[i] with { PictureUrl = chatState._productImages.GetProductImageUrl(results.Data[i].ObjectId) };
@@ -125,7 +125,7 @@ public class ChatState
         {
             try
             {
-                var item = await chatState._catalogService.GetCatalogItem(itemId);
+                var item = await chatState._catalogApiClient.GetCatalogItem(itemId);
                 await chatState._basketState.AddAsync(item!);
                 return "Item added to shopping cart.";
             }

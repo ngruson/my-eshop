@@ -9,10 +9,10 @@ using eShop.Identity.Contracts.GetUsers;
 using eShop.Catalog.Contracts.GetCatalogItems;
 using eShop.AdminApp.Application.Commands.Order.GenerateOrders;
 using eShop.Ordering.Contracts.GetCardTypes;
-using eShop.ServiceInvocation.OrderingService;
-using eShop.ServiceInvocation.CatalogService;
-using eShop.ServiceInvocation.CustomerService;
-using eShop.ServiceInvocation.IdentityService;
+using eShop.ServiceInvocation.CustomerApiClient;
+using eShop.ServiceInvocation.CatalogApiClient;
+using eShop.ServiceInvocation.IdentityApiClient;
+using eShop.ServiceInvocation.OrderingApiClient;
 
 namespace eShop.AdminApp.UnitTests.Application.Commands;
 
@@ -21,10 +21,10 @@ public class GenerateOrdersCommandUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenOrdersCreated(
         GenerateOrdersCommand command,
-        [Substitute, Frozen] ICustomerService customerService,
-        [Substitute, Frozen] IIdentityService identityService,
-        [Substitute, Frozen] ICatalogService catalogService,
-        [Substitute, Frozen] IOrderingService orderingService,
+        [Substitute, Frozen] ICustomerApiClient customerApiClient,
+        [Substitute, Frozen] IIdentityApiClient identityService,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
+        [Substitute, Frozen] IOrderingApiClient orderingApiClient,
         GenerateOrdersCommandHandler sut,
         CustomerDto[] customers,
         UserDto[] users,
@@ -33,7 +33,7 @@ public class GenerateOrdersCommandUnitTests
     {
         // Arrange
 
-        customerService.GetCustomers()
+        customerApiClient.GetCustomers()
             .Returns(customers);
 
         UserDto[] users2 = new UserDto[users.Length];
@@ -50,12 +50,12 @@ public class GenerateOrdersCommandUnitTests
         identityService.GetUsers()
             .Returns(users2);
 
-        catalogService.GetCatalogItems()
+        catalogApiClient.GetCatalogItems()
             .Returns(catalogItems);
 
         cardTypes[0] = cardTypes[0] with { Name = "Amex" };
 
-        orderingService.GetCardTypes()
+        orderingApiClient.GetCardTypes()
             .Returns(cardTypes);
 
         // Act
@@ -66,13 +66,13 @@ public class GenerateOrdersCommandUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await orderingService.Received(command.OrdersToCreate).CreateOrder(Arg.Any<Guid>(), Arg.Any<CreateOrderDto>());
+        await orderingApiClient.Received(command.OrdersToCreate).CreateOrder(Arg.Any<Guid>(), Arg.Any<CreateOrderDto>());
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         GenerateOrdersCommand command,
-        [Substitute, Frozen] IOrderingService orderingService,
+        [Substitute, Frozen] IOrderingApiClient orderingApiClient,
         GenerateOrdersCommandHandler sut)
     {
         // Arrange
@@ -85,6 +85,6 @@ public class GenerateOrdersCommandUnitTests
 
         Assert.True(result.IsError());
 
-        await orderingService.DidNotReceive().CreateOrder(Arg.Any<Guid>(), Arg.Any<CreateOrderDto>());
+        await orderingApiClient.DidNotReceive().CreateOrder(Arg.Any<Guid>(), Arg.Any<CreateOrderDto>());
     }
 }

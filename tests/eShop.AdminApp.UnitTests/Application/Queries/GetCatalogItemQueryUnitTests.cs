@@ -3,7 +3,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Queries.Catalog.GetCatalogItem;
 using eShop.Catalog.Contracts;
-using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CatalogApiClient;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -14,13 +14,13 @@ public class GetCatalogItemQueryUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCatalogItemExist(
         GetCatalogItemQuery query,
-        [Substitute, Frozen] ICatalogService catalogService,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         GetCatalogItemQueryHandler sut,
-        ServiceInvocation.CatalogService.CatalogItemViewModel catalogItem)
+        ServiceInvocation.CatalogApiClient.CatalogItemViewModel catalogItem)
     {
         // Arrange
 
-        catalogService.GetCatalogItem(query.ObjectId)
+        catalogApiClient.GetCatalogItem(query.ObjectId)
             .Returns(catalogItem);
 
         // Act
@@ -32,18 +32,18 @@ public class GetCatalogItemQueryUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await catalogService.Received().GetCatalogItem(query.ObjectId);
+        await catalogApiClient.Received().GetCatalogItem(query.ObjectId);
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         GetCatalogItemQuery query,
-        [Substitute, Frozen] ICatalogService catalogService,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         GetCatalogItemQueryHandler sut)
     {
         // Arrange
 
-        catalogService.GetCatalogItem(query.ObjectId)
+        catalogApiClient.GetCatalogItem(query.ObjectId)
             .ThrowsAsync<Exception>();
 
         // Act
@@ -55,6 +55,6 @@ public class GetCatalogItemQueryUnitTests
 
         Assert.True(result.IsError());
 
-        await catalogService.Received().GetCatalogItem(query.ObjectId);
+        await catalogApiClient.Received().GetCatalogItem(query.ObjectId);
     }
 }

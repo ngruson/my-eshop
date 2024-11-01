@@ -46,13 +46,7 @@ jobs:
             tests/eShop.Customer.FunctionalTests/eShop.Customer.FunctionalTests.csproj
 
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
-            tests/eShop.Customer.UnitTests/eShop.Customer.UnitTests.csproj
-
-            dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
-            tests/eShop.ServiceDefaults.UnitTests/eShop.ServiceDefaults.UnitTests.csproj
-
-            dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
-            tests/eShop.Shared.UnitTests/eShop.Shared.UnitTests.csproj
+            tests/eShop.Customer.UnitTests/eShop.Customer.UnitTests.csproj            
 
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.IntegrationEventLogEF.UnitTests/eShop.IntegrationEventLogEF.UnitTests.csproj
@@ -62,6 +56,15 @@ jobs:
 
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.Ordering.UnitTests/eShop.Ordering.UnitTests.csproj
+
+            dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.ServiceDefaults.UnitTests/eShop.ServiceDefaults.UnitTests.csproj
+
+            dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.ServiceInvocation.UnitTests/eShop.ServiceInvocation.UnitTests.csproj
+
+            dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            tests/eShop.Shared.UnitTests/eShop.Shared.UnitTests.csproj
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1

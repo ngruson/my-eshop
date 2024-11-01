@@ -16,12 +16,9 @@ using eShop.EventBus.Extensions;
 using eShop.EventBusRabbitMQ;
 using eShop.Shared.Features;
 using eShop.Catalog.Contracts;
-using eShop.ServiceInvocation.CatalogService;
-using eShop.ServiceInvocation.CatalogService.Refit;
-using eShop.ServiceInvocation.OrderingService;
-using eShop.ServiceInvocation.OrderingService.Refit;
-using eShop.ServiceInvocation.CustomerService;
-using eShop.ServiceInvocation.CustomerService.Refit;
+using eShop.ServiceInvocation.CustomerApiClient;
+using eShop.ServiceInvocation.CatalogApiClient;
+using eShop.ServiceInvocation.OrderingApiClient;
 
 namespace eShop.WebApp.Extensions;
 
@@ -50,35 +47,49 @@ public static class Extensions
 
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
 
-        if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Refit)
+        if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Dapr)
         {
-            builder.Services.AddRefitServices();
+            builder.AddDaprServices();
+        }
+        else
+        {
+            builder.AddRefitServices();
         }
     }
 
-    private static void AddRefitServices(this IServiceCollection services)
+    private static void AddDaprServices(this IHostApplicationBuilder builder)
     {
-        services
+        builder.Services.AddDaprClient();
+        builder.Services.AddHttpContextAccessor();
+
+        builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Dapr.CatalogApiClient>();
+        builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Dapr.CustomerApiClient>();
+        builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Dapr.OrderingApiClient>();
+    }
+
+    private static void AddRefitServices(this IHostApplicationBuilder builder)
+    {
+        builder.Services
                 .AddRefitClient<ICatalogApi>()
                 .ConfigureHttpClient(c =>
                     c.BaseAddress = new Uri("http://catalog-api"))
                 .AddAuthToken();
 
-        services
+        builder.Services
             .AddRefitClient<ICustomerApi>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri("http://customer-api"))
             .AddAuthToken();
 
-        services
+        builder.Services
             .AddRefitClient<IOrderingApi>()
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri("http://ordering-api"))
             .AddAuthToken();
 
-        services.AddScoped<ICatalogService, CatalogService>();
-        services.AddScoped<ICustomerService, CustomerService>();
-        services.AddScoped<IOrderingService, OrderingService>();
+        builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Refit.CatalogApiClient>();
+        builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Refit.CustomerApiClient>();
+        builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Refit.OrderingApiClient>();
     }
 
     public static void AddEventBusSubscriptions(this IEventBusBuilder eventBus)

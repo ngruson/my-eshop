@@ -4,7 +4,7 @@ using AutoFixture.Xunit2;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using eShop.AdminApp.Application.Commands.Customer.UpdateCustomer;
-using eShop.ServiceInvocation.CustomerService;
+using eShop.ServiceInvocation.CustomerApiClient;
 
 namespace eShop.AdminApp.UnitTests.Application.Commands;
 
@@ -13,7 +13,7 @@ public class UpdateCustomerCommandUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCustomerUpdated(
         UpdateCustomerCommand command,
-        [Substitute, Frozen] ICustomerService customerService,
+        [Substitute, Frozen] ICustomerApiClient customerApiClient,
         UpdateCustomerCommandHandler sut)
     {
         // Arrange
@@ -26,18 +26,18 @@ public class UpdateCustomerCommandUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await customerService.Received().UpdateCustomer(command.ObjectId, command.Dto);
+        await customerApiClient.Received().UpdateCustomer(command.ObjectId, command.Dto);
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         UpdateCustomerCommand command,
-        [Substitute, Frozen] ICustomerService customerService,
+        [Substitute, Frozen] ICustomerApiClient customerApiClient,
         UpdateCustomerCommandHandler sut)
     {
         // Arrange
 
-        customerService.UpdateCustomer(command.ObjectId, command.Dto)
+        customerApiClient.UpdateCustomer(command.ObjectId, command.Dto)
             .ThrowsAsync<Exception>();
 
         // Act
@@ -48,6 +48,6 @@ public class UpdateCustomerCommandUnitTests
 
         Assert.True(result.IsError());
 
-        await customerService.Received().UpdateCustomer(command.ObjectId, command.Dto);
+        await customerApiClient.Received().UpdateCustomer(command.ObjectId, command.Dto);
     }
 }

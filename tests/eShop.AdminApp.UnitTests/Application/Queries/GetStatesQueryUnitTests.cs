@@ -3,7 +3,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Queries.MasterData.GetStates;
 using eShop.MasterData.Contracts;
-using eShop.ServiceInvocation.MasterDataService;
+using eShop.ServiceInvocation.MasterDataApiClient;
 using Microsoft.Extensions.Caching.Memory;
 using NSubstitute;
 
@@ -14,13 +14,13 @@ public class GetStatesQueryUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnStatesGivenCacheMiss(
         GetStatesQuery query,
-        [Substitute, Frozen] IMasterDataService masterDataService,
+        [Substitute, Frozen] IMasterDataApiClient masterDataApiClient,
         GetStatesQueryHandler sut,
         StateDto[] states)
     {
         // Arrange
 
-        masterDataService.GetStates()
+        masterDataApiClient.GetStates()
             .Returns(states);
 
         // Act
@@ -31,14 +31,14 @@ public class GetStatesQueryUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await masterDataService.Received().GetStates();
+        await masterDataApiClient.Received().GetStates();
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnStatesGivenCacheHit(
         GetStatesQuery query,
         [Substitute, Frozen] IMemoryCache cache,
-        [Substitute, Frozen] IMasterDataService masterDataService,
+        [Substitute, Frozen] IMasterDataApiClient masterDataApiClient,
         GetStatesQueryHandler sut,
         StateViewModel[] states)
     {
@@ -58,6 +58,6 @@ public class GetStatesQueryUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await masterDataService.DidNotReceive().GetStates();
+        await masterDataApiClient.DidNotReceive().GetStates();
     }
 }

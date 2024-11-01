@@ -1,4 +1,4 @@
-using eShop.ServiceInvocation.CatalogService;
+using eShop.ServiceInvocation.CatalogApiClient;
 
 namespace eShop.WebApp.Services;
 

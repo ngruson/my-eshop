@@ -4,16 +4,11 @@ using eShop.Identity.Contracts;
 using eShop.MasterData.Contracts;
 using eShop.Ordering.Contracts;
 using eShop.ServiceDefaults;
-using eShop.ServiceInvocation.CatalogService;
-using eShop.ServiceInvocation.CatalogService.Refit;
-using eShop.ServiceInvocation.CustomerService;
-using eShop.ServiceInvocation.CustomerService.Refit;
-using eShop.ServiceInvocation.IdentityService;
-using eShop.ServiceInvocation.IdentityService.Refit;
-using eShop.ServiceInvocation.MasterDataService;
-using eShop.ServiceInvocation.MasterDataService.Refit;
-using eShop.ServiceInvocation.OrderingService;
-using eShop.ServiceInvocation.OrderingService.Refit;
+using eShop.ServiceInvocation.CatalogApiClient;
+using eShop.ServiceInvocation.CustomerApiClient;
+using eShop.ServiceInvocation.IdentityApiClient;
+using eShop.ServiceInvocation.MasterDataApiClient;
+using eShop.ServiceInvocation.OrderingApiClient;
 using eShop.Shared.Features;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -36,15 +31,31 @@ internal static class Extensions
 
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
 
-        if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Refit)
+        if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Dapr)
+        {
+            builder.AddDaprServices();
+        }
+        else
         {
             builder.AddRefitServices();
-        }        
+        }
 
         builder.Services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblyContaining<Program>();
         });
+    }
+
+    private static void AddDaprServices(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddDaprClient();
+        builder.Services.AddHttpContextAccessor();
+
+        builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Dapr.CatalogApiClient>();
+        builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Dapr.CustomerApiClient>();
+        builder.Services.AddScoped<IIdentityApiClient, ServiceInvocation.IdentityApiClient.Dapr.IdentityApiClient>();
+        builder.Services.AddScoped<IMasterDataApiClient, ServiceInvocation.MasterDataApiClient.Dapr.MasterDataApiClient>();
+        builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Dapr.OrderingApiClient>();
     }
 
     private static void AddRefitServices(this IHostApplicationBuilder builder)
@@ -79,11 +90,11 @@ internal static class Extensions
                 c.BaseAddress = new Uri("http://ordering-api"))
             .AddAuthToken();
 
-        builder.Services.AddScoped<ICatalogService, CatalogService>();
-        builder.Services.AddScoped<ICustomerService, CustomerService>();
-        builder.Services.AddScoped<IIdentityService, IdentityService>();
-        builder.Services.AddScoped<IMasterDataService, MasterDataService>();
-        builder.Services.AddScoped<IOrderingService, OrderingService>();
+        builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Refit.CatalogApiClient>();
+        builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Refit.CustomerApiClient >();
+        builder.Services.AddScoped<IIdentityApiClient, ServiceInvocation.IdentityApiClient.Refit.IdentityApiClient>();
+        builder.Services.AddScoped<IMasterDataApiClient, ServiceInvocation.MasterDataApiClient.Refit.MasterDataApiClient>();
+        builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Refit.OrderingApiClient>();
     }
 
     public static void AddAuthenticationServices(this IHostApplicationBuilder builder)

@@ -4,7 +4,7 @@ using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Queries.Order.GetOrders;
 using eShop.Ordering.Contracts;
 using eShop.Ordering.Contracts.GetOrders;
-using eShop.ServiceInvocation.OrderingService;
+using eShop.ServiceInvocation.OrderingApiClient;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -15,13 +15,13 @@ public class GetOrdersQueryUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCustomerCreated(
         GetOrdersQuery query,
-        [Substitute, Frozen] IOrderingService orderingService,
+        [Substitute, Frozen] IOrderingApiClient orderingApiClient,
         GetOrdersQueryHandler sut,
         OrderDto[] orders)
     {
         // Arrange
 
-        orderingService.GetOrders()
+        orderingApiClient.GetOrders()
             .Returns(orders);
 
         // Act
@@ -32,18 +32,18 @@ public class GetOrdersQueryUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await orderingService.Received().GetOrders();
+        await orderingApiClient.Received().GetOrders();
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         GetOrdersQuery query,
-        [Substitute, Frozen] IOrderingService orderingService,
+        [Substitute, Frozen] IOrderingApiClient orderingApiClient,
         GetOrdersQueryHandler sut)
     {
         // Arrange
 
-        orderingService.GetOrders()
+        orderingApiClient.GetOrders()
             .ThrowsAsync<Exception>();
 
         // Act
@@ -54,6 +54,6 @@ public class GetOrdersQueryUnitTests
 
         Assert.True(result.IsError());
 
-        await orderingService.Received().GetOrders();
+        await orderingApiClient.Received().GetOrders();
     }
 }

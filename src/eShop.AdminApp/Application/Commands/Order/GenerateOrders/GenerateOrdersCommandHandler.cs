@@ -7,10 +7,10 @@ using eShop.Identity.Contracts;
 using eShop.Identity.Contracts.GetUsers;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Contracts.GetCardTypes;
-using eShop.ServiceInvocation.CatalogService;
-using eShop.ServiceInvocation.CustomerService;
-using eShop.ServiceInvocation.IdentityService;
-using eShop.ServiceInvocation.OrderingService;
+using eShop.ServiceInvocation.CatalogApiClient;
+using eShop.ServiceInvocation.CustomerApiClient;
+using eShop.ServiceInvocation.IdentityApiClient;
+using eShop.ServiceInvocation.OrderingApiClient;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.GenerateOrders;
@@ -18,16 +18,16 @@ namespace eShop.AdminApp.Application.Commands.GenerateOrders;
 internal partial class GenerateOrdersCommandHandler(
     ILogger<GenerateOrdersCommandHandler> logger,
     IConfiguration config,
-    ICustomerService customerService,
-    IIdentityService identityService,
-    ICatalogService catalogService,
-    IOrderingService orderingService) : IRequestHandler<GenerateOrdersCommand, Result>
+    ICustomerApiClient customerApiClient,
+    IIdentityApiClient identityService,
+    ICatalogApiClient catalogApiClient,
+    IOrderingApiClient orderingApiClient) : IRequestHandler<GenerateOrdersCommand, Result>
 {
     private readonly ILogger<GenerateOrdersCommandHandler> logger = logger;
-    private readonly ICustomerService customerService = customerService;
-    private readonly IIdentityService identityService = identityService;
-    private readonly ICatalogService catalogService = catalogService;
-    private readonly IOrderingService orderingService = orderingService;
+    private readonly ICustomerApiClient customerApiClient = customerApiClient;
+    private readonly IIdentityApiClient identityService = identityService;
+    private readonly ICatalogApiClient catalogApiClient = catalogApiClient;
+    private readonly IOrderingApiClient orderingApiClient = orderingApiClient;
 
     private readonly string catalogApiUrl = config["services:catalog-api:http:0"]!;
 
@@ -38,7 +38,7 @@ internal partial class GenerateOrdersCommandHandler(
             // Get all customers
 
             this.WriteProgress(request, (0, "Getting customers..."));
-            CustomerDto[] customers = await this.customerService.GetCustomers();
+            CustomerDto[] customers = await this.customerApiClient.GetCustomers();
             this.WriteProgress(request, (0, "Received {Count} customers"), customers.Length);
 
             // Get all users
@@ -49,10 +49,10 @@ internal partial class GenerateOrdersCommandHandler(
 
             // Get all products
             this.WriteProgress(request, (0, "Getting catalog items..."));
-            CatalogItemDto[] catalogItems = await this.catalogService.GetCatalogItems();
+            CatalogItemDto[] catalogItems = await this.catalogApiClient.GetCatalogItems();
             this.WriteProgress(request, (0, "Received {Count} catalog items"), catalogItems.Length);
 
-            IEnumerable<CardTypeDto> cardTypes = await this.orderingService.GetCardTypes();
+            IEnumerable<CardTypeDto> cardTypes = await this.orderingApiClient.GetCardTypes();
             CardTypeDto cardType = cardTypes.First(_ => _.Name == "Amex");
 
             Random random = new();
@@ -96,7 +96,7 @@ internal partial class GenerateOrdersCommandHandler(
 
                 this.WriteProgress(request, (i, "Creating order {Counter}..."), i);
 
-                await this.orderingService.CreateOrder(Guid.NewGuid(), order);
+                await this.orderingApiClient.CreateOrder(Guid.NewGuid(), order);
 
                 this.WriteProgress(request, (i, "Order {Counter} created"), i);
             }

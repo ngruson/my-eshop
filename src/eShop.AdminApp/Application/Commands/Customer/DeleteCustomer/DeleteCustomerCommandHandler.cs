@@ -1,15 +1,15 @@
 using Ardalis.Result;
-using eShop.ServiceInvocation.CustomerService;
+using eShop.ServiceInvocation.CustomerApiClient;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.Customer.DeleteCustomer;
 
 internal class DeleteCustomerCommandHandler(
     ILogger<DeleteCustomerCommandHandler> logger,
-    ICustomerService customerService) : IRequestHandler<DeleteCustomerCommand, Result>
+    ICustomerApiClient customerApiClient) : IRequestHandler<DeleteCustomerCommand, Result>
 {
     private readonly ILogger<DeleteCustomerCommandHandler> logger = logger;
-    private readonly ICustomerService customerService = customerService;
+    private readonly ICustomerApiClient customerApiClient = customerApiClient;
 
     public async Task<Result> Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
     {
@@ -17,7 +17,7 @@ internal class DeleteCustomerCommandHandler(
         {
             this.logger.LogInformation("Deleting customer {ObjectId}...", request.ObjectId);
 
-            await this.customerService.DeleteCustomer(request.ObjectId);
+            await this.customerApiClient.DeleteCustomer(request.ObjectId);
 
             this.logger.LogInformation("Customer deleted");
 

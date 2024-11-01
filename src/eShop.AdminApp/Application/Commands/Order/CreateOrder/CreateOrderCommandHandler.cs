@@ -1,15 +1,15 @@
 using Ardalis.Result;
-using eShop.ServiceInvocation.OrderingService;
+using eShop.ServiceInvocation.OrderingApiClient;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Commands.Order.CreateOrder;
 
 internal class CreateOrderCommandHandler(
     ILogger<CreateOrderCommandHandler> logger,
-    IOrderingService orderingService) : IRequestHandler<CreateOrderCommand, Result>
+    IOrderingApiClient orderingApiClient) : IRequestHandler<CreateOrderCommand, Result>
 {
     private readonly ILogger<CreateOrderCommandHandler> logger = logger;
-    private readonly IOrderingService orderingService = orderingService;
+    private readonly IOrderingApiClient orderingApiClient = orderingApiClient;
 
     public async Task<Result> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
@@ -17,7 +17,7 @@ internal class CreateOrderCommandHandler(
         {
             this.logger.LogInformation("Creating order...");
 
-            await this.orderingService.CreateOrder(request.RequestId, request.Dto);
+            await this.orderingApiClient.CreateOrder(request.RequestId, request.Dto);
 
             this.logger.LogInformation("Order created");
 
