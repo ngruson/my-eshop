@@ -12,7 +12,7 @@ public class CustomerApiClientUnitTests
     public class CreateCustomer
     {
         [Theory, AutoNSubstituteData]
-        public async Task return_catalogItem(
+        public async Task create_customer(
             [Substitute, Frozen] ICustomerApi customerApi,
             CustomerApiClient.Refit.CustomerApiClient sut,
             CreateCustomerDto dto)
@@ -32,7 +32,7 @@ public class CustomerApiClientUnitTests
     public class DeleteCustomer
     {
         [Theory, AutoNSubstituteData]
-        public async Task return_catalogItem(
+        public async Task delete_customer(
             [Substitute, Frozen] ICustomerApi customerApi,
             CustomerApiClient.Refit.CustomerApiClient sut,
             Guid objectId)
@@ -52,7 +52,7 @@ public class CustomerApiClientUnitTests
     public class GetCustomer
     {
         [Theory, AutoNSubstituteData]
-        public async Task return_catalogItem(
+        public async Task return_customer(
             [Substitute, Frozen] ICustomerApi customerApi,
             CustomerApiClient.Refit.CustomerApiClient sut,
             Guid objectId,
@@ -75,7 +75,7 @@ public class CustomerApiClientUnitTests
     public class GetCustomerByName
     {
         [Theory, AutoNSubstituteData]
-        public async Task return_catalogItem(
+        public async Task return_customer(
             [Substitute, Frozen] ICustomerApi customerApi,
             CustomerApiClient.Refit.CustomerApiClient sut,
             string name,
@@ -99,7 +99,7 @@ public class CustomerApiClientUnitTests
     public class GetCustomers
     {
         [Theory, AutoNSubstituteData]
-        public async Task return_catalogItems(
+        public async Task return_customers(
             [Substitute, Frozen] ICustomerApi customerApi,
             CustomerApiClient.Refit.CustomerApiClient sut,
             Customer.Contracts.GetCustomers.CustomerDto[] customers,
@@ -123,7 +123,7 @@ public class CustomerApiClientUnitTests
     public class UpdateCustomer
     {
         [Theory, AutoNSubstituteData]
-        public async Task return_catalogItem(
+        public async Task update_customer(
             [Substitute, Frozen] ICustomerApi customerApi,
             CustomerApiClient.Refit.CustomerApiClient sut,
             Guid objectId,

@@ -1,8 +1,6 @@
-using System.Net.Http;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using Dapr.Client;
-using eShop.Catalog.Contracts;
 using eShop.Catalog.Contracts.CreateCatalogItem;
 using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;

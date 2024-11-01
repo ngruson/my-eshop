@@ -19,8 +19,7 @@ public class CustomerApiClient(DaprClient daprClient, AccessTokenAccessor access
             null,
             dto);
 
-        await this.DaprClient.InvokeMethodAsync<Customer.Contracts.GetCustomer.CustomerDto>(
-            request);
+        await this.DaprClient.InvokeMethodAsync(request);
     }
 
     public async Task DeleteCustomer(Guid objectId)
@@ -29,8 +28,7 @@ public class CustomerApiClient(DaprClient daprClient, AccessTokenAccessor access
             HttpMethod.Delete,
             $"{this.basePath}{objectId}");
 
-        await this.DaprClient.InvokeMethodAsync<Customer.Contracts.GetCustomer.CustomerDto>(
-            request);
+        await this.DaprClient.InvokeMethodAsync(request);
     }
 
     public async Task<Customer.Contracts.GetCustomer.CustomerDto> GetCustomer(Guid objectId)
