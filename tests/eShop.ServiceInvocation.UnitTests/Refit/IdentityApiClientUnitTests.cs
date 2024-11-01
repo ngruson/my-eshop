@@ -4,9 +4,9 @@ using eShop.Identity.Contracts;
 using eShop.Identity.Contracts.GetUsers;
 using NSubstitute;
 
-namespace eShop.ServiceInvocation.UnitTests;
+namespace eShop.ServiceInvocation.UnitTests.Refit;
 
-public class IdentityServiceUnitTests
+public class IdentityApiClientUnitTests
 {
     [Theory, AutoNSubstituteData]
     public async Task return_users(

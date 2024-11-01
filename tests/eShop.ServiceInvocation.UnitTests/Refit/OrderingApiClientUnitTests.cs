@@ -6,9 +6,9 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using NSubstitute;
 
-namespace eShop.ServiceInvocation.UnitTests;
+namespace eShop.ServiceInvocation.UnitTests.Refit;
 
-public class OrderingServiceUnitTests
+public class OrderingApiClientUnitTests
 {
     public class GetOrders
     {

@@ -8,9 +8,9 @@ using eShop.ServiceInvocation.CatalogApiClient;
 using eShop.Shared.Data;
 using NSubstitute;
 
-namespace eShop.ServiceInvocation.UnitTests;
+namespace eShop.ServiceInvocation.UnitTests.Refit;
 
-public class CatalogServiceUnitTests
+public class CatalogApiClientUnitTests
 {
     public class GetCatalogItem
     {

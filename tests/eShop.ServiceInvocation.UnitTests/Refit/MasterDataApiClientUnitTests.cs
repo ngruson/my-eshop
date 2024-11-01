@@ -3,9 +3,9 @@ using AutoFixture.Xunit2;
 using eShop.MasterData.Contracts;
 using NSubstitute;
 
-namespace eShop.ServiceInvocation.UnitTests;
+namespace eShop.ServiceInvocation.UnitTests.Refit;
 
-public class MasterDataServiceUnitTests
+public class MasterDataApiClientUnitTests
 {
     public class GetCountries
     {

@@ -1,11 +1,10 @@
 using System.Net.Http.Headers;
 using Dapr.Client;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
+using eShop.Shared.Auth;
 
 namespace eShop.ServiceInvocation;
 
-public abstract class BaseDaprApiClient(DaprClient daprClient, IHttpContextAccessor httpContextAccessor)
+public abstract class BaseDaprApiClient(DaprClient daprClient, AccessTokenAccessor accessTokenAccessor)
 {
     private readonly KeyValuePair<string, string>[] defaultQueryStringParameters =
     [
@@ -69,14 +68,11 @@ public abstract class BaseDaprApiClient(DaprClient daprClient, IHttpContextAcces
 
     private async Task<AuthenticationHeaderValue?> GetAuthToken()
     {
-        if (httpContextAccessor.HttpContext is HttpContext context)
-        {
-            string? accessToken = await context.GetTokenAsync("access_token");
+        string? accessToken = await accessTokenAccessor.GetAccessTokenAsync();
 
-            if (accessToken is not null)
-            {
-                return new AuthenticationHeaderValue("Bearer", accessToken);
-            }
+        if (accessToken is not null)
+        {
+            return new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
         return null;

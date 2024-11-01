@@ -2,12 +2,12 @@ using Dapr.Client;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Contracts.GetCardTypes;
 using eShop.Ordering.Contracts.GetOrders;
-using Microsoft.AspNetCore.Http;
+using eShop.Shared.Auth;
 
 namespace eShop.ServiceInvocation.OrderingApiClient.Dapr;
 
-public class OrderingApiClient(DaprClient daprClient, IHttpContextAccessor httpContextAccessor)
-    : BaseDaprApiClient(daprClient, httpContextAccessor), IOrderingApiClient
+public class OrderingApiClient(DaprClient daprClient, AccessTokenAccessor accessTokenAccessor)
+    : BaseDaprApiClient(daprClient, accessTokenAccessor), IOrderingApiClient
 {
     private readonly string basePath = "/api/orders";
     protected override string AppId => "ordering-api";

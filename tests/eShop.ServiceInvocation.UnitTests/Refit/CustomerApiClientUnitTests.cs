@@ -5,9 +5,9 @@ using eShop.Customer.Contracts.UpdateCustomerGeneralInfo;
 using eShop.Customer.Contracts;
 using NSubstitute;
 
-namespace eShop.ServiceInvocation.UnitTests;
+namespace eShop.ServiceInvocation.UnitTests.Refit;
 
-public class CustomerServiceUnitTests
+public class CustomerApiClientUnitTests
 {
     public class CreateCustomer
     {
@@ -38,7 +38,7 @@ public class CustomerServiceUnitTests
             Guid objectId)
         {
             // Arrange
-            
+
             // Act
 
             await sut.DeleteCustomer(objectId);

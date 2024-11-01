@@ -1,12 +1,12 @@
 using Dapr.Client;
 using eShop.Catalog.Contracts.CreateCatalogItem;
+using eShop.Shared.Auth;
 using eShop.Shared.Data;
-using Microsoft.AspNetCore.Http;
 
 namespace eShop.ServiceInvocation.CatalogApiClient.Dapr;
 
-public class CatalogApiClient(DaprClient daprClient, IHttpContextAccessor httpContextAccessor)
-    : BaseDaprApiClient(daprClient, httpContextAccessor), ICatalogApiClient
+public class CatalogApiClient(DaprClient daprClient, AccessTokenAccessor accessTokenAccessor)
+    : BaseDaprApiClient(daprClient, accessTokenAccessor), ICatalogApiClient
 {
     private readonly string basePath = "api/catalog";
     protected override string AppId => "catalog-api";
