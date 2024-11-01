@@ -122,7 +122,7 @@
     <PackageVersion Include="Polly.Core" Version="8.4.2" />
     <PackageVersion Include="Refit" Version="7.2.1" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="7.2.1" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.7.3" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.9.0" />
     <PackageVersion Include="System.Reflection.TypeExtensions" Version="4.7.0" />
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.2.0" />
   </ItemGroup>
