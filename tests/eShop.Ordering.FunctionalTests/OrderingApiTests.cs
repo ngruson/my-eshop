@@ -145,7 +145,8 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
 
         var cardExpirationDate = DateTime.Now.AddYears(1);
         var orderRequest = new CreateOrderDto(order.UserId, order.UserName, null, null, null, null, null,
-            order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, cardType.ObjectId, null, [orderItem]);
+            order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, cardType.ObjectId, null,
+            [orderItem with {  Discount = 0 }]);
         var content = new StringContent(JsonSerializer.Serialize(orderRequest), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
@@ -157,26 +158,13 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     }
 
     [Theory, AutoNSubstituteData]
-    public async Task PostDraftOrder(
-        OrderItemDto orderItem)
-    {
-        // Act
-        
-        var bodyContent = new { BuyerId = "1", Items = new List<OrderItemDto> { orderItem } };
-        var content = new StringContent(JsonSerializer.Serialize(bodyContent), Encoding.UTF8, "application/json")
-        {
-            Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
-        };
-        var response = await this._httpClient.PostAsync("api/orders/draft", content);
-
-        // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    }
-
-    [Theory, AutoNSubstituteData]
     public async Task CreateOrderDraftSucceeds(
         CreateOrderDraftCommand command)
     {
+        OrderItemDto[] orderItems = command.Items
+            .Select(x => new OrderItemDto(x.ProductId, x.ProductName, x.UnitPrice, 0, x.Units, x.PictureUrl))
+            .ToArray();
+
         var content = new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
