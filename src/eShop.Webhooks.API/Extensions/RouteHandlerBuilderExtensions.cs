@@ -1,5 +1,3 @@
-using eShop.Webhooks.API.Model;
-
 namespace eShop.Webhooks.API.Extensions;
 
 public static class RouteHandlerBuilderExtensions
@@ -8,14 +6,14 @@ public static class RouteHandlerBuilderExtensions
     {
         return routeHandlerBuilder.AddEndpointFilter(async (context, next) =>
         {
-            var webhookSubscriptionRequest = context.Arguments.OfType<WebhookSubscriptionRequest>().SingleOrDefault();
+            WebhookSubscriptionRequest? webhookSubscriptionRequest = context.Arguments.OfType<WebhookSubscriptionRequest>().SingleOrDefault();
 
             if (webhookSubscriptionRequest == null)
             {
                 return TypedResults.BadRequest("No WebhookSubscriptionRequest found.");
             }
 
-            var validationResults = webhookSubscriptionRequest.Validate(new ValidationContext(webhookSubscriptionRequest));
+            IEnumerable<ValidationResult> validationResults = webhookSubscriptionRequest.Validate(new ValidationContext(webhookSubscriptionRequest));
 
             if (validationResults.Any())
             {
@@ -36,7 +34,7 @@ public static class RouteHandlerBuilderExtensions
 
             foreach (string propertyName in propertyNames)
             {
-                if (errors.TryGetValue(propertyName, out var value))
+                if (errors.TryGetValue(propertyName, out string[]? value))
                 {
                     errors[propertyName] = [.. value, validationResult.ErrorMessage!];
                 }

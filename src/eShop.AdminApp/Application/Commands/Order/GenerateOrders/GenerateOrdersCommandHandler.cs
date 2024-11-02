@@ -153,7 +153,7 @@ internal partial class GenerateOrdersCommandHandler(
 
     private static string ReplacePlaceholders(string template, Dictionary<string, object> parameters)
     {
-        foreach (var parameter in parameters)
+        foreach (KeyValuePair<string, object> parameter in parameters)
         {
             template = template.Replace($"{{{parameter.Key}}}", parameter.Value.ToString());
         }

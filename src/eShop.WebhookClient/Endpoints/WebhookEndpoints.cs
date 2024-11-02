@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 
 namespace eShop.WebhookClient.Endpoints;
 
@@ -9,9 +10,12 @@ public static class WebhookEndpoints
     {
         const string webhookCheckHeader = "X-eshop-whtoken";
 
-        var configuration = app.ServiceProvider.GetRequiredService<IConfiguration>();
-        bool.TryParse(configuration["ValidateToken"], out var validateToken);
-        var tokenToValidate = configuration["WebhookClientOptions:Token"];
+        IConfiguration configuration = app.ServiceProvider.GetRequiredService<IConfiguration>();
+        if (!bool.TryParse(configuration["ValidateToken"], out bool validateToken))
+        {
+            validateToken = false; // or handle the error as needed
+        }
+        string? tokenToValidate = configuration["WebhookClientOptions:Token"];
 
         app.MapMethods("/check", [HttpMethods.Options], Results<Ok, BadRequest<string>> ([FromHeader(Name = webhookCheckHeader)] string value, HttpResponse response) =>
         {
@@ -30,14 +34,14 @@ public static class WebhookEndpoints
 
         app.MapPost("/webhook-received", async (WebhookData hook, HttpRequest request, ILogger<Program> logger, HooksRepository hooksRepository) =>
         {
-            var token = request.Headers[webhookCheckHeader];
+            StringValues token = request.Headers[webhookCheckHeader];
 
             logger.LogInformation("Received hook with token {Token}. My token is {MyToken}. Token validation is set to {ValidateToken}", token, tokenToValidate, validateToken);
 
             if (!validateToken || tokenToValidate == token)
             {
                 logger.LogInformation("Received hook is going to be processed");
-                var newHook = new WebHookReceived()
+                WebHookReceived newHook = new()
                 {
                     Data = hook.Payload,
                     When = hook.When,

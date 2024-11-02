@@ -35,7 +35,7 @@ public abstract class BaseDaprApiClient(DaprClient daprClient, AccessTokenAccess
     protected async Task<HttpRequestMessage> CreateRequest(HttpMethod httpMethod, string methodName,
         KeyValuePair<string, string>[]? queryStringParameters, object? data)
     {
-        var queryStringParametersConcat = this.defaultQueryStringParameters;
+        KeyValuePair<string, string>[] queryStringParametersConcat = this.defaultQueryStringParameters;
         if (queryStringParameters is not null)
         {
             queryStringParametersConcat = [.. queryStringParametersConcat, .. queryStringParameters];

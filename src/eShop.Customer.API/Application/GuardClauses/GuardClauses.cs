@@ -10,7 +10,7 @@ internal static class GuardClauses
     {
         if (input is null || input.Count == 0)
         {
-            var ex = new CustomersNotFoundException();
+            CustomersNotFoundException ex = new();
             logger.LogError(ex, "Exception: {Message}", ex.Message);
             return Result.NotFound();
         }
@@ -22,7 +22,7 @@ internal static class GuardClauses
     {
         if (input is null)
         {
-            var ex = new CustomerNotFoundException();
+            CustomerNotFoundException ex = new();
             logger.LogError(ex, "Exception: {Message}", ex.Message);
             return Result.NotFound();
         }

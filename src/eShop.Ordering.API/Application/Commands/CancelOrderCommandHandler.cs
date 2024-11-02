@@ -15,7 +15,8 @@ public class CancelOrderCommandHandler(IRepository<Domain.AggregatesModel.OrderA
     /// <returns></returns>
     public async Task<bool> Handle(CancelOrderCommand command, CancellationToken cancellationToken)
     {
-        var orderToUpdate = await this._orderRepository.GetByIdAsync(command.OrderNumber, cancellationToken);
+        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate =
+            await this._orderRepository.GetByIdAsync(command.OrderNumber, cancellationToken);
 
         if (orderToUpdate is null)
         {

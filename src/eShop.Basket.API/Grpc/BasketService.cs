@@ -11,7 +11,7 @@ public class BasketService(
     [AllowAnonymous]
     public override async Task<CustomerBasketResponse> GetBasket(GetBasketRequest request, ServerCallContext context)
     {
-        var userId = context.GetUserIdentity();
+        string? userId = context.GetUserIdentity();
         if (string.IsNullOrEmpty(userId))
         {
             return new();
@@ -22,7 +22,7 @@ public class BasketService(
             logger.LogDebug("Begin GetBasketById call from method {Method} for basket id {Id}", context.Method, userId);
         }
 
-        var data = await repository.GetBasketAsync(userId);
+        CustomerBasket? data = await repository.GetBasketAsync(userId);
 
         if (data is not null)
         {
@@ -34,7 +34,7 @@ public class BasketService(
 
     public override async Task<CustomerBasketResponse> UpdateBasket(UpdateBasketRequest request, ServerCallContext context)
     {
-        var userId = context.GetUserIdentity();
+        string? userId = context.GetUserIdentity();
         if (string.IsNullOrEmpty(userId))
         {
             ThrowNotAuthenticated();
@@ -45,8 +45,8 @@ public class BasketService(
             logger.LogDebug("Begin UpdateBasket call from method {Method} for basket id {Id}", context.Method, userId);
         }
 
-        var customerBasket = MapToCustomerBasket(userId, request);
-        var response = await repository.UpdateBasketAsync(customerBasket);
+        CustomerBasket customerBasket = MapToCustomerBasket(userId, request);
+        CustomerBasket? response = await repository.UpdateBasketAsync(customerBasket);
         if (response is null)
         {
             ThrowBasketDoesNotExist(userId);
@@ -57,7 +57,7 @@ public class BasketService(
 
     public override async Task<DeleteBasketResponse> DeleteBasket(DeleteBasketRequest request, ServerCallContext context)
     {
-        var userId = context.GetUserIdentity();
+        string? userId = context.GetUserIdentity();
         if (string.IsNullOrEmpty(userId))
         {
             ThrowNotAuthenticated();
@@ -75,9 +75,9 @@ public class BasketService(
 
     private static CustomerBasketResponse MapToCustomerBasketResponse(CustomerBasket customerBasket)
     {
-        var response = new CustomerBasketResponse();
+        CustomerBasketResponse response = new();
 
-        foreach (var item in customerBasket.Items)
+        foreach (Model.BasketItem item in customerBasket.Items)
         {
             response.Items.Add(new BasketItem()
             {
@@ -91,12 +91,12 @@ public class BasketService(
 
     private static CustomerBasket MapToCustomerBasket(string userId, UpdateBasketRequest customerBasketRequest)
     {
-        var response = new CustomerBasket
+        CustomerBasket response = new()
         {
             BuyerId = userId
         };
 
-        foreach (var item in customerBasketRequest.Items)
+        foreach (BasketItem item in customerBasketRequest.Items)
         {
             response.Items.Add(new()
             {

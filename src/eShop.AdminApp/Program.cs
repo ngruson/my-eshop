@@ -3,7 +3,7 @@ using eShop.AdminApp.Extensions;
 using eShop.ServiceDefaults;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 // Add services to the container.
@@ -17,7 +17,7 @@ builder.Services.AddServerSideBlazor();
 
 builder.AddApplicationServices();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

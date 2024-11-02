@@ -21,7 +21,7 @@ public class SetPaidOrderStatusCommandHandler(
         // Simulate a work time for validating the payment
         await Task.Delay(10000, cancellationToken);
 
-        var orderToUpdate = await this._orderRepository.SingleOrDefaultAsync(
+        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate = await this._orderRepository.SingleOrDefaultAsync(
             new GetOrderSpecification(command.OrderNumber),
             cancellationToken);
 

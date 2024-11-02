@@ -27,15 +27,12 @@ public class TextEmbeddingGenerationServiceWrapperUnitTests
 
             // Act
 
-            var result = await sut.GenerateEmbeddingAsync(value);
+            ReadOnlyMemory<float> result = await sut.GenerateEmbeddingAsync(value);
 
             // Assert
 
             Assert.Equal(embeddings[0], result);
-
-            #pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             await textEmbeddingGenerationService.Received().GenerateEmbeddingsAsync(Arg.Any<IList<string>>(), null, default);
-            #pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
         }
 
         [Theory, AutoNSubstituteData]
@@ -52,15 +49,12 @@ public class TextEmbeddingGenerationServiceWrapperUnitTests
 
             // Act
 
-            var result = await sut.GenerateEmbeddingAsync(value);
+            ReadOnlyMemory<float> result = await sut.GenerateEmbeddingAsync(value);
 
             // Assert
 
             Assert.True(result.IsEmpty);
-
-            #pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             await textEmbeddingGenerationService.DidNotReceive().GenerateEmbeddingsAsync(Arg.Any<IList<string>>(), null, default);
-            #pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
         }
     }
 
@@ -83,15 +77,12 @@ public class TextEmbeddingGenerationServiceWrapperUnitTests
 
             // Act
 
-            var result = await sut.GenerateEmbeddingsAsync(value);
+            IList<ReadOnlyMemory<float>> result = await sut.GenerateEmbeddingsAsync(value);
 
             // Assert
 
             Assert.Equal(embeddings, result);
-
-            #pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             await textEmbeddingGenerationService.Received().GenerateEmbeddingsAsync(Arg.Any<IList<string>>(), null, default);
-            #pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
         }
 
         [Theory, AutoNSubstituteData]
@@ -108,15 +99,12 @@ public class TextEmbeddingGenerationServiceWrapperUnitTests
 
             // Act
 
-            var result = await sut.GenerateEmbeddingsAsync(value);
+            IList<ReadOnlyMemory<float>> result = await sut.GenerateEmbeddingsAsync(value);
 
             // Assert
 
             Assert.Empty(result);
-
-            #pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             await textEmbeddingGenerationService.DidNotReceive().GenerateEmbeddingsAsync(Arg.Any<IList<string>>(), null, default);
-            #pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
         }
     }
 }

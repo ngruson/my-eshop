@@ -19,10 +19,10 @@ public class OrderShippedDomainEventHandler(
     {
         OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.Order.Id, OrderStatus.Shipped);
 
-        var order = await this._orderRepository.GetByIdAsync(domainEvent.Order.Id, cancellationToken);
-        var buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
+        Domain.AggregatesModel.OrderAggregate.Order? order = await this._orderRepository.GetByIdAsync(domainEvent.Order.Id, cancellationToken);
+        Buyer? buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
 
-        var integrationEvent = new OrderStatusChangedToShippedIntegrationEvent(order.Id, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!);
+        OrderStatusChangedToShippedIntegrationEvent integrationEvent = new(order.Id, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!);
         await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
     }
 }

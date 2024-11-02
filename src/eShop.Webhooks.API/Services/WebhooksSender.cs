@@ -4,15 +4,15 @@ public class WebhooksSender(IHttpClientFactory httpClientFactory, ILogger<Webhoo
 {
     public async Task SendAll(IEnumerable<WebhookSubscription> receivers, WebhookData data)
     {
-        var client = httpClientFactory.CreateClient();
-        var json = JsonSerializer.Serialize(data);
-        var tasks = receivers.Select(r => this.OnSendData(r, json, client));
+        HttpClient client = httpClientFactory.CreateClient();
+        string json = JsonSerializer.Serialize(data);
+        IEnumerable<Task> tasks = receivers.Select(r => this.OnSendData(r, json, client));
         await Task.WhenAll(tasks);
     }
 
-    private Task OnSendData(WebhookSubscription subs, string jsonData, HttpClient client)
+    private Task<HttpResponseMessage> OnSendData(WebhookSubscription subs, string jsonData, HttpClient client)
     {
-        var request = new HttpRequestMessage()
+        HttpRequestMessage request = new()
         {
             RequestUri = new Uri(subs.DestUrl!, UriKind.Absolute),
             Method = HttpMethod.Post,

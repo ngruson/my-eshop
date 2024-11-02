@@ -106,7 +106,7 @@ else if (notFound)
 
     private async Task UpdateNumInCartAsync()
     {
-        var items = await BasketState.GetBasketItemsAsync();
+        IReadOnlyCollection<BasketItem> items = await BasketState.GetBasketItemsAsync();
         numInCart = items.FirstOrDefault(row => row.ProductId == Guid.Parse(ItemId))?.Quantity ?? 0;
     }
 }

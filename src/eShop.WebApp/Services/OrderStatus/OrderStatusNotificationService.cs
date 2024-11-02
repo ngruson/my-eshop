@@ -1,18 +1,18 @@
-namespace eShop.WebApp.Services;
+namespace eShop.WebApp.Services.OrderStatus;
 
 public class OrderStatusNotificationService
 {
     // Locking manually because we need multiple values per key, and only need to lock very briefly
-    private readonly object _subscriptionsLock = new();
+    private readonly Lock _subscriptionsLock = new();
     private readonly Dictionary<string, HashSet<Subscription>> _subscriptionsByBuyerId = [];
 
     public IDisposable SubscribeToOrderStatusNotifications(string buyerId, Func<Task> callback)
     {
-        var subscription = new Subscription(this, buyerId, callback);
+        Subscription subscription = new(this, buyerId, callback);
 
         lock (this._subscriptionsLock)
         {
-            if (!this._subscriptionsByBuyerId.TryGetValue(buyerId, out var subscriptions))
+            if (!this._subscriptionsByBuyerId.TryGetValue(buyerId, out HashSet<Subscription>? subscriptions))
             {
                 subscriptions = [];
                 this._subscriptionsByBuyerId.Add(buyerId, subscriptions);
@@ -28,7 +28,7 @@ public class OrderStatusNotificationService
     {
         lock (this._subscriptionsLock)
         {
-            return this._subscriptionsByBuyerId.TryGetValue(buyerId, out var subscriptions)
+            return this._subscriptionsByBuyerId.TryGetValue(buyerId, out HashSet<Subscription>? subscriptions)
                 ? Task.WhenAll(subscriptions.Select(s => s.NotifyAsync()))
                 : Task.CompletedTask;
         }
@@ -38,7 +38,7 @@ public class OrderStatusNotificationService
     {
         lock (this._subscriptionsLock)
         {
-            if (this._subscriptionsByBuyerId.TryGetValue(buyerId, out var subscriptions))
+            if (this._subscriptionsByBuyerId.TryGetValue(buyerId, out HashSet<Subscription>? subscriptions))
             {
                 subscriptions.Remove(subscription);
                 if (subscriptions.Count == 0)

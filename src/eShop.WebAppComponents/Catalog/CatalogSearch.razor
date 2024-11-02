@@ -19,7 +19,7 @@
                     class="catalog-search-tag @(BrandId == null ? "active " : "")">
                         All
                     </a>
-                    @foreach (var brand in catalogBrands)
+                    @foreach (CatalogBrandDto brand in catalogBrands)
                     {
                         <a href="@BrandUri(brand.ObjectId)"
                         class="catalog-search-tag @(BrandId == brand.ObjectId ? "active " : "")">
@@ -36,7 +36,7 @@
                     class="catalog-search-tag @(ItemTypeId == null ? "active " : "")">
                     All
                     </a>
-                    @foreach (var itemType in catalogItemTypes)
+                    @foreach (CatalogTypeDto itemType in catalogItemTypes)
                     {
                         <a href="@TypeUri(itemType.ObjectId)"
                         class="catalog-search-tag @(ItemTypeId == itemType.ObjectId ? "active " : "")">
@@ -57,8 +57,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var brandsTask = CatalogApiClient.GetBrands();
-        var itemTypesTask = CatalogApiClient.GetTypes();
+        Task<CatalogBrandDto[]> brandsTask = CatalogApiClient.GetBrands();
+        Task<CatalogTypeDto[]> itemTypesTask = CatalogApiClient.GetTypes();
         await Task.WhenAll(brandsTask, itemTypesTask);
         catalogBrands = brandsTask.Result;
         catalogItemTypes = itemTypesTask.Result;

@@ -9,7 +9,7 @@ public class OrderStockConfirmedIntegrationEventHandler(
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var command = new SetStockConfirmedOrderStatusCommand(@event.OrderId);
+        SetStockConfirmedOrderStatusCommand command = new(@event.OrderId);
 
         logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",

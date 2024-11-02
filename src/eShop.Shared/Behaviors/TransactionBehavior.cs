@@ -19,7 +19,7 @@ public class TransactionBehavior<TRequest, TResponse>(eShopDbContext dbContext,
     public async Task<TResponse?> Handle(TRequest request, RequestHandlerDelegate<TResponse?> next, CancellationToken cancellationToken)
     {
         TResponse? response = default;
-        var typeName = request.GetGenericTypeName();
+        string typeName = request.GetGenericTypeName();
 
         try
         {

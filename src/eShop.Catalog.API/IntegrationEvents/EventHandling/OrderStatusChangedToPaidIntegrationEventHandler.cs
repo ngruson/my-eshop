@@ -13,7 +13,7 @@ public class OrderStatusChangedToPaidIntegrationEventHandler(
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
         //we're not blocking stock/inventory
-        foreach (var orderStockItem in @event.OrderStockItems)
+        foreach (OrderStockItem orderStockItem in @event.OrderStockItems)
         {
             CatalogItem? catalogItem = await repository.SingleOrDefaultAsync(
                 new GetCatalogItemByObjectIdSpecification(orderStockItem.ProductId),

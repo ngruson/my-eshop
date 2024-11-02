@@ -66,7 +66,7 @@ public abstract class Entity
         if (this.GetType() != obj.GetType())
             return false;
 
-        var item = (Entity)obj;
+        Entity item = (Entity)obj;
 
         if (item.IsTransient() || this.IsTransient())
             return false;

@@ -20,7 +20,7 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
 
     public CatalogApiTests(CatalogApiFixture fixture)
     {
-        var handler = new ApiVersionHandler(new QueryStringApiVersionWriter(), new ApiVersion(1.0));
+        ApiVersionHandler handler = new(new QueryStringApiVersionWriter(), new ApiVersion(1.0));
 
         this._webApplicationFactory = fixture;
         this._httpClient = this._webApplicationFactory.CreateDefaultClient(handler);
@@ -205,8 +205,8 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     [Fact]
     public async Task GetCatalogItemWithPartialName()
     {
-       // Act
-       var response = await this._httpClient.GetAsync("api/catalog/items/by/Alpine?PageSize=5&PageIndex=0");
+        // Act
+        HttpResponseMessage response = await this._httpClient.GetAsync("api/catalog/items/by/Alpine?PageSize=5&PageIndex=0");
 
         // Arrange   
         response.EnsureSuccessStatusCode();
@@ -275,7 +275,7 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     public async Task GetCatalogItemsWithSemanticRelevance()
     {
         // Act
-        var response = await this._httpClient.GetAsync("api/catalog/items/withSemanticRelevance/Wanderer?PageSize=5&PageIndex=0");        
+        HttpResponseMessage response = await this._httpClient.GetAsync("api/catalog/items/withSemanticRelevance/Wanderer?PageSize=5&PageIndex=0");        
         response.EnsureSuccessStatusCode();
         string body = await response.Content.ReadAsStringAsync();
         PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> result =
@@ -321,7 +321,8 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
         CatalogBrandDto[] brands = await this._httpClient.GetFromJsonAsync<CatalogBrandDto[]>("api/catalog/catalogBrands");
 
         // Act
-        var response = await this._httpClient.GetAsync($"api/catalog/items/type/all/brand/{brands[0].ObjectId}?PageSize=5&PageIndex=0");
+
+        HttpResponseMessage response = await this._httpClient.GetAsync($"api/catalog/items/type/all/brand/{brands[0].ObjectId}?PageSize=5&PageIndex=0");
         response.EnsureSuccessStatusCode();
         string body = await response.Content.ReadAsStringAsync();
         PaginatedItems<Contracts.GetCatalogItems.CatalogItemDto> result =
@@ -339,7 +340,8 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     public async Task GetAllCatalogTypes()
     {
         // Act
-        var response = await this._httpClient.GetAsync("api/catalog/catalogTypes");
+
+        HttpResponseMessage response = await this._httpClient.GetAsync("api/catalog/catalogTypes");
 
         // Arrange
 
@@ -357,12 +359,12 @@ public sealed class CatalogApiTests : IClassFixture<CatalogApiFixture>
     public async Task GetAllCatalogBrands()
     {
         // Act
-        var response = await this._httpClient.GetAsync("api/catalog/catalogBrands");
+        HttpResponseMessage response = await this._httpClient.GetAsync("api/catalog/catalogBrands");
 
         // Arrange   
         response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<List<CatalogBrand>>(body, this._jsonSerializerOptions);
+        string body = await response.Content.ReadAsStringAsync();
+        List<CatalogBrand> result = JsonSerializer.Deserialize<List<CatalogBrand>>(body, this._jsonSerializerOptions);
 
         // Assert       
         Assert.Equal(13, result.Count);

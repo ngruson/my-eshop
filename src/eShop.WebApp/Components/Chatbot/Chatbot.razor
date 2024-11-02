@@ -19,7 +19,7 @@
     <div class="chatbot-chat" @ref="chat">
         @if (chatState is not null)
         {
-            foreach (var message in chatState.Messages.Where(m => m.Role == AuthorRole.Assistant || m.Role == AuthorRole.User))
+            foreach (ChatMessageContent message in chatState.Messages.Where(m => m.Role == AuthorRole.Assistant || m.Role == AuthorRole.User))
             {
                 if (!string.IsNullOrEmpty(message.Content))
                 {
@@ -55,7 +55,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var kernel = ServiceProvider.GetService<Kernel>();
+        Kernel? kernel = ServiceProvider.GetService<Kernel>();
         if (kernel is not null)
         {
             AuthenticationState auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -69,7 +69,7 @@
 
     private async Task SendMessageAsync()
     {
-        var messageCopy = messageToSend?.Trim();
+        string? messageCopy = messageToSend?.Trim();
         messageToSend = null;
 
         if (chatState is not null && !string.IsNullOrEmpty(messageCopy))

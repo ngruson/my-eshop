@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using eShop.Shared.Data.Seed;
 using eShop.Shared.DI;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Microsoft.AspNetCore.Hosting;
 
@@ -43,18 +44,18 @@ internal static class MigrateDbContextExtensions
 
     private static async Task MigrateDbContextAsync<TContext>(this IServiceProvider services, params Func<ServiceProviderWrapper, IDbSeeder>[] seederFactories) where TContext : DbContext
     {
-        using var scope = services.CreateScope();
-        var scopeServices = scope.ServiceProvider;
-        var logger = scopeServices.GetRequiredService<ILogger<TContext>>();
-        var context = scopeServices.GetRequiredService<TContext>();
+        using IServiceScope scope = services.CreateScope();
+        IServiceProvider scopeServices = scope.ServiceProvider;
+        ILogger<TContext> logger = scopeServices.GetRequiredService<ILogger<TContext>>();
+        TContext context = scopeServices.GetRequiredService<TContext>();
 
-        using var activity = ActivitySource.StartActivity($"Migration operation {typeof(TContext).Name}");
+        using Activity? activity = ActivitySource.StartActivity($"Migration operation {typeof(TContext).Name}");
 
         try
         {
             logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(TContext).Name);
 
-            var strategy = context.Database.CreateExecutionStrategy();
+            IExecutionStrategy strategy = context.Database.CreateExecutionStrategy();
 
             ServiceProviderWrapper serviceProviderWrapper =
                 new(scopeServices);
@@ -74,7 +75,7 @@ internal static class MigrateDbContextExtensions
     private static async Task InvokeSeeders<TContext>(TContext context, ServiceProviderWrapper services, params Func<ServiceProviderWrapper, IDbSeeder>[] seederFactories)
         where TContext : DbContext
     {
-        using var activity = ActivitySource.StartActivity($"Migrating {typeof(TContext).Name}");
+        using Activity? activity = ActivitySource.StartActivity($"Migrating {typeof(TContext).Name}");
 
         try
         {

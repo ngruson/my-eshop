@@ -1,4 +1,4 @@
-﻿@page "/add-webhook"
+@page "/add-webhook"
 @using Microsoft.Extensions.Options
 @inject IOptions<WebhookClientOptions> options
 @inject NavigationManager Nav
@@ -38,13 +38,13 @@
         }
 
         message = null;
-        var baseUrl = !string.IsNullOrEmpty(options.Value.SelfUrl)
+        string baseUrl = !string.IsNullOrEmpty(options.Value.SelfUrl)
             ? options.Value.SelfUrl
             : Nav.BaseUri;
-        var granturl = $"{baseUrl}check";
-        var url = $"{baseUrl}webhook-received";
+        string granturl = $"{baseUrl}check";
+        string url = $"{baseUrl}webhook-received";
 
-        var payload = new WebhookSubscriptionRequest
+        WebhookSubscriptionRequest payload = new()
         {
             Event = "OrderPaid",
             GrantUrl = granturl,
@@ -52,7 +52,7 @@
             Token = token
         };
 
-        var response = await WebhooksClient.AddWebHookAsync(payload);
+        HttpResponseMessage response = await WebhooksClient.AddWebHookAsync(payload);
         if (response.IsSuccessStatusCode)
         {
             Nav.NavigateTo("");

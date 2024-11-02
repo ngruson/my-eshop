@@ -27,9 +27,9 @@
                 <div class='catalog-item-quantity'>Quantity</div>
                 <div class='catalog-item-total'>Total</div>
             </div>
-            @foreach (var item in basketItems)
+            @foreach (BasketItem item in basketItems)
             {
-                var quantity = CurrentOrPendingQuantity(item.ProductId, item.Quantity);
+                int quantity = CurrentOrPendingQuantity(item.ProductId, item.Quantity);
                 <div class="cart-item" @key="@item.Id">
                     <div class="catalog-item-info">
                         <img alt="@item.ProductName" src="@ProductImages.GetProductImageUrl(item.ProductId)" />
@@ -108,8 +108,8 @@
 
     private async Task UpdateQuantityAsync()
     {
-        var id = UpdateQuantityId!.Value;
-        var quantity = UpdateQuantityValue!.Value;
+        Guid id = UpdateQuantityId!.Value;
+        int quantity = UpdateQuantityValue!.Value;
         await Basket.SetQuantityAsync(id, quantity);
         basketItems = await Basket.GetBasketItemsAsync();
     }

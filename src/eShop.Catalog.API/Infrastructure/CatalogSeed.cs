@@ -19,9 +19,9 @@ public partial class CatalogSeed : IDbSeeder
         this._catalogAI = catalogAI;
         this._logger = logger;
 
-        var contentRootPath = env.ContentRootPath;
-        var sourcePath = Path.Combine(contentRootPath, "Setup", "catalog.json");
-        var sourceJson = File.ReadAllText(sourcePath);
+        string contentRootPath = env.ContentRootPath;
+        string sourcePath = Path.Combine(contentRootPath, "Setup", "catalog.json");
+        string sourceJson = File.ReadAllText(sourcePath);
         this.SourceItems = JsonSerializer.Deserialize<CatalogSourceEntry[]>(sourceJson)!;
     }
 

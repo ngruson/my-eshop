@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @using System.Web
 @inject NavigationManager Nav
 
@@ -18,7 +18,7 @@
 @code {
     private void LogIn()
     {
-        var returnUrl = Nav.ToBaseRelativePath(Nav.Uri);
+        string returnUrl = Nav.ToBaseRelativePath(Nav.Uri);
         Nav.NavigateTo($"login?returnUrl={HttpUtility.UrlEncode(returnUrl)}", forceLoad: true);
     }
 }

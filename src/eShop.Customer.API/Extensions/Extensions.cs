@@ -10,33 +10,31 @@ internal static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
-        var services = builder.Services;
-
         // Add the authentication services to DI
         builder.AddDefaultAuthentication();
 
-        services.AddDbContext<CustomerDbContext>(options =>
+        builder.Services.AddDbContext<CustomerDbContext>(options =>
         {
             options.UseNpgsql(
                 builder.Configuration.GetConnectionString("customerDb"));
         });
-        services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<CustomerDbContext>());
+        builder.Services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<CustomerDbContext>());
         builder.EnrichNpgsqlDbContext<CustomerDbContext>();
 
-        services.AddMigration<CustomerDbContext>(typeof(CustomersSeed));
+        builder.Services.AddMigration<CustomerDbContext>(typeof(CustomersSeed));
 
-        services.AddHttpContextAccessor();
+        builder.Services.AddHttpContextAccessor();
 
         // Configure Mediator
-        services.AddMediatR(cfg =>
+        builder.Services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
 
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidatorBehavior<,>));
         });
-       
-        services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-        services.AddScoped<CustomersSeed>();
+
+        builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+        builder.Services.AddScoped<CustomersSeed>();
     }
 }

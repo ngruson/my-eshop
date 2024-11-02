@@ -23,7 +23,7 @@ public class OrderQueriesUnitTests
 
             // Act
 
-            var result = await sut.GetOrderAsync(order.Id);
+            Order result = await sut.GetOrderAsync(order.Id);
 
             // Assert
 
@@ -65,7 +65,7 @@ public class OrderQueriesUnitTests
 
             // Act
 
-            var result = await sut.GetOrdersFromUserAsync(userId);
+            IEnumerable<OrderSummary> result = await sut.GetOrdersFromUserAsync(userId);
 
             // Assert
 
@@ -88,7 +88,7 @@ public class OrderQueriesUnitTests
 
             // Act
 
-            var result = await sut.GetCardTypesAsync();
+            IEnumerable<Contracts.GetCardTypes.CardTypeDto> result = await sut.GetCardTypesAsync();
 
             // Assert
 

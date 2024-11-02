@@ -13,7 +13,7 @@ internal static class CustomerApi
 {
     public static RouteGroupBuilder MapCustomerApiV1(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("api/customers").HasApiVersion(1.0);
+        RouteGroupBuilder api = app.MapGroup("api/customers").HasApiVersion(1.0);
 
         api.MapGet("/", async (bool? includeDeleted, [FromServices] IMediator mediator) =>
             (await mediator.Send(new GetCustomersQuery(includeDeleted ?? false)))

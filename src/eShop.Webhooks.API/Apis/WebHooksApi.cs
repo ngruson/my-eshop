@@ -8,12 +8,12 @@ public static class WebHooksApi
 {
     public static RouteGroupBuilder MapWebHooksApiV1(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("/api/webhooks").HasApiVersion(1.0);
+        RouteGroupBuilder api = app.MapGroup("/api/webhooks").HasApiVersion(1.0);
 
         api.MapGet("/", async (WebhooksContext context, ClaimsPrincipal user) =>
         {
-            var userId = user.GetUserId();
-            var data = await context.Subscriptions.Where(s => s.UserId == userId).ToListAsync();
+            string? userId = user.GetUserId();
+            List<WebhookSubscription> data = await context.Subscriptions.Where(s => s.UserId == userId).ToListAsync();
             return TypedResults.Ok(data);
         });
 
@@ -22,8 +22,8 @@ public static class WebHooksApi
             ClaimsPrincipal user,
             int id) =>
         {
-            var userId = user.GetUserId();
-            var subscription = await context.Subscriptions
+            string? userId = user.GetUserId();
+            WebhookSubscription? subscription = await context.Subscriptions
                 .SingleOrDefaultAsync(s => s.Id == id && s.UserId == userId);
             if (subscription != null)
             {
@@ -38,11 +38,11 @@ public static class WebHooksApi
             WebhooksContext context,
             ClaimsPrincipal user) =>
         {
-            var grantOk = await grantUrlTester.TestGrantUrl(request.Url!, request.GrantUrl!, request.Token ?? string.Empty);
+            bool grantOk = await grantUrlTester.TestGrantUrl(request.Url!, request.GrantUrl!, request.Token ?? string.Empty);
 
             if (grantOk)
             {
-                var subscription = new WebhookSubscription()
+                WebhookSubscription subscription = new()
                 {
                     Date = DateTime.UtcNow,
                     DestUrl = request.Url,
@@ -68,8 +68,8 @@ public static class WebHooksApi
             ClaimsPrincipal user,
             int id) =>
         {
-            var userId = user.GetUserId();
-            var subscription = await context.Subscriptions.SingleOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+            string? userId = user.GetUserId();
+            WebhookSubscription? subscription = await context.Subscriptions.SingleOrDefaultAsync(s => s.Id == id && s.UserId == userId);
 
             if (subscription != null)
             {

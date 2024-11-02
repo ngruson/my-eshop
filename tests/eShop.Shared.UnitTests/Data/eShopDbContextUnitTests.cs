@@ -37,7 +37,7 @@ public class eShopDbContextUnitTests
         // Arrange
 
         optionsBuilder.UseInMemoryDatabase(databaseName: "testDatabase");
-        var context = new TestDbContext(optionsBuilder.Options, mediator);
+        TestDbContext context = new(optionsBuilder.Options, mediator);
         context.Database.EnsureCreated();
 
         // Act
@@ -57,7 +57,7 @@ public class eShopDbContextUnitTests
         // Arrange
 
         optionsBuilder.UseInMemoryDatabase(databaseName: "testDatabase");
-        var context = new TestDbContext(optionsBuilder.Options, mediator);
+        TestDbContext context = new(optionsBuilder.Options, mediator);
         context.Database.EnsureCreated();
 
         await context.BeginTransactionAsync();
@@ -79,7 +79,7 @@ public class eShopDbContextUnitTests
         // Arrange
 
         optionsBuilder.UseInMemoryDatabase(databaseName: "testDatabase");
-        var context = new TestDbContext(optionsBuilder.Options, mediator);
+        TestDbContext context = new(optionsBuilder.Options, mediator);
         context.Database.EnsureCreated();
 
         IDbContextTransaction? transaction = await context.BeginTransactionAsync();
@@ -101,7 +101,7 @@ public class eShopDbContextUnitTests
         // Arrange
 
         optionsBuilder.UseInMemoryDatabase(databaseName: "testDatabase");
-        var context = new TestDbContext(optionsBuilder.Options, mediator);
+        TestDbContext context = new(optionsBuilder.Options, mediator);
         context.Database.EnsureCreated();
         context.ThrowExceptionOnSaveChanges = true;
 
@@ -125,7 +125,7 @@ public class eShopDbContextUnitTests
         // Arrange
 
         optionsBuilder.UseInMemoryDatabase(databaseName: "testDatabase");
-        var context = new TestDbContext(optionsBuilder.Options, mediator);
+        TestDbContext context = new(optionsBuilder.Options, mediator);
         context.Database.EnsureCreated();
 
         // Act
@@ -146,7 +146,7 @@ public class eShopDbContextUnitTests
         // Arrange
 
         optionsBuilder.UseInMemoryDatabase(databaseName: "testDatabase");
-        var context = new TestDbContext(optionsBuilder.Options, mediator);
+        TestDbContext context = new(optionsBuilder.Options, mediator);
         context.Database.EnsureCreated();
 
         IDbContextTransaction? transaction = await context.BeginTransactionAsync();

@@ -1,4 +1,4 @@
-﻿@page "/user/login"
+@page "/user/login"
 @inject NavigationManager Nav
 @attribute [Authorize]
 @code {
@@ -10,8 +10,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var returnUrl = ReturnUrl ?? "/";
-        var url = new Uri(returnUrl, UriKind.RelativeOrAbsolute);
+        string returnUrl = ReturnUrl ?? "/";
+        Uri url = new Uri(returnUrl, UriKind.RelativeOrAbsolute);
         Nav.NavigateTo(url.IsAbsoluteUri ? "/" : returnUrl);
         await base.OnInitializedAsync();
     }

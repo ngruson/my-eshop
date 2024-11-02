@@ -22,14 +22,14 @@
     {
         <div>
             <div class="catalog-items">
-                @foreach (var item in catalogResult.Data)
+                @foreach (CatalogItemViewModel item in catalogResult.Data)
                 {
                     <CatalogListItem Item="@item" />
                 }
             </div>
 
             <div class="page-links">
-                @foreach (var pageIndex in GetVisiblePageIndexes(catalogResult))
+                @foreach (int pageIndex in GetVisiblePageIndexes(catalogResult))
                 {
                     <NavLink ActiveClass="active-page" Match="@NavLinkMatch.All" href="@Nav.GetUriWithQueryParameter("page", pageIndex == 1 ? null : pageIndex)">@pageIndex</NavLink>
                 }

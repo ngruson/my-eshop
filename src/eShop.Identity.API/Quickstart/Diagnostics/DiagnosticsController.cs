@@ -16,7 +16,7 @@ public class DiagnosticsController : Controller
             return this.NotFound();
         }
 
-        var model = new DiagnosticsViewModel(await this.HttpContext.AuthenticateAsync());
+        DiagnosticsViewModel model = new(await this.HttpContext.AuthenticateAsync());
         return this.View(model);
     }
 }

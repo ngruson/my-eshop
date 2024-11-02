@@ -25,7 +25,7 @@ internal class DeleteCatalogItemCommandHandler(
                     new GetCatalogItemByObjectIdSpecification(request.ObjectId),
                     cancellationToken);
 
-            var foundResult = Guard.Against.CatalogItemNull(catalogItem, this.logger);
+            Result foundResult = Guard.Against.CatalogItemNull(catalogItem, this.logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;

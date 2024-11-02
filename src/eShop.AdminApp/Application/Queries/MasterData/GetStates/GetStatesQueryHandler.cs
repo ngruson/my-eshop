@@ -26,7 +26,7 @@ public class GetStatesQueryHandler(
             if (!this.cache.TryGetValue(key, out object? states))
             {
                 this.logger.LogInformation("States not found in cache. Retrieving from master data API.");
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetSlidingExpiration(TimeSpan.FromHours(1));
                 StateDto[] dto = await this.masterDataApiClient.GetStates();
                 viewModel = [.. dto.MapToStateViewModels()];

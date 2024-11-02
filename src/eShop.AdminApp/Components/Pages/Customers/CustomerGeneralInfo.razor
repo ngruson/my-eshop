@@ -171,7 +171,7 @@ else
             return new List<Option<string>>();
         }
 
-        var options = this.states.Select(_ => new Option<string>
+        List<Option<string>> options = this.states.Select(_ => new Option<string>
             {
                 Text = _.Name,
                 Value = _.Code

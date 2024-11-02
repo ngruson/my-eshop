@@ -23,9 +23,10 @@ public sealed class CatalogIntegrationEventService(
 
     public async Task PublishEventsThroughEventBusAsync(Guid transactionId, CancellationToken cancellationToken)
     {
-        var pendingLogEvents = await integrationEventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId, cancellationToken);
+        IEnumerable<IntegrationEventLogEntry> pendingLogEvents =
+            await integrationEventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId, cancellationToken);
 
-        foreach (var logEvt in pendingLogEvents)
+        foreach (IntegrationEventLogEntry logEvt in pendingLogEvents)
         {
             logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", logEvt.EventId, logEvt.IntegrationEvent);
 

@@ -13,8 +13,8 @@ public sealed class CatalogApiFixture : WebApplicationFactory<Program>, IAsyncLi
 
     public CatalogApiFixture()
     {
-        var options = new DistributedApplicationOptions { AssemblyName = typeof(CatalogApiFixture).Assembly.FullName, DisableDashboard = true };
-        var appBuilder = DistributedApplication.CreateBuilder(options);
+        DistributedApplicationOptions options = new() { AssemblyName = typeof(CatalogApiFixture).Assembly.FullName, DisableDashboard = true };
+        IDistributedApplicationBuilder appBuilder = DistributedApplication.CreateBuilder(options);
         this.Postgres = appBuilder.AddPostgres("CatalogDB")
             .WithImage("ankane/pgvector")
             .WithImageTag("latest");

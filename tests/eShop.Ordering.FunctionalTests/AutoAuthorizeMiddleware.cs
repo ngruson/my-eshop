@@ -8,7 +8,7 @@ class AutoAuthorizeMiddleware(RequestDelegate rd)
 
     public async Task Invoke(HttpContext httpContext)
     {
-        var identity = new ClaimsIdentity("cookies");
+        ClaimsIdentity identity = new("cookies");
 
         identity.AddClaim(new Claim("sub", IDENTITY_ID));
         identity.AddClaim(new Claim("unique_name", IDENTITY_ID));

@@ -9,7 +9,7 @@ public class OrderPaymentFailedIntegrationEventHandler(
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var command = new CancelOrderCommand(@event.OrderId);
+        CancelOrderCommand command = new(@event.OrderId);
 
         logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",

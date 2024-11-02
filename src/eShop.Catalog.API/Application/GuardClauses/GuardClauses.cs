@@ -10,7 +10,7 @@ internal static class GuardClauses
     {
         if (input is null || input.Count == 0)
         {
-            var ex = new CatalogItemsNotFoundException();
+            CatalogItemsNotFoundException ex = new();
             logger.LogError(ex, "Exception: {Message}", ex.Message);
             return Result.NotFound();
         }
@@ -22,7 +22,7 @@ internal static class GuardClauses
     {
         if (input is null || input.Count == 0)
         {
-            var ex = new CatalogTypesNotFoundException();
+            CatalogTypesNotFoundException ex = new();
             logger.LogError(ex, "Exception: {Message}", ex.Message);
             return Result.NotFound();
         }
@@ -34,7 +34,7 @@ internal static class GuardClauses
     {
         if (input is null || input.Count == 0)
         {
-            var ex = new CatalogBrandsNotFoundException();
+            CatalogBrandsNotFoundException ex = new();
             logger.LogError(ex, "Exception: {Message}", ex.Message);
             return Result.NotFound();
         }
@@ -46,7 +46,7 @@ internal static class GuardClauses
     {
         if (input is null)
         {
-            var ex = new CatalogItemNotFoundException();
+            CatalogItemNotFoundException ex = new();
             logger.LogError(ex, "Exception: {Message}", ex.Message);
             return Result.NotFound();
         }
@@ -58,7 +58,7 @@ internal static class GuardClauses
     {
         if (input is null)
         {
-            var ex = new CatalogTypeNotFoundException();
+            CatalogTypeNotFoundException ex = new();
             logger.LogError(ex, "Exception: {Message}", ex.Message);
             return Result.NotFound();
         }
@@ -70,7 +70,7 @@ internal static class GuardClauses
     {
         if (input is null)
         {
-            var ex = new CatalogBrandNotFoundException();
+            CatalogBrandNotFoundException ex = new();
             logger.LogError(ex, "Exception: {Message}", ex.Message);
             return Result.NotFound();
         }

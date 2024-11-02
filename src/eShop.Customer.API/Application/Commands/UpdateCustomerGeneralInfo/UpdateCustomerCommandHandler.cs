@@ -24,7 +24,7 @@ internal class UpdateCustomerCommandHandler(
                     new GetCustomerByObjectIdSpecification(request.ObjectId),
                     cancellationToken);
 
-            var foundResult = Guard.Against.CustomerNull(customer, this.logger);
+            Result foundResult = Guard.Against.CustomerNull(customer, this.logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;

@@ -21,7 +21,7 @@ public class GetUsersQueryUnitTests
     {
         // Arrange
 
-        var mockUsers = users.BuildMock();
+        IQueryable<ApplicationUser> mockUsers = users.BuildMock();
 
         userManager.Users
             .Returns(mockUsers);

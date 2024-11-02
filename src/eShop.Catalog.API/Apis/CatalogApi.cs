@@ -24,7 +24,7 @@ public static class CatalogApi
 {
     public static IEndpointRouteBuilder MapCatalogApiV1(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("api/catalog").HasApiVersion(1.0);
+        RouteGroupBuilder api = app.MapGroup("api/catalog").HasApiVersion(1.0);
 
         // Routes for querying catalog items.
         api.MapGet("/items", async (bool? includeDeleted, [FromServices] IMediator mediator) =>

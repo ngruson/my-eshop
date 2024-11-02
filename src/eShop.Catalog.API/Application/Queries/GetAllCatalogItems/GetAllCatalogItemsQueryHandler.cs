@@ -23,7 +23,7 @@ internal class GetAllCatalogItemsQueryHandler(
             List<CatalogItem> catalogItems =
                 await this.repository.ListAsync(new GetCatalogItemsSpecification(request.IncludeDeleted), cancellationToken);
 
-            var foundResult = Ardalis.GuardClauses.Guard.Against.CatalogItemsNullOrEmpty(catalogItems, this.logger);
+            Result foundResult = Ardalis.GuardClauses.Guard.Against.CatalogItemsNullOrEmpty(catalogItems, this.logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;

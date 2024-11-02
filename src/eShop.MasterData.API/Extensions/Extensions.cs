@@ -7,13 +7,11 @@ internal static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
-        var services = builder.Services;
-
         // Add the authentication services to DI
         builder.AddDefaultAuthentication();
 
         // Configure Mediator
-        services.AddMediatR(cfg =>
+        builder.Services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
 

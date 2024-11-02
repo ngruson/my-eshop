@@ -18,7 +18,7 @@ public class SetAwaitingValidationOrderStatusCommandHandler(
     /// <returns></returns>
     public async Task<bool> Handle(SetAwaitingValidationOrderStatusCommand command, CancellationToken cancellationToken)
     {
-        var orderToUpdate = await this._orderRepository.SingleOrDefaultAsync(
+        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate = await this._orderRepository.SingleOrDefaultAsync(
             new GetOrderSpecification(command.OrderNumber),
             cancellationToken);
 

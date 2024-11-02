@@ -17,7 +17,7 @@ internal static class Extensions
     {
         public Task BeforeStartAsync(DistributedApplicationModel appModel, CancellationToken cancellationToken = default)
         {
-            foreach (var p in appModel.GetProjectResources())
+            foreach (ProjectResource p in appModel.GetProjectResources())
             {
                 p.Annotations.Add(new EnvironmentCallbackAnnotation(context =>
                 {

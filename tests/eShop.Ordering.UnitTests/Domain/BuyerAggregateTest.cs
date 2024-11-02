@@ -8,12 +8,14 @@ public class BuyerAggregateTest
     [Fact]
     public void Create_buyer_item_success()
     {
-        //Arrange    
-        var identity = new Guid().ToString();
-        var name = "fakeUser";
+        //Arrange
 
-        //Act 
-        var fakeBuyerItem = new Buyer(identity, name);
+        string identity = new Guid().ToString();
+        string name = "fakeUser";
+
+        //Act
+
+        Buyer fakeBuyerItem = new(identity, name);
 
         //Assert
         Assert.NotNull(fakeBuyerItem);
@@ -22,11 +24,13 @@ public class BuyerAggregateTest
     [Fact]
     public void Create_buyer_item_fail()
     {
-        //Arrange    
-        var identity = string.Empty;
-        var name = "fakeUser";
+        //Arrange
+
+        string identity = string.Empty;
+        string name = "fakeUser";
 
         //Act - Assert
+
         Assert.Throws<ArgumentNullException>(() => new Buyer(identity, name));
     }
 

@@ -29,7 +29,7 @@ public class ProfileService(UserManager<ApplicationUser> userManager) : IProfile
                 string? security_stamp = context.Subject.Claims.Where(c => c.Type == "security_stamp").Select(c => c.Value).SingleOrDefault();
                 if (security_stamp != null)
                 {
-                    var db_security_stamp = await userManager.GetSecurityStampAsync(user);
+                    string db_security_stamp = await userManager.GetSecurityStampAsync(user);
                     if (db_security_stamp != security_stamp)
                         return;
                 }
@@ -44,14 +44,14 @@ public class ProfileService(UserManager<ApplicationUser> userManager) : IProfile
 
     private List<Claim> GetClaimsFromUser(ApplicationUser user)
     {
-        var claims = new List<Claim>
-        {
+        List<Claim> claims =
+        [
             new(JwtClaimTypes.Subject, user.Id),
             new(JwtClaimTypes.PreferredUserName, user.UserName!),
             new(JwtRegisteredClaimNames.UniqueName, user.UserName!),
             new(JwtClaimTypes.GivenName, user.FirstName!),
             new(JwtClaimTypes.FamilyName, user.LastName!)
-        };
+        ];
 
         if (userManager.SupportsUserEmail)
         {

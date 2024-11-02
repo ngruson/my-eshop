@@ -10,8 +10,8 @@ internal class BasketApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
 
     public BasketApiFixture()
     {
-        var options = new DistributedApplicationOptions { AssemblyName = typeof(BasketApiFixture).Assembly.FullName, DisableDashboard = true };
-        var appBuilder = DistributedApplication.CreateBuilder(options);
+        DistributedApplicationOptions options = new() { AssemblyName = typeof(BasketApiFixture).Assembly.FullName, DisableDashboard = true };
+        IDistributedApplicationBuilder appBuilder = DistributedApplication.CreateBuilder(options);
         this._app = appBuilder.Build();
     }
     public async Task InitializeAsync()

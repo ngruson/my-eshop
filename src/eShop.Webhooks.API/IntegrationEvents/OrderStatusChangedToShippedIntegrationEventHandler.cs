@@ -1,6 +1,3 @@
-using eShop.Webhooks.API.Model;
-using eShop.Webhooks.API.Services;
-
 namespace eShop.Webhooks.API.IntegrationEvents;
 
 public class OrderStatusChangedToShippedIntegrationEventHandler(
@@ -10,11 +7,11 @@ public class OrderStatusChangedToShippedIntegrationEventHandler(
 {
     public async Task Handle(OrderStatusChangedToShippedIntegrationEvent @event, CancellationToken cancellationToken)
     {
-        var subscriptions = await retriever.GetSubscriptionsOfType(WebhookType.OrderShipped);
+        IEnumerable<WebhookSubscription> subscriptions = await retriever.GetSubscriptionsOfType(WebhookType.OrderShipped);
 
         logger.LogInformation("Received OrderStatusChangedToShippedIntegrationEvent and got {SubscriptionCount} subscriptions to process", subscriptions.Count());
 
-        var webhookData = new WebhookData(WebhookType.OrderShipped, @event);
+        WebhookData webhookData = new(WebhookType.OrderShipped, @event);
 
         await sender.SendAll(subscriptions, webhookData);
     }

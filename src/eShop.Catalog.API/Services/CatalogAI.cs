@@ -29,7 +29,7 @@ public sealed class CatalogAI(IWebHostEnvironment environment, ILogger<CatalogAI
             IList<ReadOnlyMemory<float>> embeddings =
                 await this._wrapper!.GenerateEmbeddingsAsync(items.Select(CatalogItemToString).ToList());
 
-            var results = embeddings.Select(m => new Vector(m[0..EmbeddingDimensions])).ToList();
+            List<Vector> results = embeddings.Select(m => new Vector(m[0..EmbeddingDimensions])).ToList();
 
             if (this._logger.IsEnabled(LogLevel.Trace))
             {

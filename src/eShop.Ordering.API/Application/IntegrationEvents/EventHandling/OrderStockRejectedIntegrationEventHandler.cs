@@ -7,12 +7,12 @@ public class OrderStockRejectedIntegrationEventHandler(
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var orderStockRejectedItems = @event.OrderStockItems
+        List<Guid> orderStockRejectedItems = @event.OrderStockItems
             .FindAll(c => !c.HasStock)
             .Select(c => c.ProductId)
             .ToList();
 
-        var command = new SetStockRejectedOrderStatusCommand(@event.OrderId, orderStockRejectedItems);
+        SetStockRejectedOrderStatusCommand command = new(@event.OrderId, orderStockRejectedItems);
 
         logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",

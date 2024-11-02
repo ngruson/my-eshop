@@ -11,7 +11,7 @@ public static class OrdersApi
 {
     public static RouteGroupBuilder MapOrdersApiV1(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("api/orders").HasApiVersion(1.0);
+        RouteGroupBuilder api = app.MapGroup("api/orders").HasApiVersion(1.0);
 
         api.MapPut("/cancel", CancelOrderAsync);
         api.MapPut("/ship", ShipOrderAsync);
@@ -39,7 +39,7 @@ public static class OrdersApi
             return TypedResults.BadRequest("Empty GUID is not valid for request ID");
         }
 
-        var requestCancelOrder = new IdentifiedCommand<CancelOrderCommand, bool>(command, requestId);
+        IdentifiedCommand<CancelOrderCommand, bool> requestCancelOrder = new(command, requestId);
 
         services.Logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
@@ -48,7 +48,7 @@ public static class OrdersApi
             requestCancelOrder.Command.OrderNumber,
             requestCancelOrder);
 
-        var commandResult = await services.Mediator.Send(requestCancelOrder);
+        bool commandResult = await services.Mediator.Send(requestCancelOrder);
 
         if (!commandResult)
         {
@@ -68,7 +68,7 @@ public static class OrdersApi
             return TypedResults.BadRequest("Empty GUID is not valid for request ID");
         }
 
-        var requestShipOrder = new IdentifiedCommand<ShipOrderCommand, bool>(command, requestId);
+        IdentifiedCommand<ShipOrderCommand, bool> requestShipOrder = new(command, requestId);
 
         services.Logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
@@ -77,7 +77,7 @@ public static class OrdersApi
             requestShipOrder.Command.OrderNumber,
             requestShipOrder);
 
-        var commandResult = await services.Mediator.Send(requestShipOrder);
+        bool commandResult = await services.Mediator.Send(requestShipOrder);
 
         if (!commandResult)
         {
@@ -91,7 +91,7 @@ public static class OrdersApi
     {
         try
         {
-            var order = await services.Queries.GetOrderAsync(orderId);
+            Order order = await services.Queries.GetOrderAsync(orderId);
             return TypedResults.Ok(order);
         }
         catch
@@ -102,14 +102,14 @@ public static class OrdersApi
 
     public static async Task<Ok<IEnumerable<OrderSummary>>> GetOrdersByUserAsync([AsParameters] OrderServices services)
     {
-        var userId = services.IdentityService.GetUserIdentity();
-        var orders = await services.Queries.GetOrdersFromUserAsync(userId!);
+        string? userId = services.IdentityService.GetUserIdentity();
+        IEnumerable<OrderSummary> orders = await services.Queries.GetOrdersFromUserAsync(userId!);
         return TypedResults.Ok(orders);
     }
 
     public static async Task<Ok<IEnumerable<CardTypeDto>>> GetCardTypesAsync(IOrderQueries orderQueries)
     {
-        var cardTypes = await orderQueries.GetCardTypesAsync();
+        IEnumerable<CardTypeDto> cardTypes = await orderQueries.GetCardTypesAsync();
         return TypedResults.Ok(cardTypes);
     }
 

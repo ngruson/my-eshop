@@ -10,17 +10,17 @@ class GrantUrlTesterService(IHttpClientFactory factory, ILogger<IGrantUrlTesterS
             return false;
         }
 
-        var client = factory.CreateClient();
-        var msg = new HttpRequestMessage(HttpMethod.Options, url);
+        HttpClient client = factory.CreateClient();
+        HttpRequestMessage msg = new(HttpMethod.Options, url);
         msg.Headers.Add("X-eshop-whtoken", token);
 
         logger.LogInformation("Sending the OPTIONS message to {Url} with token \"{Token}\"", url, token ?? string.Empty);
 
         try
         {
-            var response = await client.SendAsync(msg);
-            var tokenReceived = response.Headers.TryGetValues("X-eshop-whtoken", out var tokenValues) ? tokenValues.FirstOrDefault() : null;
-            var tokenExpected = string.IsNullOrWhiteSpace(token) ? null : token;
+            HttpResponseMessage response = await client.SendAsync(msg);
+            string? tokenReceived = response.Headers.TryGetValues("X-eshop-whtoken", out IEnumerable<string>? tokenValues) ? tokenValues.FirstOrDefault() : null;
+            string? tokenExpected = string.IsNullOrWhiteSpace(token) ? null : token;
 
             logger.LogInformation("Response code is {StatusCode} for url {Url} and token in header was {TokenReceived} (expected token was {TokenExpected})", response.StatusCode, url, tokenReceived, tokenExpected);
 
@@ -36,8 +36,8 @@ class GrantUrlTesterService(IHttpClientFactory factory, ILogger<IGrantUrlTesterS
 
     private static bool CheckSameOrigin(string urlHook, string url)
     {
-        var firstUrl = new Uri(urlHook, UriKind.Absolute);
-        var secondUrl = new Uri(url, UriKind.Absolute);
+        Uri firstUrl = new(urlHook, UriKind.Absolute);
+        Uri secondUrl = new(url, UriKind.Absolute);
 
         return firstUrl.Scheme == secondUrl.Scheme &&
             firstUrl.Port == secondUrl.Port &&

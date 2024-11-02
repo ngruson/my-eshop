@@ -18,17 +18,17 @@ public class OrderStatusChangedToPaidDomainEventHandler(
     {
         OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.OrderId, OrderStatus.Paid);
 
-        var order = await this._orderRepository.GetByIdAsync(domainEvent.OrderId, cancellationToken);
+        Domain.AggregatesModel.OrderAggregate.Order? order = await this._orderRepository.GetByIdAsync(domainEvent.OrderId, cancellationToken);
         Buyer? buyer = null;
         if (order!.BuyerId.HasValue)
         {
             buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
         }
 
-        var orderStockList = domainEvent.OrderItems
+        IEnumerable<OrderStockItem> orderStockList = domainEvent.OrderItems
             .Select(orderItem => new OrderStockItem(orderItem.ProductId, orderItem.Units));
 
-        var integrationEvent = new OrderStatusChangedToPaidIntegrationEvent(
+        OrderStatusChangedToPaidIntegrationEvent integrationEvent = new(
             domainEvent.OrderId,
             order.OrderStatus,
             buyer?.Name,

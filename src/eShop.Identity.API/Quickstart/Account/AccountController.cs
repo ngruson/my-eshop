@@ -139,7 +139,7 @@ namespace eShop.Identity.API.Quickstart.Account
         public async Task<IActionResult> Logout(string logoutId)
         {
             // build a model so the logout page knows what to display
-            var vm = await this.BuildLogoutViewModelAsync(logoutId);
+            LogoutViewModel vm = await this.BuildLogoutViewModelAsync(logoutId);
 
             if (vm.ShowLogoutPrompt == false)
             {
@@ -159,7 +159,7 @@ namespace eShop.Identity.API.Quickstart.Account
         public async Task<IActionResult> Logout(LogoutInputModel model)
         {
             // build a model so the logged out page knows what to display
-            var vm = await this.BuildLoggedOutViewModelAsync(model.LogoutId);
+            LoggedOutViewModel vm = await this.BuildLoggedOutViewModelAsync(model.LogoutId);
 
             if (this.User?.Identity?.IsAuthenticated == true)
             {
@@ -272,7 +272,7 @@ namespace eShop.Identity.API.Quickstart.Account
                 return vm;
             }
 
-            var context = await interaction.GetLogoutContextAsync(logoutId);
+            LogoutRequest context = await interaction.GetLogoutContextAsync(logoutId);
             if (context?.ShowSignoutPrompt == false)
             {
                 // it's safe to automatically sign-out
