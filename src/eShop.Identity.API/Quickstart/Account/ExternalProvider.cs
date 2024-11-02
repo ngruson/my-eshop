@@ -5,6 +5,6 @@ namespace eShop.Identity.API.Quickstart.Account;
 
 public class ExternalProvider
 {
-    public string DisplayName { get; set; }
-    public string AuthenticationScheme { get; set; }
+    public required string DisplayName { get; set; }
+    public required string AuthenticationScheme { get; set; }
 }

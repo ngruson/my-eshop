@@ -8,6 +8,6 @@ namespace eShop.Identity.API.Quickstart.Device;
 
 public class DeviceAuthorizationViewModel : ConsentViewModel
 {
-    public string UserCode { get; set; }
+    public required string UserCode { get; set; }
     public bool ConfirmUserCode { get; set; }
 }

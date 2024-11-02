@@ -6,7 +6,6 @@ public class ExternalController(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
     IIdentityServerInteractionService interaction,
-    IClientStore clientStore,
     IEventService events,
     ILogger<ExternalController> logger) : Controller
 {

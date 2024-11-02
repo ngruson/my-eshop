@@ -5,5 +5,5 @@ namespace eShop.Identity.API.Quickstart.Account;
 
 public class RedirectViewModel
 {
-    public string RedirectUrl { get; set; }
+    public required string RedirectUrl { get; set; }
 }
