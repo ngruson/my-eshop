@@ -19,6 +19,8 @@ using eShop.Catalog.Contracts;
 using eShop.ServiceInvocation.CustomerApiClient;
 using eShop.ServiceInvocation.CatalogApiClient;
 using eShop.ServiceInvocation.OrderingApiClient;
+using eShop.Shared.Auth;
+using eShop.WebApp.Services.OrderStatus;
 
 namespace eShop.WebApp.Extensions;
 
@@ -59,8 +61,9 @@ public static class Extensions
 
     private static void AddDaprServices(this IHostApplicationBuilder builder)
     {
-        builder.Services.AddDaprClient();
+        builder.Services.AddDaprClient();        
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<AccessTokenAccessor>();
 
         builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Dapr.CatalogApiClient>();
         builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Dapr.CustomerApiClient>();
@@ -104,18 +107,15 @@ public static class Extensions
 
     public static void AddAuthenticationServices(this IHostApplicationBuilder builder)
     {
-        var configuration = builder.Configuration;
-        var services = builder.Services;
-
         JsonWebTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 
-        var identityUrl = configuration.GetRequiredValue("IdentityUrl");
-        var callBackUrl = configuration.GetRequiredValue("CallBackUrl");
-        var sessionCookieLifetime = configuration.GetValue("SessionCookieLifetimeMinutes", 60);
+        string identityUrl = builder.Configuration.GetRequiredValue("IdentityUrl");
+        string callBackUrl = builder.Configuration.GetRequiredValue("CallBackUrl");
+        int sessionCookieLifetime = builder.Configuration.GetValue("SessionCookieLifetimeMinutes", 60);
 
         // Add Authentication services
-        services.AddAuthorization();
-        services.AddAuthentication(options =>
+        builder.Services.AddAuthorization();
+        builder.Services.AddAuthentication(options =>
         {
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -139,14 +139,14 @@ public static class Extensions
         });
 
         // Blazor auth services
-        services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
-        services.AddCascadingAuthenticationState();
+        builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+        builder.Services.AddCascadingAuthenticationState();
     }
 
     private static void AddAIServices(this IHostApplicationBuilder builder)
     {
-        var openAIOptions = builder.Configuration.GetSection("AI").Get<AIOptions>()?.OpenAI;
-        var deploymentName = openAIOptions?.ChatModel;
+        OpenAIOptions? openAIOptions = builder.Configuration.GetSection("AI").Get<AIOptions>()?.OpenAI;
+        string? deploymentName = openAIOptions?.ChatModel;
 
         if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("openai")) && !string.IsNullOrWhiteSpace(deploymentName))
         {
@@ -158,15 +158,15 @@ public static class Extensions
 
     public static async Task<string?> GetBuyerIdAsync(this AuthenticationStateProvider authenticationStateProvider)
     {
-        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        AuthenticationState authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        ClaimsPrincipal user = authState.User;
         return user.FindFirst("sub")?.Value;
     }
 
     public static async Task<string?> GetUserNameAsync(this AuthenticationStateProvider authenticationStateProvider)
     {
-        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        AuthenticationState authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        ClaimsPrincipal user = authState.User;
         return user.FindFirst(ClaimTypes.Name)?.Value;
     }
 }

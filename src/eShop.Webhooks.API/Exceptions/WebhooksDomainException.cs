@@ -1,4 +1,4 @@
-﻿namespace Webhooks.API.Exceptions;
+﻿namespace eShop.Webhooks.API.Exceptions;
 
 public class WebhooksDomainException : Exception
 {

@@ -31,14 +31,14 @@ public sealed class RabbitMQEventBus(
 
     public Task<Result> PublishAsync(IntegrationEvent @event, CancellationToken cancellationToken)
     {
-        var routingKey = @event.GetType().Name;
+        string routingKey = @event.GetType().Name;
 
         if (logger.IsEnabled(LogLevel.Trace))
         {
             logger.LogTrace("Creating RabbitMQ channel to publish event: {EventId} ({EventName})", @event.Id, routingKey);
         }
 
-        using var channel = this._rabbitMQConnection?.CreateModel() ?? throw new InvalidOperationException("RabbitMQ connection is not open");
+        using IModel channel = this._rabbitMQConnection?.CreateModel() ?? throw new InvalidOperationException("RabbitMQ connection is not open");
 
         if (logger.IsEnabled(LogLevel.Trace))
         {
@@ -47,15 +47,15 @@ public sealed class RabbitMQEventBus(
 
         channel.ExchangeDeclare(exchange: ExchangeName, type: "direct");
 
-        var body = this.SerializeMessage(@event);
+        byte[] body = this.SerializeMessage(@event);
 
         // Start an activity with a name following the semantic convention of the OpenTelemetry messaging specification.
         // https://github.com/open-telemetry/semantic-conventions/blob/main/docs/messaging/messaging-spans.md
-        var activityName = $"{routingKey} publish";
+        string activityName = $"{routingKey} publish";
 
         return this._pipeline.Execute(() =>
         {
-            using var activity = this._activitySource.StartActivity(activityName, ActivityKind.Client);
+            using Activity? activity = this._activitySource.StartActivity(activityName, ActivityKind.Client);
 
             // Depending on Sampling (and whether a listener is registered or not), the activity above may not be created.
             // If it is created, then propagate its context. If it is not created, the propagate the Current context, if any.
@@ -71,7 +71,7 @@ public sealed class RabbitMQEventBus(
                 contextToInject = Activity.Current.Context;
             }
 
-            var properties = channel.CreateBasicProperties();
+            IBasicProperties properties = channel.CreateBasicProperties();
             // persistent
             properties.DeliveryMode = 2;
 
@@ -133,28 +133,28 @@ public sealed class RabbitMQEventBus(
     {
         static IEnumerable<string> ExtractTraceContextFromBasicProperties(IBasicProperties props, string key)
         {
-            if (props.Headers.TryGetValue(key, out var value))
+            if (props.Headers.TryGetValue(key, out object? value))
             {
-                var bytes = value as byte[];
+                byte[]? bytes = value as byte[];
                 return [Encoding.UTF8.GetString(bytes!)];
             }
             return [];
         }
 
         // Extract the PropagationContext of the upstream parent from the message headers.
-        var parentContext = this._propagator.Extract(default, eventArgs.BasicProperties, ExtractTraceContextFromBasicProperties);
+        PropagationContext parentContext = this._propagator.Extract(default, eventArgs.BasicProperties, ExtractTraceContextFromBasicProperties);
         Baggage.Current = parentContext.Baggage;
 
         // Start an activity with a name following the semantic convention of the OpenTelemetry messaging specification.
         // https://github.com/open-telemetry/semantic-conventions/blob/main/docs/messaging/messaging-spans.md
-        var activityName = $"{eventArgs.RoutingKey} receive";
+        string activityName = $"{eventArgs.RoutingKey} receive";
 
-        using var activity = this._activitySource.StartActivity(activityName, ActivityKind.Client, parentContext.ActivityContext);
+        using Activity? activity = this._activitySource.StartActivity(activityName, ActivityKind.Client, parentContext.ActivityContext);
 
         SetActivityContext(activity!, eventArgs.RoutingKey, "receive");
 
-        var eventName = eventArgs.RoutingKey;
-        var message = Encoding.UTF8.GetString(eventArgs.Body.Span);
+        string eventName = eventArgs.RoutingKey;
+        string message = Encoding.UTF8.GetString(eventArgs.Body.Span);
 
         try
         {
@@ -187,9 +187,9 @@ public sealed class RabbitMQEventBus(
             logger.LogTrace("Processing RabbitMQ event: {EventName}", eventName);
         }
 
-        await using var scope = serviceProvider.CreateAsyncScope();
+        await using AsyncServiceScope scope = serviceProvider.CreateAsyncScope();
 
-        if (!this._subscriptionInfo.EventTypes.TryGetValue(eventName, out var eventType))
+        if (!this._subscriptionInfo.EventTypes.TryGetValue(eventName, out Type? eventType))
         {
             logger.LogWarning("Unable to resolve event type for event name {EventName}", eventName);
             return;
@@ -201,7 +201,7 @@ public sealed class RabbitMQEventBus(
         // REVIEW: This could be done in parallel
 
         // Get all the handlers using the event type as the key
-        foreach (var handler in scope.ServiceProvider.GetKeyedServices<IIntegrationEventHandler>(eventType))
+        foreach (IIntegrationEventHandler handler in scope.ServiceProvider.GetKeyedServices<IIntegrationEventHandler>(eventType))
         {
             await handler.Handle(integrationEvent!, default);
         }
@@ -266,7 +266,7 @@ public sealed class RabbitMQEventBus(
                     logger.LogTrace("Starting RabbitMQ basic consume");
                 }
 
-                var consumer = new AsyncEventingBasicConsumer(this._consumerChannel);
+                AsyncEventingBasicConsumer consumer = new(this._consumerChannel);
 
                 consumer.Received += this.OnMessageReceived;
 
@@ -275,7 +275,7 @@ public sealed class RabbitMQEventBus(
                     autoAck: false,
                     consumer: consumer);
 
-                foreach (var (eventName, _) in this._subscriptionInfo.EventTypes)
+                foreach ((string eventName, Type _) in this._subscriptionInfo.EventTypes)
                 {
                     this._consumerChannel.QueueBind(
                         queue: this._queueName,
@@ -303,7 +303,7 @@ public sealed class RabbitMQEventBus(
     private static ResiliencePipeline CreateResiliencePipeline(int retryCount)
     {
         // See https://www.pollydocs.org/strategies/retry.html
-        var retryOptions = new RetryStrategyOptions
+        RetryStrategyOptions retryOptions = new()
         {
             ShouldHandle = new PredicateBuilder().Handle<BrokerUnreachableException>().Handle<SocketException>(),
             MaxRetryAttempts = retryCount,

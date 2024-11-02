@@ -11,33 +11,31 @@ internal static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
-        var services = builder.Services;
-        
         // Add the authentication services to DI
         builder.AddDefaultAuthentication();
 
         // Pooling is disabled because of the following error:
         // Unhandled exception. System.InvalidOperationException:
         // The DbContext of type 'OrderingContext' cannot be pooled because it does not have a public constructor accepting a single parameter of type DbContextOptions or has more than one constructor.
-        services.AddDbContext<OrderingContext>(options =>
+        builder.Services.AddDbContext<OrderingContext>(options =>
         {
             options.UseNpgsql(builder.Configuration.GetConnectionString("orderingDb"));
         });
-        services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<OrderingContext>());
+        builder.Services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<OrderingContext>());
         builder.EnrichNpgsqlDbContext<OrderingContext>();
 
-        services.AddMigration<OrderingContext>(typeof(CardTypesSeed));
+        builder.Services.AddMigration<OrderingContext>(typeof(CardTypesSeed));
 
         // Add the integration services that consume the DbContext
-        services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService>();
+        builder.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService>();
 
-        services.AddTransient<IIntegrationEventService, OrderingIntegrationEventService>();
+        builder.Services.AddTransient<IIntegrationEventService, OrderingIntegrationEventService>();
 
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
         if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
         {
-            services.AddDaprClient();
-            services.AddSingleton<IEventBus, DaprEventBus>();
+            builder.Services.AddDaprClient();
+            builder.Services.AddSingleton<IEventBus, DaprEventBus>();
         }
         else
         {
@@ -45,11 +43,11 @@ internal static class Extensions
                 .AddEventBusSubscriptions();
         }
 
-        services.AddHttpContextAccessor();
-        services.AddTransient<IIdentityService, IdentityService>();
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddTransient<IIdentityService, IdentityService>();
 
         // Configure Mediator
-        services.AddMediatR(cfg =>
+        builder.Services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
 
@@ -59,14 +57,14 @@ internal static class Extensions
         });
 
         // Register the command validators for the validator behavior (validators based on FluentValidation library)
-        services.AddSingleton<IValidator<CancelOrderCommand>, CancelOrderCommandValidator>();
-        services.AddSingleton<IValidator<CreateOrderCommand>, CreateOrderCommandValidator>();
-        services.AddSingleton<IValidator<IdentifiedCommand<CreateOrderCommand, bool>>, IdentifiedCommandValidator>();
-        services.AddSingleton<IValidator<ShipOrderCommand>, ShipOrderCommandValidator>();
+        builder.Services.AddSingleton<IValidator<CancelOrderCommand>, CancelOrderCommandValidator>();
+        builder.Services.AddSingleton<IValidator<CreateOrderCommand>, CreateOrderCommandValidator>();
+        builder.Services.AddSingleton<IValidator<IdentifiedCommand<CreateOrderCommand, bool>>, IdentifiedCommandValidator>();
+        builder.Services.AddSingleton<IValidator<ShipOrderCommand>, ShipOrderCommandValidator>();
 
-        services.AddScoped<IOrderQueries, OrderQueries>();
-        services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-        services.AddScoped<IRequestManager, RequestManager>();
+        builder.Services.AddScoped<IOrderQueries, OrderQueries>();
+        builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+        builder.Services.AddScoped<IRequestManager, RequestManager>();
     }
 
     private static void AddEventBusSubscriptions(this IEventBusBuilder eventBus)

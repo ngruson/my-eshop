@@ -16,7 +16,7 @@ public class GracePeriodConfirmedIntegrationEventHandler(
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var command = new SetAwaitingValidationOrderStatusCommand(@event.OrderId);
+        SetAwaitingValidationOrderStatusCommand command = new(@event.OrderId);
 
         logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",

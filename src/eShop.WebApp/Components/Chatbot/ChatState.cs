@@ -7,6 +7,7 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.ChatCompletion;
 using eShop.Shared.Data;
 using eShop.ServiceInvocation.CatalogApiClient;
+using Microsoft.Extensions.Logging;
 
 namespace eShop.WebApp.Components.Chatbot;
 
@@ -26,11 +27,11 @@ public class ChatState
         this._basketState = basketState;
         this._user = user;
         this._productImages = productImages;
-        this._logger = loggerFactory.CreateLogger(typeof(ChatState));
+        this._logger = loggerFactory.CreateLogger<ChatState>();
 
         if (this._logger.IsEnabled(LogLevel.Debug))
         {
-            var completionService = kernel.GetRequiredService<IChatCompletionService>();
+            IChatCompletionService completionService = kernel.GetRequiredService<IChatCompletionService>();
             this._logger.LogDebug("ChatName: {model}", completionService.Attributes["DeploymentName"]);
         }
 
@@ -83,7 +84,7 @@ public class ChatState
         [KernelFunction, Description("Gets information about the chat user")]
         public string GetUserInfo()
         {
-            var claims = chatState._user.Claims;
+            IEnumerable<Claim> claims = chatState._user.Claims;
             return JsonSerializer.Serialize(new
             {
                 Name = GetValue(claims, "name"),
@@ -125,7 +126,7 @@ public class ChatState
         {
             try
             {
-                var item = await chatState._catalogApiClient.GetCatalogItem(itemId);
+                CatalogItemViewModel item = await chatState._catalogApiClient.GetCatalogItem(itemId);
                 await chatState._basketState.AddAsync(item!);
                 return "Item added to shopping cart.";
             }
@@ -144,7 +145,7 @@ public class ChatState
         {
             try
             {
-                var basketItems = await chatState._basketState.GetBasketItemsAsync();
+                IReadOnlyCollection<BasketItem> basketItems = await chatState._basketState.GetBasketItemsAsync();
                 return JsonSerializer.Serialize(basketItems);
             }
             catch (Exception e)

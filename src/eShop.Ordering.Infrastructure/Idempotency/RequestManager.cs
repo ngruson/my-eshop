@@ -6,17 +6,16 @@ public class RequestManager(OrderingContext context) : IRequestManager
 
     public async Task<bool> ExistAsync(Guid id)
     {
-        var request = await this._context.
-            FindAsync<ClientRequest>(id);
+        ClientRequest? request = await this._context.FindAsync<ClientRequest>(id);
 
         return request != null;
     }
 
     public async Task CreateRequestForCommandAsync<T>(Guid id)
     {
-        var exists = await this.ExistAsync(id);
+        bool exists = await this.ExistAsync(id);
 
-        var request = exists ?
+        ClientRequest request = exists ?
             throw new OrderingDomainException($"Request with {id} already exists") :
             new ClientRequest()
             {

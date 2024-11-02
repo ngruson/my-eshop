@@ -24,7 +24,7 @@ internal class GetAllCatalogTypesQueryHandler(
                 new GetAllCatalogTypesSpecification(),
                 cancellationToken);
 
-            var foundResult = Ardalis.GuardClauses.Guard.Against.CatalogTypesNullOrEmpty(catalogTypes, this.logger);
+            Result foundResult = Ardalis.GuardClauses.Guard.Against.CatalogTypesNullOrEmpty(catalogTypes, this.logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;

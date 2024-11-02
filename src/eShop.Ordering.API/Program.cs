@@ -1,20 +1,22 @@
+using Asp.Versioning;
+using Asp.Versioning.Builder;
 using eShop.Ordering.API.Apis;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddApplicationServices();
 builder.Services.AddProblemDetails();
 
-var withApiVersioning = builder.Services.AddApiVersioning();
+IApiVersioningBuilder withApiVersioning = builder.Services.AddApiVersioning();
 
 builder.AddDefaultOpenApi(withApiVersioning);
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-var orders = app.NewVersionedApi("Orders");
+IVersionedEndpointRouteBuilder orders = app.NewVersionedApi("Orders");
 
 orders.MapOrdersApiV1()
       .RequireAuthorization();

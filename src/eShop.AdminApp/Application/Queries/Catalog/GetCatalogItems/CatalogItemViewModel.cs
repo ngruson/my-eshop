@@ -37,7 +37,7 @@ public record CatalogItemViewModel(
 
     private static string FormatPrice(decimal price)
     {
-        var usCulture = new CultureInfo("en-US");
+        CultureInfo usCulture = new("en-US");
         return string.Format(usCulture, "{0:C}", price);
     }
 }

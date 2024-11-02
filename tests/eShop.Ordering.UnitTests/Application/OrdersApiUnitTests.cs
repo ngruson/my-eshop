@@ -47,7 +47,8 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.CancelOrderAsync(requestId, command, orderServices);
+            Results<Ok, BadRequest<string>, ProblemHttpResult> result =
+                await OrdersApi.CancelOrderAsync(requestId, command, orderServices);
 
             // Assert
             Assert.IsType<Ok>(result.Result);
@@ -62,7 +63,8 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.CancelOrderAsync(Guid.Empty, command, orderServices);
+            Results<Ok, BadRequest<string>, ProblemHttpResult> result =
+                await OrdersApi.CancelOrderAsync(Guid.Empty, command, orderServices);
 
             // Assert
 
@@ -83,7 +85,8 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.CancelOrderAsync(requestId, command, orderServices);
+            Results<Ok, BadRequest<string>, ProblemHttpResult> result =
+                await OrdersApi.CancelOrderAsync(requestId, command, orderServices);
 
             // Assert
 
@@ -107,7 +110,8 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.ShipOrderAsync(requestId, command, orderServices);
+            Results<Ok, BadRequest<string>, ProblemHttpResult> result =
+                await OrdersApi.ShipOrderAsync(requestId, command, orderServices);
 
             // Assert
 
@@ -127,7 +131,8 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.ShipOrderAsync(Guid.Empty, command, orderServices);
+            Results<Ok, BadRequest<string>, ProblemHttpResult> result =
+                await OrdersApi.ShipOrderAsync(Guid.Empty, command, orderServices);
 
             // Assert
 
@@ -148,7 +153,8 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.ShipOrderAsync(requestId, command, orderServices);
+            Results<Ok, BadRequest<string>, ProblemHttpResult> result =
+                await OrdersApi.ShipOrderAsync(requestId, command, orderServices);
 
             // Assert
 
@@ -164,8 +170,8 @@ public class OrdersApiUnitTests
         // Arrange
 
         // Act
-        
-        var result = await OrdersApi.GetOrdersByUserAsync(orderServices);
+
+        Ok<IEnumerable<OrderSummary>> result = await OrdersApi.GetOrdersByUserAsync(orderServices);
 
         // Assert
         Assert.IsType<Ok<IEnumerable<OrderSummary>>>(result);
@@ -186,7 +192,7 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.GetOrderAsync(orderId, orderServices);
+            Results<Ok<Order>, NotFound> result = await OrdersApi.GetOrderAsync(orderId, orderServices);
 
             // Assert
             Assert.IsType<Ok<Order>>(result.Result);
@@ -205,7 +211,7 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.GetOrderAsync(orderId, orderServices);
+            Results<Ok<Order>, NotFound> result = await OrdersApi.GetOrderAsync(orderId, orderServices);
 
             // Assert
             Assert.IsType<NotFound>(result.Result);
@@ -225,7 +231,7 @@ public class OrdersApiUnitTests
 
         // Act
 
-        var result = await OrdersApi.CreateOrderDraftAsync(command, orderServices);
+        OrderDraftDTO result = await OrdersApi.CreateOrderDraftAsync(command, orderServices);
 
         // Assert
 
@@ -247,7 +253,7 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.CreateOrderAsync(requestId, request, orderServices);
+            Results<Ok, BadRequest<string>> result = await OrdersApi.CreateOrderAsync(requestId, request, orderServices);
 
             // Assert
 
@@ -264,7 +270,7 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.CreateOrderAsync(requestId, request, orderServices);
+            Results<Ok, BadRequest<string>> result = await OrdersApi.CreateOrderAsync(requestId, request, orderServices);
 
             // Assert
 
@@ -280,7 +286,7 @@ public class OrdersApiUnitTests
 
             // Act
 
-            var result = await OrdersApi.CreateOrderAsync(Guid.Empty, request, orderServices);
+            Results<Ok, BadRequest<string>> result = await OrdersApi.CreateOrderAsync(Guid.Empty, request, orderServices);
 
             // Assert
 

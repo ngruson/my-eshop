@@ -125,7 +125,7 @@ public class BasketState(
 
         async Task<IReadOnlyCollection<BasketItem>> FetchCoreAsync()
         {
-            var quantities = await basketService.GetBasketAsync();
+            IReadOnlyCollection<BasketQuantity> quantities = await basketService.GetBasketAsync();
             if (quantities.Count == 0)
             {
                 return [];

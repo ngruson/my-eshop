@@ -11,7 +11,7 @@ internal static class IdentityApi
 {
     public static RouteGroupBuilder MapIdentityApiV1(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("api/user").HasApiVersion(1.0);
+        RouteGroupBuilder api = app.MapGroup("api/user").HasApiVersion(1.0);
 
         api.MapGet("/", async ([FromServices] IMediator mediator) =>
             (await mediator.Send(new GetUsersQuery()))

@@ -24,7 +24,7 @@ internal class GetCustomersQueryHandler(
             List<Domain.AggregatesModel.CustomerAggregate.Customer> customers =
                 await this.customerRepository.ListAsync(new GetCustomersSpecification(request.IncludeDeleted), cancellationToken);
 
-            var foundResult = Guard.Against.CustomersNullOrEmpty(customers, this.logger);
+            Result foundResult = Guard.Against.CustomersNullOrEmpty(customers, this.logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;

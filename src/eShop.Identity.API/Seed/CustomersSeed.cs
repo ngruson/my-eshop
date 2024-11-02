@@ -18,7 +18,7 @@ public class CustomersSeed(IMediator mediator) : IDbSeeder
         using CsvReader csv = new(reader, CultureInfo.InvariantCulture);
         List<CustomerCsv> records = csv.GetRecords<CustomerCsv>().Take(10).ToList();
 
-        foreach (var customer in records)
+        foreach (CustomerCsv customer in records)
         {
             CreateUserDto createUserDto = new(
                 customer.UserName!,

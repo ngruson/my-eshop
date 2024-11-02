@@ -1,4 +1,5 @@
 using System.Text;
+using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
@@ -12,12 +13,9 @@ namespace eShop.ServiceDefaults;
 
 internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider, IConfiguration configuration) : IConfigureOptions<SwaggerGenOptions>
 {
-    private readonly IApiVersionDescriptionProvider _provider = provider;
-    private readonly IConfiguration _configuration = configuration;
-
     public void Configure(SwaggerGenOptions options)
     {
-        foreach (var description in this._provider.ApiVersionDescriptions)
+        foreach (ApiVersionDescription description in provider.ApiVersionDescriptions)
         {
             options.SwaggerDoc(description.GroupName, this.CreateInfoForApiVersion(description));
         }
@@ -36,9 +34,9 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
         ///     }
         ///   }
         /// }
-        var openApi = this._configuration.GetSection("OpenApi");
-        var document = openApi.GetRequiredSection("Document");
-        var info = new OpenApiInfo()
+        IConfigurationSection openApi = configuration.GetSection("OpenApi");
+        IConfigurationSection document = openApi.GetRequiredSection("Document");
+        OpenApiInfo info = new()
         {
             Title = document.GetRequiredValue("Title"),
             Version = description.ApiVersion.ToString(),
@@ -50,7 +48,7 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
 
     private static string BuildDescription(ApiVersionDescription api, string description)
     {
-        var text = new StringBuilder(description);
+        StringBuilder text = new StringBuilder(description);
 
         if (api.IsDeprecated)
         {
@@ -85,9 +83,9 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
             {
                 text.AppendLine();
 
-                var rendered = false;
+                bool rendered = false;
 
-                foreach (var link in policy.Links.Where(l => l.Type == "text/html"))
+                foreach (LinkHeaderValue? link in policy.Links.Where(l => l.Type == "text/html"))
                 {
                     if (!rendered)
                     {
@@ -117,7 +115,7 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
 
     private void ConfigureAuthorization(SwaggerGenOptions options)
     {
-        var identitySection = this._configuration.GetSection("Identity");
+        IConfigurationSection identitySection = configuration.GetSection("Identity");
 
         if (!identitySection.Exists())
         {
@@ -134,8 +132,8 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
         //    }
         // }
 
-        var identityUrlExternal = identitySection.GetRequiredValue("Url");
-        var scopes = identitySection.GetRequiredSection("Scopes").GetChildren().ToDictionary(p => p.Key, p => p.Value);
+        string identityUrlExternal = identitySection.GetRequiredValue("Url");
+        Dictionary<string, string?> scopes = identitySection.GetRequiredSection("Scopes").GetChildren().ToDictionary(p => p.Key, p => p.Value);
 
         options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
         {
@@ -159,7 +157,7 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            var metadata = context.ApiDescription.ActionDescriptor.EndpointMetadata;
+            IList<object> metadata = context.ApiDescription.ActionDescriptor.EndpointMetadata;
 
             if (!metadata.OfType<IAuthorizeData>().Any())
             {
@@ -169,7 +167,7 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
             operation.Responses.TryAdd("401", new OpenApiResponse { Description = "Unauthorized" });
             operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden" });
 
-            var oAuthScheme = new OpenApiSecurityScheme
+            OpenApiSecurityScheme oAuthScheme = new()
             {
                 Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
             };

@@ -15,7 +15,7 @@ public class CreateOrderDraftCommandUnitTests
 
         //Act
 
-        var result = await sut.Handle(command with { Items = items }, default);
+        OrderDraftDTO result = await sut.Handle(command with { Items = items }, default);
 
         //Assert
 

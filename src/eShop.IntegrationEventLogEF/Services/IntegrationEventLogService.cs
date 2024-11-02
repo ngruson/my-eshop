@@ -44,7 +44,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
             throw new ArgumentNullException(nameof(transactionId));
         }
 
-        var eventLogEntry = new IntegrationEventLogEntry(@event, transactionId);
+        IntegrationEventLogEntry eventLogEntry = new(@event, transactionId);
 
         await this._repository.AddAsync(eventLogEntry, cancellationToken);
     }
@@ -66,7 +66,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     private async Task UpdateEventStatus(Guid eventId, EventStateEnum status)
     {
-        var eventLogEntry = await this._repository.SingleOrDefaultAsync(new GetEventSpecification(eventId));
+        IntegrationEventLogEntry? eventLogEntry = await this._repository.SingleOrDefaultAsync(new GetEventSpecification(eventId));
 
         if (eventLogEntry != null)
         {

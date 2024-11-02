@@ -148,7 +148,7 @@ if (useOpenAI)
         .WithEnvironment("AI__OPENAI__CHATMODEL", chatModelName);
 }
 
-var adminApp = builder.AddProject<Projects.eShop_AdminApp>("admin-app")
+IResourceBuilder<ProjectResource> adminApp = builder.AddProject<Projects.eShop_AdminApp>("admin-app")
     .WithDaprSidecar()
     .WithExternalHttpEndpoints()
     .WithReference(catalogApi)
@@ -184,7 +184,7 @@ builder.Build().Run();
 static bool ShouldUseHttpForEndpoints()
 {
     const string EnvVarName = "ESHOP_USE_HTTP_ENDPOINTS";
-    var envValue = Environment.GetEnvironmentVariable(EnvVarName);
+    string? envValue = Environment.GetEnvironmentVariable(EnvVarName);
 
     // Attempt to parse the environment variable value; return true if it's exactly "1".
     return int.TryParse(envValue, out int result) && result == 1;

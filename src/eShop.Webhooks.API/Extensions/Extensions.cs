@@ -2,6 +2,7 @@
 using eShop.EventBusRabbitMQ;
 using eShop.Webhooks.API.Infrastructure;
 using eShop.Webhooks.API.IntegrationEvents;
+using eShop.Webhooks.API.Services;
 
 internal static class Extensions
 {

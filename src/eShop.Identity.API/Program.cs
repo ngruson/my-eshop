@@ -1,8 +1,10 @@
+using Asp.Versioning;
+using Asp.Versioning.Builder;
 using eShop.Identity.API.Quickstart;
 using eShop.Identity.API.Seed;
 using static Duende.IdentityServer.IdentityServerConstants;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
@@ -58,7 +60,7 @@ builder.Services.AddAuthorization()
 builder.Services.AddAuthentication()
     .AddOpenIdConnect("Microsoft", "Employee Login", options =>
     {
-        options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+        options.SignInScheme = ExternalCookieAuthenticationScheme;
         options.Authority = $"https://login.microsoftonline.com/{builder.Configuration["Entra:TenantId"]}/v2.0";
         options.ClientId = builder.Configuration["Entra:ClientId"];
         options.ClientSecret = builder.Configuration["Entra:ClientSecret"];
@@ -75,18 +77,18 @@ builder.Services.AddTransient<IRedirectService, RedirectService>();
 
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
+    cfg.RegisterServicesFromAssemblyContaining<Program>();
 });
 
-var withApiVersioning = builder.Services.AddApiVersioning();
+IApiVersioningBuilder withApiVersioning = builder.Services.AddApiVersioning();
 
 builder.AddDefaultOpenApi(withApiVersioning);
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-var api = app.NewVersionedApi("Identity");
+IVersionedEndpointRouteBuilder api = app.NewVersionedApi("Identity");
 
 api.MapIdentityApiV1()
       .RequireAuthorization(LocalApi.PolicyName);

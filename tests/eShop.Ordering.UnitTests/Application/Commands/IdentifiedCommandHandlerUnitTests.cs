@@ -23,7 +23,8 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+
+        bool result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result);
@@ -47,7 +48,8 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+
+        bool result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result);
@@ -71,9 +73,11 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+
+        bool result = await sut.Handle(command, default);
 
         // Assert
+
         Assert.True(result);
         await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
     }
@@ -95,9 +99,11 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+
+        bool result = await sut.Handle(command, default);
 
         // Assert
+
         Assert.True(result);
         await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
     }
@@ -119,7 +125,8 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+
+        bool result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result);
@@ -143,9 +150,11 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+
+        bool result = await sut.Handle(command, default);
 
         // Assert
+
         Assert.True(result);
         await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
     }
@@ -167,7 +176,8 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+
+        bool result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result);
@@ -189,7 +199,7 @@ public class IdentifiedCommandHandlerUnitTests
 
         // Act
 
-        var result = await sut.Handle(message, default);
+        bool result = await sut.Handle(message, default);
 
         // Assert
 
@@ -216,7 +226,7 @@ public class IdentifiedCommandHandlerUnitTests
 
         // Act
 
-        var result = await sut.Handle(message, default);
+        bool result = await sut.Handle(message, default);
 
         // Assert
 

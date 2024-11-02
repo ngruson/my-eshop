@@ -15,9 +15,10 @@ public class OrderingIntegrationEventService(IEventBus eventBus,
 
     public async Task PublishEventsThroughEventBusAsync(Guid transactionId, CancellationToken cancellationToken)
     {
-        var pendingLogEvents = await this._eventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId, cancellationToken);
+        IEnumerable<IntegrationEventLogEF.IntegrationEventLogEntry> pendingLogEvents =
+            await this._eventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId, cancellationToken);
 
-        foreach (var logEvt in pendingLogEvents)
+        foreach (IntegrationEventLogEF.IntegrationEventLogEntry logEvt in pendingLogEvents)
         {
             this._logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", logEvt.EventId, logEvt.IntegrationEvent);
 

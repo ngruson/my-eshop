@@ -8,7 +8,7 @@ public class BasketService(GrpcBasketClient basketClient)
 {
     public async Task<IReadOnlyCollection<BasketQuantity>> GetBasketAsync()
     {
-        var result = await basketClient.GetBasketAsync(new ());
+        CustomerBasketResponse result = await basketClient.GetBasketAsync(new());
         return MapToBasket(result);
     }
 
@@ -19,11 +19,11 @@ public class BasketService(GrpcBasketClient basketClient)
 
     public async Task UpdateBasketAsync(IReadOnlyCollection<BasketQuantity> basket)
     {
-        var updatePayload = new UpdateBasketRequest();
+        UpdateBasketRequest updatePayload = new();
 
-        foreach (var item in basket)
+        foreach (BasketQuantity item in basket)
         {
-            var updateItem = new GrpcBasketItem
+            GrpcBasketItem updateItem = new GrpcBasketItem
             {
                 ProductId = item.ProductId.ToString(),
                 Quantity = item.Quantity,
@@ -36,8 +36,8 @@ public class BasketService(GrpcBasketClient basketClient)
 
     private static List<BasketQuantity> MapToBasket(CustomerBasketResponse response)
     {
-        var result = new List<BasketQuantity>();
-        foreach (var item in response.Items)
+        List<BasketQuantity> result = [];
+        foreach (GrpcBasketItem? item in response.Items)
         {
             result.Add(new BasketQuantity(Guid.Parse(item.ProductId), item.Quantity));
         }

@@ -1,4 +1,3 @@
-using eShop.Catalog.API.Model;
 using eShop.Catalog.Contracts.GetCatalogItems;
 
 namespace eShop.Catalog.API.Application.Queries.GetPaginatedCatalogItems;
@@ -14,8 +13,8 @@ internal static class MapperExtensions
                 c.Description!,
                 c.Price,
                 c.PictureFileName!,
-                new CatalogTypeDto(c.CatalogType.ObjectId, c.CatalogType.Type),
-                new CatalogBrandDto(c.CatalogBrand.ObjectId, c.CatalogBrand.Brand),
+                new CatalogTypeDto(c.CatalogType!.ObjectId, c.CatalogType.Type),
+                new CatalogBrandDto(c.CatalogBrand!.ObjectId, c.CatalogBrand.Brand),
                 c.AvailableStock,
                 c.RestockThreshold,
                 c.MaxStockThreshold,

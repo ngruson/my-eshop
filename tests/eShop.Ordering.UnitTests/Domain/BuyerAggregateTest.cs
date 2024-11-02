@@ -8,12 +8,14 @@ public class BuyerAggregateTest
     [Fact]
     public void Create_buyer_item_success()
     {
-        //Arrange    
-        var identity = new Guid().ToString();
-        var name = "fakeUser";
+        //Arrange
 
-        //Act 
-        var fakeBuyerItem = new Buyer(identity, name);
+        string identity = new Guid().ToString();
+        string name = "fakeUser";
+
+        //Act
+
+        Buyer fakeBuyerItem = new(identity, name);
 
         //Assert
         Assert.NotNull(fakeBuyerItem);
@@ -22,11 +24,13 @@ public class BuyerAggregateTest
     [Fact]
     public void Create_buyer_item_fail()
     {
-        //Arrange    
-        var identity = string.Empty;
-        var name = "fakeUser";
+        //Arrange
+
+        string identity = string.Empty;
+        string name = "fakeUser";
 
         //Act - Assert
+
         Assert.Throws<ArgumentNullException>(() => new Buyer(identity, name));
     }
 
@@ -56,16 +60,11 @@ public class BuyerAggregateTest
     public void create_payment_method_success(
         CardType cardType)
     {
-        //Arrange    
-        var cardTypeId = 1;
-        var alias = "fakeAlias";
-        var cardNumber = "124";
-        var securityNumber = "1234";
-        var cardHolderName = "FakeHolderNAme";
-        var expiration = DateTime.UtcNow.AddYears(1);
+        //Arrange
 
         //Act
-        var result = new PaymentMethod(cardType, alias, cardNumber, securityNumber, cardHolderName, expiration);
+
+        PaymentMethod result = new(cardType, "fakeAlias", "124", "1234", "FakeHolderName", DateTime.UtcNow.AddYears(1));
 
         //Assert
         Assert.NotNull(result);

@@ -98,7 +98,7 @@ public class CancelOrderCommandUnitTests
 
         // Act
 
-        var result = await sut.Handle(command, default);
+        bool result = await sut.Handle(command, default);
 
         //Assert
 

@@ -1,4 +1,4 @@
-namespace Webhooks.API.IntegrationEvents;
+namespace eShop.Webhooks.API.IntegrationEvents;
 
 public class ProductPriceChangedIntegrationEventHandler : IIntegrationEventHandler<ProductPriceChangedIntegrationEvent>
 {

@@ -10,7 +10,7 @@ internal static class MasterDataApi
 {
     public static RouteGroupBuilder MapCountryApiV1(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("api/countries").HasApiVersion(1.0);
+        RouteGroupBuilder api = app.MapGroup("api/countries").HasApiVersion(1.0);
 
         api.MapGet("/", async ([FromServices] IMediator mediator) =>
             (await mediator.Send(new GetCountriesQuery()))
@@ -21,7 +21,7 @@ internal static class MasterDataApi
 
     public static RouteGroupBuilder MapStateApiV1(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("api/states").HasApiVersion(1.0);
+        RouteGroupBuilder api = app.MapGroup("api/states").HasApiVersion(1.0);
 
         api.MapGet("/", async ([FromServices] IMediator mediator) =>
             (await mediator.Send(new GetStatesQuery()))

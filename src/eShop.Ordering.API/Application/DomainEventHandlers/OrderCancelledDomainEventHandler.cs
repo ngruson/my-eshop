@@ -20,10 +20,10 @@ public partial class OrderCancelledDomainEventHandler(
     {
         OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.Order.Id, OrderStatus.Cancelled);
 
-        var order = await this._orderRepository.GetByIdAsync(domainEvent.Order.Id, cancellationToken);
-        var buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
+        Order? order = await this._orderRepository.GetByIdAsync(domainEvent.Order.Id, cancellationToken);
+        Buyer? buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
 
-        var integrationEvent = new OrderStatusChangedToCancelledIntegrationEvent(order.Id, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!);
+        OrderStatusChangedToCancelledIntegrationEvent integrationEvent = new(order.Id, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!);
         await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
     }
 }

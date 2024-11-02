@@ -22,8 +22,8 @@ public class BasketServiceTests
         {
             // Arrange
 
-            var serverCallContext = TestServerCallContext.Create();
-            var httpContext = new DefaultHttpContext
+            TestServerCallContext serverCallContext = TestServerCallContext.Create();
+            DefaultHttpContext httpContext = new()
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", userId)]))
             };
@@ -31,7 +31,7 @@ public class BasketServiceTests
 
             // Act
 
-            var response = await sut.GetBasket(new GetBasketRequest(), serverCallContext);
+            CustomerBasketResponse response = await sut.GetBasket(new GetBasketRequest(), serverCallContext);
 
             // Assert
 
@@ -53,8 +53,8 @@ public class BasketServiceTests
 
             logger.IsEnabled(LogLevel.Debug).Returns(true);
 
-            var serverCallContext = TestServerCallContext.Create();
-            var httpContext = new DefaultHttpContext
+            TestServerCallContext serverCallContext = TestServerCallContext.Create();
+            DefaultHttpContext httpContext = new()
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", userId)]))
             };
@@ -62,7 +62,7 @@ public class BasketServiceTests
 
             // Act
 
-            var response = await sut.GetBasket(new GetBasketRequest(), serverCallContext);
+            CustomerBasketResponse response = await sut.GetBasket(new GetBasketRequest(), serverCallContext);
 
             // Assert
 
@@ -79,13 +79,13 @@ public class BasketServiceTests
             // Arrange
 
             repository.GetBasketAsync("1").Returns(Task.FromResult(basket));
-            var serverCallContext = TestServerCallContext.Create();
-            var httpContext = new DefaultHttpContext();
+            TestServerCallContext serverCallContext = TestServerCallContext.Create();
+            DefaultHttpContext httpContext = new();
             serverCallContext.SetUserState("__HttpContext", httpContext);
 
             // Act
 
-            var response = await sut.GetBasket(new GetBasketRequest(), serverCallContext);
+            CustomerBasketResponse response = await sut.GetBasket(new GetBasketRequest(), serverCallContext);
 
             Assert.IsType<CustomerBasketResponse>(response);
             Assert.Empty(response.Items);
@@ -101,8 +101,8 @@ public class BasketServiceTests
         {
             // Arrange
 
-            var serverCallContext = TestServerCallContext.Create();
-            var httpContext = new DefaultHttpContext
+            TestServerCallContext serverCallContext = TestServerCallContext.Create();
+            DefaultHttpContext httpContext = new()
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", userId)]))
             };
@@ -110,7 +110,7 @@ public class BasketServiceTests
 
             // Act
 
-            var exception = await Assert.ThrowsAsync<RpcException>(() => sut.UpdateBasket(new UpdateBasketRequest(), serverCallContext));
+            RpcException exception = await Assert.ThrowsAsync<RpcException>(() => sut.UpdateBasket(new UpdateBasketRequest(), serverCallContext));
 
             // Assert
 
@@ -130,16 +130,16 @@ public class BasketServiceTests
             repository.UpdateBasketAsync(Arg.Any<CustomerBasket>()).Returns(Task.FromResult(basket));
             logger.IsEnabled(LogLevel.Debug).Returns(true);
 
-            var serverCallContext = TestServerCallContext.Create();
-            var httpContext = new DefaultHttpContext
+            TestServerCallContext serverCallContext = TestServerCallContext.Create();
+            DefaultHttpContext httpContext = new()
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", userId)]))
             };
-            serverCallContext.SetUserState("__HttpContext", httpContext);           
+            serverCallContext.SetUserState("__HttpContext", httpContext);
 
             // Act
 
-            var response = await sut.UpdateBasket(new UpdateBasketRequest(), serverCallContext);
+            CustomerBasketResponse response = await sut.UpdateBasket(new UpdateBasketRequest(), serverCallContext);
 
             // Assert
 
@@ -154,13 +154,13 @@ public class BasketServiceTests
         {
             // Arrange
 
-            var serverCallContext = TestServerCallContext.Create();
-            var httpContext = new DefaultHttpContext();
+            TestServerCallContext serverCallContext = TestServerCallContext.Create();
+            DefaultHttpContext httpContext = new();
             serverCallContext.SetUserState("__HttpContext", httpContext);
 
             // Act
 
-            var exception = await Assert.ThrowsAsync<RpcException>(() => sut.UpdateBasket(new UpdateBasketRequest(), serverCallContext));
+            RpcException exception = await Assert.ThrowsAsync<RpcException>(() => sut.UpdateBasket(new UpdateBasketRequest(), serverCallContext));
 
             // Assert
 
@@ -178,13 +178,13 @@ public class BasketServiceTests
         {
             // Arrange
 
-            var serverCallContext = TestServerCallContext.Create();
-            var httpContext = new DefaultHttpContext();
+            TestServerCallContext serverCallContext = TestServerCallContext.Create();
+            DefaultHttpContext httpContext = new();
             serverCallContext.SetUserState("__HttpContext", httpContext);
 
             // Act
 
-            var exception = await Assert.ThrowsAsync<RpcException>(() => sut.DeleteBasket(request, serverCallContext));
+            RpcException exception = await Assert.ThrowsAsync<RpcException>(() => sut.DeleteBasket(request, serverCallContext));
 
             // Assert
 
@@ -201,8 +201,8 @@ public class BasketServiceTests
         {
             // Arrange
 
-            var serverCallContext = TestServerCallContext.Create();
-            var httpContext = new DefaultHttpContext
+            TestServerCallContext serverCallContext = TestServerCallContext.Create();
+            DefaultHttpContext httpContext = new()
             {
                 User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", userId)]))
             };

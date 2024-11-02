@@ -26,7 +26,7 @@ public class GetCountriesQueryHandler(
             if (!this.cache.TryGetValue(key, out object? countries))
             {
                 this.logger.LogInformation("Countries not found in cache. Retrieving from master data API.");
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetSlidingExpiration(TimeSpan.FromHours(1));
                 CountryDto[] dto = await this.masterDataApiClient.GetCountries();
                 viewModel = [.. dto.MapToCountryViewModels()];

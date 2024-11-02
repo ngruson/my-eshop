@@ -10,7 +10,7 @@ public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TReque
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         this._logger.LogInformation("Handling command {CommandName} ({@Command})", request.GetGenericTypeName(), request);
-        var response = await next();
+        TResponse? response = await next();
         this._logger.LogInformation("Command {CommandName} handled - response: {@Response}", request.GetGenericTypeName(), response);
 
         return response;

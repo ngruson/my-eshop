@@ -14,7 +14,7 @@ public class OrderingContextUnitTests
 
         optionsBuilder.UseInMemoryDatabase(databaseName: "testDatabase");
 
-        var context = new OrderingContext(optionsBuilder.Options, mediator);
+        OrderingContext context = new(optionsBuilder.Options, mediator);
 
         context.Database.EnsureCreated();
 

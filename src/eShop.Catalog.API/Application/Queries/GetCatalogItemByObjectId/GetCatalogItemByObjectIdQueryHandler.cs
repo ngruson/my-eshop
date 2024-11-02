@@ -25,7 +25,7 @@ internal class GetCatalogItemByObjectIdQueryHandler(
                 .FirstOrDefaultAsync(new GetCatalogItemByObjectIdSpecification(request.ObjectId),
                     cancellationToken);
 
-            var foundResult = Ardalis.GuardClauses.Guard.Against.CatalogItemNull(catalogItem, this.logger);
+            Result foundResult = Ardalis.GuardClauses.Guard.Against.CatalogItemNull(catalogItem, this.logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;

@@ -1,3 +1,5 @@
+using eShop.Webhooks.API.Model;
+
 namespace eShop.Webhooks.API.Infrastructure;
 
 /// <remarks>

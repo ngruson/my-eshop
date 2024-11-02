@@ -56,7 +56,7 @@ internal class Config
                 {
                     new Secret("secret".Sha256())
                 },
-                RedirectUris = { configuration["MauiCallback"] },
+                RedirectUris = { configuration["MauiCallback"]! },
                 RequireConsent = false,
                 RequirePkce = true,
                 PostLogoutRedirectUris = { $"{configuration["MauiCallback"]}/Account/Redirecting" },

@@ -156,5 +156,5 @@
     }
 
     private static DateTime? ParseExpiryDate(string? monthYear)
-        => DateTime.TryParseExact($"01/{monthYear}", "dd/MM/yy", null, DateTimeStyles.None, out var result) ? result.ToUniversalTime() : null;
+        => DateTime.TryParseExact($"01/{monthYear}", "dd/MM/yy", null, DateTimeStyles.None, out DateTime result) ? result.ToUniversalTime() : null;
 }

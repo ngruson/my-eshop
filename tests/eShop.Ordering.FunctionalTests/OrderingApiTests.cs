@@ -19,7 +19,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
 
     public OrderingApiTests(OrderingApiFixture fixture)
     {
-        var handler = new ApiVersionHandler(new QueryStringApiVersionWriter(), new ApiVersion(1.0));
+        ApiVersionHandler handler = new(new QueryStringApiVersionWriter(), new ApiVersion(1.0));
 
         this._webApplicationFactory = fixture;
         this._httpClient = this._webApplicationFactory.CreateDefaultClient(handler);
@@ -29,11 +29,13 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     public async Task GetAllStoredOrdersWorks()
     {
         // Act
-        var response = await this._httpClient.GetAsync("api/orders");
+
+        HttpResponseMessage response = await this._httpClient.GetAsync("api/orders");
         await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
 
         // Assert
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -42,13 +44,15 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         CancelOrderCommand command)
     {
         // Act
-        var content = new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
+
+        StringContent content = new(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.Empty.ToString() } }
         };
-        var response = await this._httpClient.PutAsync("/api/orders/cancel", content);
+        HttpResponseMessage response = await this._httpClient.PutAsync("/api/orders/cancel", content);
 
         // Assert
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -57,11 +61,12 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         CancelOrderCommand command)
     {
         // Act
-        var content = new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
+
+        StringContent content = new(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
         };
-        var response = await this._httpClient.PutAsync("api/orders/cancel", content);
+        HttpResponseMessage response = await this._httpClient.PutAsync("api/orders/cancel", content);
 
         // Assert
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
@@ -72,13 +77,15 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         ShipOrderCommand command)
     {
         // Act
-        var content = new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
+
+        StringContent content = new(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.Empty.ToString() } }
         };
-        var response = await this._httpClient.PutAsync("api/orders/ship", content);
+        HttpResponseMessage response = await this._httpClient.PutAsync("api/orders/ship", content);
 
         // Assert
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -87,24 +94,28 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         ShipOrderCommand command)
     {
         // Act
-        var content = new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
+
+        StringContent content = new(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
         };
-        var response = await this._httpClient.PutAsync("api/orders/ship", content);
+        HttpResponseMessage response = await this._httpClient.PutAsync("api/orders/ship", content);
 
         // Assert
+
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
     }
 
     [Fact]
     public async Task GetAllOrdersCardType()
     {
-        // Act 1
-        var response = await this._httpClient.GetAsync("api/orders/cardTypes");
+        // Act
+
+        HttpResponseMessage response = await this._httpClient.GetAsync("api/orders/cardTypes");
         response.EnsureSuccessStatusCode();
 
         // Assert
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -112,10 +123,12 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     public async Task GetStoredOrdersWithOrderId()
     {
         // Act
-        var response = await this._httpClient.GetAsync("api/orders/1");
-        var responseStatus = response.StatusCode;
+
+        HttpResponseMessage response = await this._httpClient.GetAsync("api/orders/1");
+        HttpStatusCode responseStatus = response.StatusCode;
 
         // Assert
+
         Assert.Equal("NotFound", responseStatus.ToString());
     }
 
@@ -123,13 +136,14 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     public async Task AddNewEmptyOrder()
     {
         // Act
-        var content = new StringContent(JsonSerializer.Serialize(new Order()), Encoding.UTF8, "application/json")
+        StringContent content = new(JsonSerializer.Serialize(new Order()), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.Empty.ToString() } }
         };
-        var response = await this._httpClient.PostAsync("api/orders", content);
+        HttpResponseMessage response = await this._httpClient.PostAsync("api/orders", content);
 
         // Assert
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -143,17 +157,18 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         IEnumerable<CardTypeDto> cardTypes = await this._httpClient.GetFromJsonAsync<IEnumerable<CardTypeDto>>("api/orders/cardTypes");
         CardTypeDto cardType = cardTypes.First(_ => _.Name == "Amex");
 
-        var cardExpirationDate = DateTime.Now.AddYears(1);
-        var orderRequest = new CreateOrderDto(order.UserId, order.UserName, null, null, null, null, null,
+        DateTime cardExpirationDate = DateTime.Now.AddYears(1);
+        CreateOrderDto orderRequest = new(order.UserId, order.UserName, null, null, null, null, null,
             order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, cardType.ObjectId, null,
             [orderItem with {  Discount = 0 }]);
-        var content = new StringContent(JsonSerializer.Serialize(orderRequest), Encoding.UTF8, "application/json")
+        StringContent content = new(JsonSerializer.Serialize(orderRequest), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
         };
-        var response = await this._httpClient.PostAsync("api/orders", content);
+        HttpResponseMessage response = await this._httpClient.PostAsync("api/orders", content);
 
         // Assert
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -165,19 +180,19 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
             .Select(x => new OrderItemDto(x.ProductId, x.ProductName, x.UnitPrice, 0, x.Units, x.PictureUrl))
             .ToArray();
 
-        var content = new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
+        StringContent content = new(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
         };
-        var response = await this._httpClient.PostAsync("api/orders/draft", content);
+        HttpResponseMessage response = await this._httpClient.PostAsync("api/orders/draft", content);
 
-        var s = await response.Content.ReadAsStringAsync();
-        var jsonSerializerOptions = new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        var options = jsonSerializerOptions;
-        var responseData = JsonSerializer.Deserialize<OrderDraftDTO>(s, options);
+        string s = await response.Content.ReadAsStringAsync();
+        JsonSerializerOptions jsonSerializerOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        JsonSerializerOptions options = jsonSerializerOptions;
+        OrderDraftDTO responseData = JsonSerializer.Deserialize<OrderDraftDTO>(s, options);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(command.Items.Count(), responseData.OrderItems.Count());
+        Assert.Equal(command.Items.Length, responseData.OrderItems.Count());
         Assert.Equal(command.Items.Sum(o => o.Units * o.UnitPrice), responseData.Total);
         AssertThatOrderItemsAreTheSameAsRequestPayloadItems(command, responseData);
     }
@@ -185,9 +200,13 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     private static void AssertThatOrderItemsAreTheSameAsRequestPayloadItems(CreateOrderDraftCommand payload, OrderDraftDTO responseData)
     {
         // check that OrderItems contain all product Ids from the payload
-        var payloadItemsProductIds = payload.Items.Select(x => x.ProductId);
-        var orderItemsProductIds = responseData.OrderItems.Select(x => x.ProductId);
-        Assert.All(orderItemsProductIds, orderItemProdId => payloadItemsProductIds.Contains(orderItemProdId));
-        // TODO: might need to add more asserts in here
+
+        IEnumerable<Guid> payloadItemsProductIds = payload.Items.Select(x => x.ProductId);
+        IEnumerable<Guid> orderItemsProductIds = responseData.OrderItems.Select(x => x.ProductId);
+
+        foreach (Guid orderItemProdId in orderItemsProductIds)
+        {
+            Assert.Contains(orderItemProdId, payloadItemsProductIds);
+        }
     }
 }

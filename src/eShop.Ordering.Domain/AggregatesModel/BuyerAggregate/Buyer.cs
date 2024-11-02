@@ -31,7 +31,7 @@ public class Buyer : Entity, IAggregateRoot
         CardType cardType, string alias, string cardNumber,
         string securityNumber, string cardHolderName, DateTime expiration, int orderId)
     {
-        var existingPayment = this._paymentMethods
+        PaymentMethod? existingPayment = this._paymentMethods
             .SingleOrDefault(p => p.IsEqualTo(cardType, cardNumber, expiration));
 
         if (existingPayment is not null)
@@ -41,7 +41,7 @@ public class Buyer : Entity, IAggregateRoot
             return existingPayment;
         }
 
-        var payment = new PaymentMethod(cardType, alias, cardNumber, securityNumber, cardHolderName, expiration);
+        PaymentMethod payment = new(cardType, alias, cardNumber, securityNumber, cardHolderName, expiration);
 
         this._paymentMethods.Add(payment);
 

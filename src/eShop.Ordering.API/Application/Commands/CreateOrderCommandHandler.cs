@@ -1,6 +1,7 @@
 namespace eShop.Ordering.API.Application.Commands;
 
 using eShop.Ordering.API.Application.Specifications;
+using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
@@ -21,7 +22,7 @@ public class CreateOrderCommandHandler(
     public async Task<bool> Handle(CreateOrderCommand message, CancellationToken cancellationToken)
     {
         // Add Integration event to clean the basket
-        var orderStartedIntegrationEvent = new OrderStartedIntegrationEvent(message.UserId!);
+        OrderStartedIntegrationEvent orderStartedIntegrationEvent = new(message.UserId!);
         await this._orderingIntegrationEventService.AddAndSaveEventAsync(orderStartedIntegrationEvent, cancellationToken);
 
         CardType cardType = await this._cardTypeRepository.SingleOrDefaultAsync(new CardTypeSpecification(message.CardType), cancellationToken)
@@ -30,7 +31,7 @@ public class CreateOrderCommandHandler(
         Order order = new(message.UserId!, message.UserName!, address,
             cardType, message.CardNumber!, message.CardSecurityNumber!, message.CardHolderName!, message.CardExpiration);
 
-        foreach (var item in message.OrderItems)
+        foreach (OrderItemDto item in message.OrderItems)
         {
             order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, item.Discount, item.PictureUrl, item.Units);
         }

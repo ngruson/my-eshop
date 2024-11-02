@@ -2,36 +2,34 @@ namespace eShop.Identity.API.Services;
 
 public class ProfileService(UserManager<ApplicationUser> userManager) : IProfileService
 {
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
-
     public async Task GetProfileDataAsync(ProfileDataRequestContext context)
     {
-        var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
+        ArgumentNullException.ThrowIfNull(context.Subject, nameof(context.Subject));        
 
-        var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
+        string? subjectId = context.Subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
 
-        var user = await this._userManager.FindByIdAsync(subjectId!) ?? throw new ArgumentException("Invalid subject identifier");
-        var claims = this.GetClaimsFromUser(user);
+        ApplicationUser user = await userManager.FindByIdAsync(subjectId!) ?? throw new ArgumentException("Invalid subject identifier");
+        List<Claim> claims = this.GetClaimsFromUser(user);
         context.IssuedClaims = [.. claims];
     }
 
     public async Task IsActiveAsync(IsActiveContext context)
     {
-        var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
+        ArgumentNullException.ThrowIfNull(context.Subject, nameof(context.Subject));
 
-        var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
-        var user = await this._userManager.FindByIdAsync(subjectId!);
+        string? subjectId = context.Subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
+        ApplicationUser? user = await userManager.FindByIdAsync(subjectId!);
 
         context.IsActive = false;
 
         if (user != null)
         {
-            if (this._userManager.SupportsUserSecurityStamp)
+            if (userManager.SupportsUserSecurityStamp)
             {
-                var security_stamp = subject.Claims.Where(c => c.Type == "security_stamp").Select(c => c.Value).SingleOrDefault();
+                string? security_stamp = context.Subject.Claims.Where(c => c.Type == "security_stamp").Select(c => c.Value).SingleOrDefault();
                 if (security_stamp != null)
                 {
-                    var db_security_stamp = await this._userManager.GetSecurityStampAsync(user);
+                    string db_security_stamp = await userManager.GetSecurityStampAsync(user);
                     if (db_security_stamp != security_stamp)
                         return;
                 }
@@ -46,16 +44,16 @@ public class ProfileService(UserManager<ApplicationUser> userManager) : IProfile
 
     private List<Claim> GetClaimsFromUser(ApplicationUser user)
     {
-        var claims = new List<Claim>
-        {
+        List<Claim> claims =
+        [
             new(JwtClaimTypes.Subject, user.Id),
             new(JwtClaimTypes.PreferredUserName, user.UserName!),
             new(JwtRegisteredClaimNames.UniqueName, user.UserName!),
-            new(JwtClaimTypes.GivenName, user.FirstName),
-            new(JwtClaimTypes.FamilyName, user.LastName)
-        };
+            new(JwtClaimTypes.GivenName, user.FirstName!),
+            new(JwtClaimTypes.FamilyName, user.LastName!)
+        ];
 
-        if (this._userManager.SupportsUserEmail)
+        if (userManager.SupportsUserEmail)
         {
             claims.AddRange(
             [
@@ -64,7 +62,7 @@ public class ProfileService(UserManager<ApplicationUser> userManager) : IProfile
             ]);
         }
 
-        if (this._userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
+        if (userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
         {
             claims.AddRange(
             [
