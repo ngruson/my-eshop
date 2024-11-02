@@ -5,10 +5,13 @@ namespace eShop.Identity.API.Quickstart.Home;
 
 public class ErrorViewModel
 {
+    public ErrorViewModel()
+    {
+    }
     public ErrorViewModel(string error)
     {
         this.Error = new ErrorMessage { Error = error };
     }
 
-    public ErrorMessage Error { get; set; }
+    public ErrorMessage? Error { get; set; }
 }
