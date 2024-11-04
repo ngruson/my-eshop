@@ -46,6 +46,43 @@ public class OrderingApiClientUnitTests
         }
     }
 
+    public class GetOrder
+    {
+        [Theory, AutoNSubstituteData]
+        public async Task return_order(
+            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] DaprClient daprClient,
+            OrderingApiClient.Dapr.OrderingApiClient sut,
+            Ordering.Contracts.GetOrder.OrderDto order,
+            HttpRequestMessage httpRequestMessage,
+            string accessToken
+        )
+        {
+            // Arrange
+
+            accessTokenAccessor.GetAccessTokenAsync()
+                .Returns(accessToken);
+
+            daprClient.CreateInvokeMethodRequest(
+                HttpMethod.Get,
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<IReadOnlyCollection<KeyValuePair<string, string>>>())
+            .Returns(httpRequestMessage);
+
+            daprClient.InvokeMethodAsync<Ordering.Contracts.GetOrder.OrderDto>(httpRequestMessage)
+                .Returns(order);
+
+            // Act
+
+            Ordering.Contracts.GetOrder.OrderDto actual = await sut.GetOrder(order.ObjectId);
+
+            // Assert
+
+            Assert.Equal(actual, order);
+        }
+    }
+
     public class CreateOrder
     {
         [Theory, AutoNSubstituteData]
@@ -75,6 +112,42 @@ public class OrderingApiClientUnitTests
             // Act
 
             await sut.CreateOrder(requestId, dto);
+
+            // Assert
+
+            await daprClient.Received().InvokeMethodAsync(httpRequestMessage);
+        }
+    }
+
+    public class UpdateOrder
+    {
+        [Theory, AutoNSubstituteData]
+        public async Task update_order(
+            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] DaprClient daprClient,
+            OrderingApiClient.Dapr.OrderingApiClient sut,
+            Guid requestId,
+            Ordering.Contracts.UpdateOrder.OrderDto dto,
+            HttpRequestMessage httpRequestMessage,
+            string accessToken
+        )
+        {
+            // Arrange
+
+            accessTokenAccessor.GetAccessTokenAsync()
+                .Returns(accessToken);
+
+            daprClient.CreateInvokeMethodRequest(
+                HttpMethod.Put,
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<IReadOnlyCollection<KeyValuePair<string, string>>>(),
+                dto)
+            .Returns(httpRequestMessage);
+
+            // Act
+
+            await sut.UpdateOrder(requestId, dto);
 
             // Assert
 
