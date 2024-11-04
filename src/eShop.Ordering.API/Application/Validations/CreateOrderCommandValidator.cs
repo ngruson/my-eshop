@@ -1,3 +1,4 @@
+using eShop.Ordering.API.Application.Commands.CreateOrder;
 using eShop.Ordering.Contracts.CreateOrder;
 
 namespace eShop.Ordering.API.Application.Validations;

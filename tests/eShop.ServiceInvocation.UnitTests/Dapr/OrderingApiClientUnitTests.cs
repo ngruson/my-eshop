@@ -1,13 +1,9 @@
-using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Contracts.GetCardTypes;
-using eShop.Ordering.Contracts.GetOrders;
-using eShop.Ordering.Contracts;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using NSubstitute;
 using eShop.Shared.Auth;
 using Dapr.Client;
-using eShop.MasterData.Contracts;
 
 namespace eShop.ServiceInvocation.UnitTests.Dapr;
 
@@ -20,7 +16,7 @@ public class OrderingApiClientUnitTests
             [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
             [Substitute, Frozen] DaprClient daprClient,
             OrderingApiClient.Dapr.OrderingApiClient sut,
-            OrderDto[] orders,
+            Ordering.Contracts.GetOrders.OrderDto[] orders,
             HttpRequestMessage httpRequestMessage,
             string accessToken
         )
@@ -37,12 +33,12 @@ public class OrderingApiClientUnitTests
                 Arg.Any<IReadOnlyCollection<KeyValuePair<string, string>>>())
             .Returns(httpRequestMessage);
 
-            daprClient.InvokeMethodAsync<OrderDto[]>(httpRequestMessage)
+            daprClient.InvokeMethodAsync<Ordering.Contracts.GetOrders.OrderDto[]>(httpRequestMessage)
                 .Returns(orders);
 
             // Act
 
-            OrderDto[] actual = await sut.GetOrders();
+            Ordering.Contracts.GetOrders.OrderDto[] actual = await sut.GetOrders();
 
             // Assert
 
@@ -58,7 +54,7 @@ public class OrderingApiClientUnitTests
             [Substitute, Frozen] DaprClient daprClient,
             OrderingApiClient.Dapr.OrderingApiClient sut,
             Guid requestId,
-            CreateOrderDto dto,
+            Ordering.Contracts.CreateOrder.OrderDto dto,
             HttpRequestMessage httpRequestMessage,
             string accessToken
         )
@@ -86,14 +82,14 @@ public class OrderingApiClientUnitTests
         }
     }
 
-    public class GetCardTypes
+    public class DeleteOrder
     {
         [Theory, AutoNSubstituteData]
-        public async Task return_cardTypes(
+        public async Task delete_order(
             [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
             [Substitute, Frozen] DaprClient daprClient,
             OrderingApiClient.Dapr.OrderingApiClient sut,
-            CardTypeDto[] cardTypes,
+            Guid objectId,
             HttpRequestMessage httpRequestMessage,
             string accessToken
         )
@@ -104,22 +100,56 @@ public class OrderingApiClientUnitTests
                 .Returns(accessToken);
 
             daprClient.CreateInvokeMethodRequest(
-                HttpMethod.Get,
+                HttpMethod.Delete,
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<IReadOnlyCollection<KeyValuePair<string, string>>>())
             .Returns(httpRequestMessage);
 
-            daprClient.InvokeMethodAsync<CardTypeDto[]>(httpRequestMessage)
-                .Returns(cardTypes);
-
             // Act
 
-            CardTypeDto[] actual = await sut.GetCardTypes();
+            await sut.DeleteOrder(objectId);
 
             // Assert
 
-            Assert.Equal(actual, cardTypes);
+            await daprClient.Received().InvokeMethodAsync(httpRequestMessage);
+        }
+
+        public class GetCardTypes
+        {
+            [Theory, AutoNSubstituteData]
+            public async Task return_cardTypes(
+                [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+                [Substitute, Frozen] DaprClient daprClient,
+                OrderingApiClient.Dapr.OrderingApiClient sut,
+                HttpRequestMessage httpRequestMessage,
+                string accessToken,
+                CardTypeDto[] cardTypes
+            )
+            {
+                // Arrange
+
+                accessTokenAccessor.GetAccessTokenAsync()
+                    .Returns(accessToken);
+
+                daprClient.CreateInvokeMethodRequest(
+                    HttpMethod.Get,
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<IReadOnlyCollection<KeyValuePair<string, string>>>())
+                .Returns(httpRequestMessage);
+
+                daprClient.InvokeMethodAsync<CardTypeDto[]>(httpRequestMessage)
+                    .Returns(cardTypes);
+
+                // Act
+
+                CardTypeDto[] actual = await sut.GetCardTypes();
+
+                // Assert
+
+                Assert.Equal(actual, cardTypes);
+            }
         }
     }
 }

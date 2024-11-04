@@ -1,0 +1,42 @@
+@page "/order/{objectId:guid}"
+@using MediatR
+@using eShop.AdminApp.Application.Queries.Order.GetOrder
+@inject IMediator Mediator
+
+<PageTitle>@($"Order {Order?.OrderNumber}")</PageTitle>
+
+<FluentBreadcrumb Class="tw-ml-8 tw-mt-2">
+    <FluentBreadcrumbItem Href="/orders">
+        Orders
+    </FluentBreadcrumbItem>
+    <FluentBreadcrumbItem>
+        @($"Order {Order?.OrderNumber}")
+    </FluentBreadcrumbItem>
+</FluentBreadcrumb>
+
+<div class="tw-container tw-p-8">    
+    <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
+        <h3 class="tw-text-2xl tw-font-medium">@($"Order {Order?.OrderNumber}")</h3>
+    </div>    
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="20" Class="tw-w-full">
+        <div class="tw-w-2/4 tw-h-full">
+            <OrderCard Order="@Order" />
+        </div>
+        <div class="tw-w-2/4">
+            <OrderAddressCard Order="@Order" />
+        </div>
+    </FluentStack>
+    <OrderItemsCard Order="@Order" />
+</div>
+
+@code {
+    [Parameter]
+    public Guid ObjectId { get; set; } = default!;
+
+    private OrderViewModel? Order { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Order = await Mediator.Send(new GetOrderQuery(ObjectId));
+    }
+}

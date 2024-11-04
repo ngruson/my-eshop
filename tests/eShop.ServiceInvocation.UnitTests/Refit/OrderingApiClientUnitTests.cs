@@ -16,7 +16,7 @@ public class OrderingApiClientUnitTests
         public async Task return_orders(
             [Substitute, Frozen] IOrderingApi orderingApi,
             OrderingApiClient.Refit.OrderingApiClient sut,
-            OrderDto[] orders
+            Ordering.Contracts.GetOrders.OrderDto[] orders
         )
         {
             // Arrange
@@ -25,7 +25,7 @@ public class OrderingApiClientUnitTests
 
             // Act
 
-            OrderDto[] actual = await sut.GetOrders();
+            Ordering.Contracts.GetOrders.OrderDto[] actual = await sut.GetOrders();
 
             // Assert
 
@@ -40,7 +40,7 @@ public class OrderingApiClientUnitTests
             [Substitute, Frozen] IOrderingApi orderingApi,
             OrderingApiClient.Refit.OrderingApiClient sut,
             Guid requestId,
-            CreateOrderDto request
+            Ordering.Contracts.CreateOrder.OrderDto request
         )
         {
             // Arrange
@@ -52,6 +52,26 @@ public class OrderingApiClientUnitTests
             // Assert
 
             await orderingApi.Received().CreateOrder(requestId, request);
+        }
+    }
+
+    public class DeleteOrder
+    {
+        [Theory, AutoNSubstituteData]
+        public async Task return_orders(
+            [Substitute, Frozen] IOrderingApi orderingApi,
+            OrderingApiClient.Refit.OrderingApiClient sut,
+            Guid objectId
+        )
+        {
+            // Arrange
+
+            // Act
+            await sut.DeleteOrder(objectId);
+
+            // Assert
+
+            await orderingApi.Received().DeleteOrder(objectId);
         }
     }
 

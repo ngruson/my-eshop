@@ -23,7 +23,7 @@ public class OrderQueriesUnitTests
 
             // Act
 
-            Order result = await sut.GetOrderAsync(order.Id);
+            Order result = await sut.GetOrderAsync(order.ObjectId);
 
             // Assert
 
@@ -41,7 +41,7 @@ public class OrderQueriesUnitTests
 
             // Act
 
-            async Task func() => await sut.GetOrderAsync(order.Id);
+            async Task func() => await sut.GetOrderAsync(order.ObjectId);
 
             // Assert
 

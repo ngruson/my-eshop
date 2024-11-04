@@ -1,5 +1,6 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using eShop.Ordering.API.Application.Commands.CreateOrder;
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;

@@ -1,3 +1,4 @@
+using eShop.Ordering.API.Application.Commands.CreateOrder;
 using eShop.Ordering.API.Application.Validations;
 using eShop.Ordering.Contracts.CreateOrder;
 using FluentValidation.TestHelper;

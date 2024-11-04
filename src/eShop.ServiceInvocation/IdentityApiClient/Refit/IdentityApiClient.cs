@@ -9,4 +9,9 @@ public class IdentityApiClient(IIdentityApi identityApi) : IIdentityApiClient
     {
         return await identityApi.GetUsers();
     }
+
+    public async Task<Identity.Contracts.GetUser.UserDto> GetUser(string name)
+    {
+        return await identityApi.GetUser(name);
+    }
 }

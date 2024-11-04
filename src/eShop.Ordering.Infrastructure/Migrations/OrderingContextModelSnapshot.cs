@@ -301,7 +301,6 @@ namespace Ordering.Infrastructure.Migrations
                                 .HasColumnType("text");
 
                             b1.Property<string>("State")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("Street")

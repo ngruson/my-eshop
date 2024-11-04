@@ -1,5 +1,6 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using eShop.Ordering.API.Application.Commands.SetAwaitingValidationOrderStatus;
 using eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 using eShop.Ordering.API.Application.IntegrationEvents.Events;
 

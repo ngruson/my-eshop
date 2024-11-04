@@ -3,8 +3,10 @@ using System.Globalization;
 
 namespace eShop.AdminApp.Application.Queries.Order.GetOrders;
 
-internal class OrderViewModel(string orderNumber, DateTime orderDate, string buyerName, string orderStatus, decimal total)
+internal class OrderViewModel(Guid objectId, string orderNumber, DateTime orderDate, string buyerName, string orderStatus, decimal total)
 {
+    public Guid ObjectId { get; set; } = objectId;
+
     [Display(Name = "Order Number")]
     public string OrderNumber { get; private init; } = orderNumber;
 

@@ -1,3 +1,5 @@
+using eShop.Ordering.API.Application.Commands.SetStockConfirmedOrderStatus;
+
 namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
 public class OrderStockConfirmedIntegrationEventHandler(

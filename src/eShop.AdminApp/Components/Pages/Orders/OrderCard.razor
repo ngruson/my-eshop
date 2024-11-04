@@ -1,0 +1,66 @@
+@using MediatR
+@using eShop.AdminApp.Application.Queries.Order.GetOrder
+@inject IMediator Mediator
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+
+<h4>Order</h4>
+@if (editContext is not null)
+{
+    <EditForm EditContext="@editContext">
+        <DataAnnotationsValidator />
+        <FluentCard Height="100%">
+            <div>
+                <FluentTextField Label="Order Number" @bind-Value="@Order!.OrderNumber" ReadOnly="true" Appearance="FluentInputAppearance.Filled" />
+            </div>
+            <div>
+                <FluentTextField Label="Order Date" @bind-Value="@Order!.OrderDate" ReadOnly="true" Appearance="@FluentInputAppearance.Filled" />
+            </div>
+            <div>
+                <FluentTextField Label="Status" @bind-Value="@Order!.OrderStatus" ReadOnly="true" Appearance="@FluentInputAppearance.Filled" />
+            </div>
+            <div>
+                <FluentTextField Label="Total" @bind-Value="@Order!.Total" ReadOnly="true" Appearance="@FluentInputAppearance.Filled" />
+            </div>
+        </FluentCard>
+    </EditForm>
+}
+else
+{
+    <FluentProgressRing></FluentProgressRing>
+    <FluentLabel>Loading...</FluentLabel>
+}
+
+@code {
+    [Parameter]
+    public OrderViewModel? Order { get; set; }
+
+    private EditContext? editContext { get; set; }
+    private ValidationMessageStore? messageStore;
+    private bool isEditing;
+    private string buttonText = "Update";
+    private FluentInputAppearance textFieldAppearance = FluentInputAppearance.Filled;
+    private Appearance selectListAppearance = Appearance.Filled;
+
+    protected override void OnParametersSet()
+    {
+        if (Order is not null)
+        {
+            if (Order.ObjectId == Guid.Empty)
+            {
+                buttonText = "Add";
+                ToggleEdit();
+            }
+
+            editContext = new EditContext(Order);
+            messageStore = new(editContext);
+        }
+    }
+
+    private void ToggleEdit()
+    {
+        isEditing = !isEditing;
+        textFieldAppearance = isEditing ? FluentInputAppearance.Outline : FluentInputAppearance.Filled;
+        selectListAppearance = isEditing ? Appearance.Outline : Appearance.Filled;
+    }
+}

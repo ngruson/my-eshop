@@ -13,9 +13,9 @@ public class OrderQueries(
     private readonly IRepository<OrderAggregate.Order> orderRepository = orderRepository;
     private readonly IRepository<CardType> cardTypeRepository = cardTypeRepository;
 
-    public async Task<Order> GetOrderAsync(int id)
+    public async Task<Order> GetOrderAsync(Guid objectId)
     {
-        OrderAggregate.Order order = await this.orderRepository.SingleOrDefaultAsync(new GetOrderSpecification(id))
+        OrderAggregate.Order order = await this.orderRepository.SingleOrDefaultAsync(new GetOrderSpecification(objectId))
             ?? throw new KeyNotFoundException();
 
         return new Order

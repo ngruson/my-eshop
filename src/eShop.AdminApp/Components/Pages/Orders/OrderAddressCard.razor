@@ -1,0 +1,172 @@
+@using MediatR
+@using eShop.AdminApp.Application.Commands.Order.UpdateOrder
+@using eShop.AdminApp.Application.Queries.Order.GetOrder
+@using eShop.MasterData.Contracts
+@using eShop.ServiceInvocation.MasterDataApiClient
+@inject IMasterDataApiClient MasterDataService
+@inject IMediator Mediator
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+
+<FluentStack Orientation="Orientation.Horizontal">
+    <div class="tw-w-11/12">
+        <h4>Address</h4>
+    </div>
+    <div class="tw-w-1/12">
+        @if (Order?.ObjectId != Guid.Empty)
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.Edit())" Class="tw-mx-auto" OnClick="ToggleEdit" />
+        }
+    </div>
+</FluentStack>
+@if (editContext is not null)
+{
+    <EditForm EditContext="@editContext">
+        <DataAnnotationsValidator />
+        <FluentCard>
+            <div>
+                <FluentTextField Label="Buyer" @bind-Value="@Order!.BuyerName" ReadOnly="true" Appearance="FluentInputAppearance.Filled" />
+            </div>
+            <div>
+                <FluentTextField Label="Street" @bind-Value="@Order!.Address.Street" ReadOnly="@(!isEditing)" Appearance="@textFieldAppearance" />
+                <FluentValidationMessage For="@(() => Order.Address.Street)" />
+            </div>
+            <div>
+                <FluentTextField Label="City" @bind-Value="@Order!.Address.City" ReadOnly="@(!isEditing)" Appearance="@textFieldAppearance" />
+                <FluentValidationMessage For="@(() => Order.Address.City)" />
+            </div>
+            <div>
+                <FluentTextField Label="Zip Code" @bind-Value="@Order!.Address.ZipCode" ReadOnly="@(!isEditing)" Appearance="@textFieldAppearance" />
+                <FluentValidationMessage For="@(() => Order.Address.ZipCode)" />
+            </div>            
+            <div>
+                <FluentSelect Appearance="@selectListAppearance"
+                              Height="250px"
+                              Items=@GetCountryOptions()
+                              Name="country"
+                              Label="Country"
+                              TOption="Option<string>"
+                              OptionText="@(_ => _.Text)"
+                              OptionValue="@(_ => _.Value)"
+                              OptionSelected="@(i => i.Value == Order.Address.Country)"
+                              Position="SelectPosition.Above"
+                              ReadOnly="@(!isEditing)"
+                              Disabled="@(!isEditing)"
+                              SelectedOptionChanged="CountryValueChanged"
+                              @bind-Value="Order.Address.Country" />
+                <FluentValidationMessage For="@(() => Order.Address.Country)" />
+            </div>
+            <div>
+                <FluentSelect Appearance="@selectListAppearance"
+                              Height="250px"
+                              Items=@GetStatesOptions()
+                              Name="state"
+                              Label="State"
+                              Disabled="@(Order.Address.Country != "US" || !isEditing)"
+                              TOption="Option<string>"
+                              OptionText="@(_ => _.Text)"
+                              OptionValue="@(_ => _.Value)"
+                              OptionSelected="@(i => i.Value == Order.Address.State)"
+                              Position="SelectPosition.Above"
+                              ReadOnly="@(!isEditing)"
+                              @bind-Value="Order.Address.State" />
+                <FluentValidationMessage For="@(() => Order.Address.State)" />
+            </div>
+            <div class="tw-mt-4">
+                <FluentButton Appearance="Appearance.Accent" Disabled="@(!isEditing)" Type="ButtonType.Submit" OnClick="SaveChanges">@buttonText</FluentButton>
+                <FluentButton Appearance="Appearance.Outline" Disabled="@(!isEditing)" OnClick="ToggleEdit">Cancel</FluentButton>
+            </div>
+        </FluentCard>
+    </EditForm>
+}
+else
+{
+    <FluentProgressRing></FluentProgressRing>
+    <FluentLabel>Loading...</FluentLabel>
+}
+
+@code {
+    [Parameter]
+    public OrderViewModel? Order { get; set; }
+
+    private IEnumerable<CountryDto> countries = Array.Empty<CountryDto>();
+    private IEnumerable<StateDto> states = Array.Empty<StateDto>();
+
+    private EditContext? editContext { get; set; }
+    private ValidationMessageStore? messageStore;
+    private bool isEditing;
+    private string buttonText = "Update";
+    private FluentInputAppearance textFieldAppearance = FluentInputAppearance.Filled;
+    private Appearance selectListAppearance = Appearance.Filled;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        this.countries = await MasterDataService.GetCountries();
+        this.states = await MasterDataService.GetStates();
+
+        if (Order is not null)
+        {
+            if (Order.ObjectId == Guid.Empty)
+            {
+                buttonText = "Add";
+                ToggleEdit();
+            }
+
+            editContext = new EditContext(Order);
+            messageStore = new(editContext);
+        }
+    }
+
+    private void ToggleEdit()
+    {
+        isEditing = !isEditing;
+        textFieldAppearance = isEditing ? FluentInputAppearance.Outline : FluentInputAppearance.Filled;
+        selectListAppearance = isEditing ? Appearance.Outline : Appearance.Filled;
+    }
+
+    private void SaveChanges()
+    {
+        UpdateOrderCommand command = Order!.Map();
+        Mediator.Send(command);
+        ToggleEdit();
+        ToastService.ShowToast(ToastIntent.Success, "Order updated successfully");
+    }
+
+    private List<Option<string>> GetCountryOptions()
+    {
+        return this.countries.Select(_ => new Option<string>
+            {
+                Text = _.Name,
+                Value = _.Code
+            }).ToList();
+    }
+
+    private void CountryValueChanged(Option<string> option)
+    {
+        if (option is null)
+            return;
+
+        if (option.Value != "US")
+        {
+            Order!.Address.State = null;
+        }
+    }
+
+    private List<Option<string>> GetStatesOptions()
+    {
+        if (Order!.Address.Country != "US")
+        {
+            return new List<Option<string>>();
+        }
+
+        List<Option<string>> options = this.states.Select(_ => new Option<string>
+            {
+                Text = _.Name,
+                Value = _.Code
+            }).ToList();
+
+        options.Insert(0, new Option<string> { Text = "Select a state", Value = "" });
+
+        return options;
+    }
+}

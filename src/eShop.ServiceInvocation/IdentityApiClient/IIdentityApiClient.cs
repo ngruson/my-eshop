@@ -1,8 +1,7 @@
-using eShop.Identity.Contracts.GetUsers;
-
 namespace eShop.ServiceInvocation.IdentityApiClient;
 
 public interface IIdentityApiClient
 {
-    Task<UserDto[]> GetUsers();
+    Task<Identity.Contracts.GetUsers.UserDto[]> GetUsers();
+    Task<Identity.Contracts.GetUser.UserDto> GetUser(string name);
 }

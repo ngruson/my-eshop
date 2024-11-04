@@ -1,9 +1,14 @@
 using Ardalis.Result.AspNetCore;
+using eShop.Ordering.API.Application.Commands.CancelOrder;
+using eShop.Ordering.API.Application.Commands.CreateOrder;
+using eShop.Ordering.API.Application.Commands.CreateOrderDraft;
+using eShop.Ordering.API.Application.Commands.ShipOrder;
+using eShop.Ordering.API.Application.Commands.UpdateOrder;
+using eShop.Ordering.API.Application.Queries.GetOrder;
 using eShop.Ordering.API.Application.Queries.GetOrders;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Contracts.GetCardTypes;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Order = eShop.Ordering.API.Application.Queries.Order;
 
 namespace eShop.Ordering.API.Apis;
 
@@ -20,11 +25,18 @@ public static class OrdersApi
             (await mediator.Send(new GetOrdersQuery()))
                 .ToMinimalApiResult());
 
-        api.MapGet("{orderId:int}", GetOrderAsync);
+        api.MapGet("/{objectId}", async (Guid objectId, [FromServices] IMediator mediator) =>
+            (await mediator.Send(new GetOrderQuery(objectId)))
+                .ToMinimalApiResult());
+
         api.MapGet("/", GetOrdersByUserAsync);
         api.MapGet("/cardTypes", GetCardTypesAsync);
         api.MapPost("/draft", CreateOrderDraftAsync);
         api.MapPost("/", CreateOrderAsync);
+
+        api.MapPut("/{objectId}", async (Guid objectId, [FromBody] Contracts.UpdateOrder.OrderDto dto, [FromServices] IMediator mediator) =>
+            (await mediator.Send(new UpdateOrderCommand(objectId, dto)))
+                .ToMinimalApiResult());
 
         return api;
     }
@@ -87,19 +99,6 @@ public static class OrdersApi
         return TypedResults.Ok();
     }
 
-    public static async Task<Results<Ok<Order>, NotFound>> GetOrderAsync(int orderId, [AsParameters] OrderServices services)
-    {
-        try
-        {
-            Order order = await services.Queries.GetOrderAsync(orderId);
-            return TypedResults.Ok(order);
-        }
-        catch
-        {
-            return TypedResults.NotFound();
-        }
-    }
-
     public static async Task<Ok<IEnumerable<OrderSummary>>> GetOrdersByUserAsync([AsParameters] OrderServices services)
     {
         string? userId = services.IdentityService.GetUserIdentity();
@@ -127,7 +126,7 @@ public static class OrdersApi
 
     public static async Task<Results<Ok, BadRequest<string>>> CreateOrderAsync(
         [FromHeader(Name = "x-requestid")] Guid requestId,
-        CreateOrderDto request,
+        OrderDto request,
         [AsParameters] OrderServices services)
     {
 
