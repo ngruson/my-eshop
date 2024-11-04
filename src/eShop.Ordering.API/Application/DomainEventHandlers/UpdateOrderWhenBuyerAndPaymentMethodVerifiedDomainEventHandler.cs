@@ -15,7 +15,7 @@ public class UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler(
     public async Task Handle(BuyerAndPaymentMethodVerifiedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate = await this._orderRepository.GetByIdAsync(domainEvent.OrderId, cancellationToken);
-        orderToUpdate!.SetPaymentMethodVerified(domainEvent.Buyer.Id, domainEvent.Payment.Id); 
+        orderToUpdate!.SetPaymentMethodVerified(domainEvent.Buyer.Id, domainEvent.Payment.Id);
         OrderingApiTrace.LogOrderPaymentMethodUpdated(this._logger, domainEvent.OrderId, nameof(domainEvent.Payment), domainEvent.Payment.Id);
     }
 }

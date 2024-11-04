@@ -8,6 +8,7 @@ internal static class MapperExtensions
     {
         return orders
             .Select(o => new OrderDto(
+                o.ObjectId,
                 o.Id.ToString(),
                 o.OrderDate,
                 o.Buyer?.Name!,

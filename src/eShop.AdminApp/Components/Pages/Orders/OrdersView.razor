@@ -1,7 +1,11 @@
 @page "/orders"
 @using MediatR
+@using eShop.AdminApp.Application.Commands.Customer.DeleteCustomer
+@using eShop.AdminApp.Application.Commands.Order.DeleteOrder
 @using eShop.AdminApp.Application.Queries.Order.GetOrders
 @inject IMediator Mediator
+@inject IDialogService DialogService
+@inject NavigationManager Navigation
 
 <PageTitle>Orders</PageTitle>
 
@@ -10,7 +14,15 @@
         <h3 class="tw-text-2xl tw-font-medium">Orders</h3>
     </div>
     <div>
+        <FluentCheckbox Label="Show deleted" @bind-Value="includeDeleted" @bind-Value:after="@(() => GetOrders())" />
         <FluentDataGrid Items="@orders" ShowHover="true">
+            <SelectColumn TGridItem="OrderViewModel"
+                          SelectMode="DataGridSelectMode.Multiple"
+                          SelectFromEntireRow="false"
+                          @bind-SelectedItems="@SelectedItems" />
+            <TemplateColumn>
+                <FluentIcon Title="Order Detail" Value="@(new Icons.Regular.Size16.ArrowCircleRight())" OnClick="() => NavigateToOrder(context.ObjectId)" />
+            </TemplateColumn>
             <PropertyColumn Property="@(p => p.OrderNumber)" Sortable="true" />
             <PropertyColumn Property="@(p => p.OrderDate)" Format="yyyy-MM-dd" Sortable="true" />
             <PropertyColumn Property="@(p => p.BuyerName)" Sortable="true" />
@@ -22,10 +34,45 @@
 
 @code {
     private IQueryable<OrderViewModel>? orders;
+    private IEnumerable<OrderViewModel> SelectedItems = [];
+    private bool includeDeleted;
 
     protected override async Task OnInitializedAsync()
     {
+        await GetOrders();
+    }
+
+    private async Task GetOrders()
+    {
         this.orders = (await Mediator.Send(new GetOrdersQuery()))
             .Value.AsQueryable();
+    }
+
+    private void AddOrder()
+    {
+        Navigation.NavigateTo("/order/new");
+    }
+
+    private void NavigateToOrder(Guid objectId) => Navigation.NavigateTo($"/order/{objectId}");
+
+    private async Task DeleteCustomers()
+    {
+        if (SelectedItems.Any())
+        {
+            IDialogReference dialog = await DialogService.ShowConfirmationAsync(
+                "Are you sure you want to delete the selected orders?",
+                "Yes", "No",
+                "Delete Orders");
+            DialogResult dialogResult = await dialog.Result;
+
+            if (dialogResult.Cancelled == false)
+            {
+                foreach (OrderViewModel order in SelectedItems)
+                {
+                    await Mediator.Send(new DeleteOrderCommand(order.ObjectId));
+                }
+                await GetOrders();
+            }
+        }
     }
 }

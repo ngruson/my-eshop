@@ -1,3 +1,5 @@
+using eShop.Ordering.API.Application.Commands.CancelOrder;
+
 namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
 public class OrderPaymentFailedIntegrationEventHandler(

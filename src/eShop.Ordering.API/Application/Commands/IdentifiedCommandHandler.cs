@@ -1,3 +1,7 @@
+using eShop.Ordering.API.Application.Commands.CancelOrder;
+using eShop.Ordering.API.Application.Commands.CreateOrder;
+using eShop.Ordering.API.Application.Commands.ShipOrder;
+
 namespace eShop.Ordering.API.Application.Commands;
 
 /// <summary>

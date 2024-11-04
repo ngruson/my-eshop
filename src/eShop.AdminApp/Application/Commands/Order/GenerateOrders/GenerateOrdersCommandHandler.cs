@@ -78,7 +78,7 @@ internal partial class GenerateOrdersCommandHandler(
                         $"{this.catalogApiUrl}/api/catalog/items/{catalogItem.ObjectId}/pic");
                 }
 
-                CreateOrderDto order = new(
+                OrderDto order = new(
                     UserId: user.Id,
                     UserName: user.UserName,
                     City: customer.City!,

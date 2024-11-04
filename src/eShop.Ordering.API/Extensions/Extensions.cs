@@ -1,5 +1,8 @@
 using eShop.EventBus.Dapr;
 using eShop.EventBusRabbitMQ;
+using eShop.Ordering.API.Application.Commands.CancelOrder;
+using eShop.Ordering.API.Application.Commands.CreateOrder;
+using eShop.Ordering.API.Application.Commands.ShipOrder;
 using eShop.Ordering.Infrastructure.Repositories;
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;

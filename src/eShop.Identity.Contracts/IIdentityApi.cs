@@ -1,5 +1,4 @@
 using eShop.Identity.Contracts.CreateUser;
-using eShop.Identity.Contracts.GetUsers;
 using Refit;
 
 namespace eShop.Identity.Contracts;
@@ -7,7 +6,10 @@ namespace eShop.Identity.Contracts;
 public interface IIdentityApi
 {
     [Get("/api/user?api-version=1.0")]
-    Task<UserDto[]> GetUsers();
+    Task<GetUsers.UserDto[]> GetUsers();
+
+    [Get("/api/user/{name}?api-version=1.0")]
+    Task<GetUser.UserDto> GetUser(string name);
 
     [Post("/api/user?api-version=1.0")]
     Task CreateUser([Body] CreateUserDto dto);

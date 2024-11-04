@@ -1,8 +1,6 @@
 using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
-using eShop.AdminApp.Application.Queries.Order.GetOrders;
-using eShop.Ordering.Contracts;
 using eShop.Ordering.Contracts.GetOrders;
 using eShop.ServiceInvocation.OrderingApiClient;
 using NSubstitute;
@@ -13,10 +11,10 @@ namespace eShop.AdminApp.UnitTests.Application.Queries;
 public class GetOrdersQueryUnitTests
 {
     [Theory, AutoNSubstituteData]
-    internal async Task ReturnSuccessWhenCustomerCreated(
-        GetOrdersQuery query,
+    internal async Task return_success_when_orders_exist(
+        AdminApp.Application.Queries.Order.GetOrders.GetOrdersQuery query,
         [Substitute, Frozen] IOrderingApiClient orderingApiClient,
-        GetOrdersQueryHandler sut,
+        AdminApp.Application.Queries.Order.GetOrders.GetOrdersQueryHandler sut,
         OrderDto[] orders)
     {
         // Arrange
@@ -26,7 +24,8 @@ public class GetOrdersQueryUnitTests
 
         // Act
 
-        Result<List<OrderViewModel>> result = await sut.Handle(query, CancellationToken.None);
+        Result<List<AdminApp.Application.Queries.Order.GetOrders.OrderViewModel>> result =
+            await sut.Handle(query, CancellationToken.None);
 
         // Assert
 
@@ -36,10 +35,10 @@ public class GetOrdersQueryUnitTests
     }
 
     [Theory, AutoNSubstituteData]
-    internal async Task ReturnErrorWhenExceptionIsThrown(
-        GetOrdersQuery query,
+    internal async Task return_error_when_exception_is_thrown(
+        AdminApp.Application.Queries.Order.GetOrders.GetOrdersQuery query,
         [Substitute, Frozen] IOrderingApiClient orderingApiClient,
-        GetOrdersQueryHandler sut)
+        AdminApp.Application.Queries.Order.GetOrders.GetOrdersQueryHandler sut)
     {
         // Arrange
 
@@ -48,7 +47,8 @@ public class GetOrdersQueryUnitTests
 
         // Act
 
-        Result<List<OrderViewModel>> result = await sut.Handle(query, CancellationToken.None);
+        Result<List<AdminApp.Application.Queries.Order.GetOrders.OrderViewModel>> result =
+            await sut.Handle(query, CancellationToken.None);
 
         // Assert
 

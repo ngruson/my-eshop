@@ -94,7 +94,7 @@ public class BasketState(
             _.ProductId, _.ProductName, _.UnitPrice, 0, _.Quantity, _.PictureUrl));
 
         // Call into Ordering.API to create the order using those details
-        CreateOrderDto request = new(
+        OrderDto request = new(
             UserId: buyerId,
             UserName: userName,
             City: checkoutInfo.City!,

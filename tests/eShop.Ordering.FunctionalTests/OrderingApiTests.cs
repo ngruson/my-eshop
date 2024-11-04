@@ -4,10 +4,13 @@ using System.Text;
 using System.Text.Json;
 using Asp.Versioning;
 using Asp.Versioning.Http;
-using eShop.Ordering.API.Application.Commands;
+using eShop.Ordering.API.Application.Commands.CancelOrder;
+using eShop.Ordering.API.Application.Commands.CreateOrderDraft;
+using eShop.Ordering.API.Application.Commands.ShipOrder;
 using eShop.Ordering.API.Application.Queries;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Contracts.GetCardTypes;
+using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace eShop.Ordering.FunctionalTests;
@@ -119,12 +122,14 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    [Fact]
-    public async Task GetStoredOrdersWithOrderId()
+    [Theory, AutoNSubstituteData]
+    public async Task GetStoredOrdersWithOrderId(Contracts.GetOrder.OrderDto order)
     {
+        // Arrange
+
         // Act
 
-        HttpResponseMessage response = await this._httpClient.GetAsync("api/orders/1");
+        HttpResponseMessage response = await this._httpClient.GetAsync($"api/orders/{order.ObjectId}");
         HttpStatusCode responseStatus = response.StatusCode;
 
         // Assert
@@ -132,11 +137,12 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         Assert.Equal("NotFound", responseStatus.ToString());
     }
 
-    [Fact]
-    public async Task AddNewEmptyOrder()
+    [Theory, AutoNSubstituteData]
+    public async Task AddNewEmptyOrder(OrderDto order)
     {
         // Act
-        StringContent content = new(JsonSerializer.Serialize(new Order()), Encoding.UTF8, "application/json")
+
+        StringContent content = new(JsonSerializer.Serialize(order), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.Empty.ToString() } }
         };
@@ -149,7 +155,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
 
     [Theory, AutoNSubstituteData]
     public async Task AddNewOrder(
-        CreateOrderDto order,
+        OrderDto order,
         OrderItemDto orderItem)
     {
         // Act
@@ -158,7 +164,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         CardTypeDto cardType = cardTypes.First(_ => _.Name == "Amex");
 
         DateTime cardExpirationDate = DateTime.Now.AddYears(1);
-        CreateOrderDto orderRequest = new(order.UserId, order.UserName, null, null, null, null, null,
+        OrderDto orderRequest = new(order.UserId, order.UserName, null, null, null, null, null,
             order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, cardType.ObjectId, null,
             [orderItem with {  Discount = 0 }]);
         StringContent content = new(JsonSerializer.Serialize(orderRequest), Encoding.UTF8, "application/json")

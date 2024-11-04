@@ -1,0 +1,124 @@
+@using MediatR
+@using eShop.AdminApp.Application.Commands.Order.UpdateOrder
+@using eShop.AdminApp.Application.Queries.Order.GetOrder
+@using eShop.MasterData.Contracts
+@using eShop.ServiceInvocation.MasterDataApiClient
+@inject IMasterDataApiClient MasterDataService
+@inject IMediator Mediator
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+
+<h4>Order Items</h4>
+@if (editContext is not null)
+{
+    <EditForm EditContext="@editContext">
+        <DataAnnotationsValidator />
+        <FluentCard>
+            <div>
+                <FluentDataGrid Items="@orderItems" ShowHover="true">
+                    @* <TemplateColumn> *@
+                    @*     <FluentIcon Title="Order Detail" Value="@(new Icons.Regular.Size16.ArrowCircleRight())" OnClick="() => NavigateToOrder(context.ObjectId)" /> *@
+                    @* </TemplateColumn> *@
+                    <PropertyColumn Property="@(orderItem => orderItem.ProductName)" Sortable="true" />
+                    <PropertyColumn Property="@(orderItem => orderItem.UnitPrice)" Sortable="true" />
+                    <PropertyColumn Property="@(orderItem => orderItem.Units)" Sortable="true" />
+                    <PropertyColumn Property="@(orderItem => orderItem.Discount)" Sortable="true" />
+                    <PropertyColumn Property="@(orderItem => orderItem.Total)" Sortable="true" />
+                </FluentDataGrid>
+            </div>
+        </FluentCard>
+    </EditForm>
+}
+else
+{
+    <FluentProgressRing></FluentProgressRing>
+    <FluentLabel>Loading...</FluentLabel>
+}
+
+@code {
+    [Parameter]
+    public OrderViewModel? Order { get; set; }
+
+    private IQueryable<OrderItemViewModel>? orderItems;
+    private IEnumerable<CountryDto> countries = Array.Empty<CountryDto>();
+    private IEnumerable<StateDto> states = Array.Empty<StateDto>();
+
+    private EditContext? editContext { get; set; }
+    private ValidationMessageStore? messageStore;
+    private bool isEditing;
+    private string buttonText = "Update";
+    private FluentInputAppearance textFieldAppearance = FluentInputAppearance.Filled;
+    private Appearance selectListAppearance = Appearance.Filled;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        this.orderItems = Order?.OrderItems.AsQueryable();
+        this.countries = await MasterDataService.GetCountries();
+        this.states = await MasterDataService.GetStates();
+
+        if (Order is not null)
+        {
+            if (Order.ObjectId == Guid.Empty)
+            {
+                buttonText = "Add";
+                ToggleEdit();
+            }
+
+            editContext = new EditContext(Order);
+            messageStore = new(editContext);
+        }
+    }
+
+    private void ToggleEdit()
+    {
+        isEditing = !isEditing;
+        textFieldAppearance = isEditing ? FluentInputAppearance.Outline : FluentInputAppearance.Filled;
+        selectListAppearance = isEditing ? Appearance.Outline : Appearance.Filled;
+    }
+
+    private void SaveChanges()
+    {
+        UpdateOrderCommand command = Order!.Map();
+        Mediator.Send(command);
+        ToggleEdit();
+        ToastService.ShowToast(ToastIntent.Success, "Order updated successfully");
+    }
+
+    private List<Option<string>> GetCountryOptions()
+    {
+        return this.countries.Select(_ => new Option<string>
+            {
+                Text = _.Name,
+                Value = _.Code
+            }).ToList();
+    }
+
+    private void CountryValueChanged(Option<string> option)
+    {
+        if (option is null)
+            return;
+
+        if (option.Value != "US")
+        {
+            Order!.Address.State = null;
+        }
+    }
+
+    private List<Option<string>> GetStatesOptions()
+    {
+        if (Order!.Address.Country != "US")
+        {
+            return new List<Option<string>>();
+        }
+
+        List<Option<string>> options = this.states.Select(_ => new Option<string>
+            {
+                Text = _.Name,
+                Value = _.Code
+            }).ToList();
+
+        options.Insert(0, new Option<string> { Text = "Select a state", Value = "" });
+
+        return options;
+    }
+}

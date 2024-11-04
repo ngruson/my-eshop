@@ -1,3 +1,5 @@
+using eShop.Ordering.API.Application.Commands.ShipOrder;
+
 namespace eShop.Ordering.API.Application.Validations;
 
 public class ShipOrderCommandValidator : AbstractValidator<ShipOrderCommand>

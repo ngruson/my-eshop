@@ -1,9 +1,10 @@
+using eShop.Ordering.API.Application.Queries;
+
 namespace Ordering.UnitTests.Application;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using eShop.Ordering.API.Application.Queries;
-using Order = eShop.Ordering.API.Application.Queries.Order;
-using eShop.Ordering.API;
+using Order = Order;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using NSubstitute.ExceptionExtensions;
@@ -11,6 +12,10 @@ using Microsoft.AspNetCore.Routing;
 using eShop.Ordering.API.Apis;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Contracts.GetCardTypes;
+using eShop.Ordering.API.Application.Commands.CancelOrder;
+using eShop.Ordering.API.Application.Commands.CreateOrder;
+using eShop.Ordering.API.Application.Commands.CreateOrderDraft;
+using eShop.Ordering.API.Application.Commands.ShipOrder;
 
 public class OrdersApiUnitTests
 {
@@ -177,47 +182,6 @@ public class OrdersApiUnitTests
         Assert.IsType<Ok<IEnumerable<OrderSummary>>>(result);
     }
 
-    public class GetOrder
-    {
-        [Theory, AutoNSubstituteData]
-        public async Task success(
-        [Substitute, Frozen] OrderServices orderServices,
-        int orderId,
-        Order order)
-        {
-            // Arrange
-
-            orderServices.Queries.GetOrderAsync(orderId)
-                .Returns(Task.FromResult(order));
-
-            // Act
-
-            Results<Ok<Order>, NotFound> result = await OrdersApi.GetOrderAsync(orderId, orderServices);
-
-            // Assert
-            Assert.IsType<Ok<Order>>(result.Result);
-            Assert.Equal(order, ((Ok<Order>)result.Result).Value);
-        }
-
-        [Theory, AutoNSubstituteData]
-        public async Task When_exception_return_not_found(
-            [Substitute, Frozen] OrderServices orderServices,
-            int orderId)
-        {
-            // Arrange
-
-            orderServices.Queries.GetOrderAsync(orderId)
-                .ThrowsAsync<Exception>();
-
-            // Act
-
-            Results<Ok<Order>, NotFound> result = await OrdersApi.GetOrderAsync(orderId, orderServices);
-
-            // Assert
-            Assert.IsType<NotFound>(result.Result);
-        }
-    }
-
     [Theory, AutoNSubstituteData]
     public async Task Create_order_draft(
         [Substitute, Frozen] OrderServices orderServices,
@@ -243,7 +207,7 @@ public class OrdersApiUnitTests
         [Theory, AutoNSubstituteData]
         public async Task When_command_succeeds_return_ok(
             [Substitute, Frozen] OrderServices orderServices,
-            CreateOrderDto request,
+            OrderDto request,
             Guid requestId)
         {
             // Arrange
@@ -263,7 +227,7 @@ public class OrdersApiUnitTests
         [Theory, AutoNSubstituteData]
         public async Task When_command_fails_return_ok(
             OrderServices orderServices,
-            CreateOrderDto request,
+            OrderDto request,
             Guid requestId)
         {
             // Arrange
@@ -280,7 +244,7 @@ public class OrdersApiUnitTests
         [Theory, AutoNSubstituteData]
         public async Task With_empty_request_id_return_bad_request(
             OrderServices orderServices,
-            CreateOrderDto request)
+            OrderDto request)
         {
             // Arrange
 

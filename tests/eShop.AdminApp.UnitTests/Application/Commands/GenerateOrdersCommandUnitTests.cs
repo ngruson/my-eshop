@@ -66,7 +66,7 @@ public class GenerateOrdersCommandUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await orderingApiClient.Received(command.OrdersToCreate).CreateOrder(Arg.Any<Guid>(), Arg.Any<CreateOrderDto>());
+        await orderingApiClient.Received(command.OrdersToCreate).CreateOrder(Arg.Any<Guid>(), Arg.Any<OrderDto>());
     }
 
     [Theory, AutoNSubstituteData]
@@ -85,6 +85,6 @@ public class GenerateOrdersCommandUnitTests
 
         Assert.True(result.IsError());
 
-        await orderingApiClient.DidNotReceive().CreateOrder(Arg.Any<Guid>(), Arg.Any<CreateOrderDto>());
+        await orderingApiClient.DidNotReceive().CreateOrder(Arg.Any<Guid>(), Arg.Any<OrderDto>());
     }
 }

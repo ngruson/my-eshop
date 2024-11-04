@@ -1,3 +1,5 @@
+using eShop.Ordering.API.Application.Commands.SetStockRejectedOrderStatus;
+
 namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 public class OrderStockRejectedIntegrationEventHandler(
     IMediator mediator,

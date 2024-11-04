@@ -52,6 +52,7 @@ public class Order
     public Order(string userId, string userName, Address address, CardType cardType, string cardNumber, string cardSecurityNumber,
             string cardHolderName, DateTime cardExpiration, int? buyerId = null, int? paymentMethodId = null) : this()
     {
+        this.ObjectId = Guid.NewGuid();
         this.BuyerId = buyerId;
         this.PaymentId = paymentMethodId;
         this.OrderStatus = OrderStatus.Submitted;
@@ -87,6 +88,14 @@ public class Order
             //add validated new order item
             OrderItem orderItem = new(productId, productName, unitPrice, discount, pictureUrl, units);
             this._orderItems.Add(orderItem);
+        }
+    }
+
+    public void SetAddress(Address address)
+    {
+        if (this.Address != address)
+        {
+            this.Address = address;
         }
     }
 

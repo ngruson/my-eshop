@@ -1,5 +1,12 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using eShop.Ordering.API.Application.Commands.CancelOrder;
+using eShop.Ordering.API.Application.Commands.CreateOrder;
+using eShop.Ordering.API.Application.Commands.SetAwaitingValidationOrderStatus;
+using eShop.Ordering.API.Application.Commands.SetPaidOrderStatus;
+using eShop.Ordering.API.Application.Commands.SetStockConfirmedOrderStatus;
+using eShop.Ordering.API.Application.Commands.SetStockRejectedOrderStatus;
+using eShop.Ordering.API.Application.Commands.ShipOrder;
 using NSubstitute.ExceptionExtensions;
 
 namespace Ordering.UnitTests.Application.Commands;

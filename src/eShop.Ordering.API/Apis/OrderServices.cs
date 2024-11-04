@@ -1,4 +1,4 @@
-namespace eShop.Ordering.API;
+namespace eShop.Ordering.API.Apis;
 
 public class OrderServices(
     IMediator mediator,

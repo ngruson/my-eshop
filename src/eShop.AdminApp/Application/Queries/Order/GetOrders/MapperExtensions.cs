@@ -7,7 +7,7 @@ internal static class MapperExtensions
     internal static List<OrderViewModel> MapToOrderViewModelList(this List<OrderDto> orders)
     {
         return orders
-            .Select(o => new OrderViewModel(o.OrderNumber, o.OrderDate, o.BuyerName, o.OrderStatus, o.Total))
+            .Select(o => new OrderViewModel(o.ObjectId, o.OrderNumber, o.OrderDate, o.BuyerName, o.OrderStatus, o.Total))
             .ToList();
     }
 }
