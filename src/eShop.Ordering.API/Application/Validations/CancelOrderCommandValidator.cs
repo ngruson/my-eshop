@@ -6,6 +6,6 @@ public class CancelOrderCommandValidator : AbstractValidator<CancelOrderCommand>
 {
     public CancelOrderCommandValidator()
     {
-        this.RuleFor(order => order.OrderNumber).NotEmpty().WithMessage("No orderId found");
+        this.RuleFor(order => order.ObjectId).NotEmpty().WithMessage("No orderId found");
     }
 }

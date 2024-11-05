@@ -1,7 +1,7 @@
 namespace eShop.Ordering.Contracts.CreateOrder;
 
 public record OrderDto(
-    string UserId,
+    Guid UserId,
     string UserName,
     string City,
     string Street,
@@ -13,5 +13,5 @@ public record OrderDto(
     DateTime CardExpiration,
     string CardSecurityNumber,
     Guid CardType,
-    string Buyer,
+    Guid Buyer,
     OrderItemDto[] Items);

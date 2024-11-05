@@ -1,3 +1,4 @@
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 
 namespace eShop.Ordering.API.Application.Commands.SetStockConfirmedOrderStatus;
@@ -20,7 +21,9 @@ public class SetStockConfirmedOrderStatusCommandHandler(
         // Simulate a work time for confirming the stock
         await Task.Delay(10000, cancellationToken);
 
-        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate = await this._orderRepository.GetByIdAsync(command.OrderNumber, cancellationToken);
+        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate =
+            await this._orderRepository.SingleOrDefaultAsync(new GetOrderSpecification(command.ObjectId), cancellationToken);
+
         if (orderToUpdate is null)
         {
             return false;

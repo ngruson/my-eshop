@@ -20,7 +20,7 @@ public class ShipOrderCommandUnitTests
         order.SetStockConfirmedStatus();
         order.SetPaidStatus();
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.GetByIdAsync(command.ObjectId, default)
             .Returns(order);
 
         //Act
@@ -43,7 +43,7 @@ public class ShipOrderCommandUnitTests
     {
         // Arrange
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.GetByIdAsync(command.ObjectId, default)
             .Returns(order);
 
         //Act

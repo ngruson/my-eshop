@@ -1,3 +1,4 @@
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
 
@@ -17,12 +18,13 @@ public class OrderShippedDomainEventHandler(
 
     public async Task Handle(OrderShippedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.Order.Id, OrderStatus.Shipped);
+        OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.Order.ObjectId, OrderStatus.Shipped);
 
-        Domain.AggregatesModel.OrderAggregate.Order? order = await this._orderRepository.GetByIdAsync(domainEvent.Order.Id, cancellationToken);
+        Domain.AggregatesModel.OrderAggregate.Order? order = await this._orderRepository.SingleOrDefaultAsync(
+            new GetOrderSpecification(domainEvent.Order.ObjectId), cancellationToken);
         Buyer? buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
 
-        OrderStatusChangedToShippedIntegrationEvent integrationEvent = new(order.Id, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!);
+        OrderStatusChangedToShippedIntegrationEvent integrationEvent = new(order.ObjectId, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!);
         await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
     }
 }

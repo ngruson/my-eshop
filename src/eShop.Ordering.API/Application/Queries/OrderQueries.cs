@@ -40,7 +40,7 @@ public class OrderQueries(
         };
     }
 
-    public async Task<IEnumerable<OrderSummary>> GetOrdersFromUserAsync(string userId)
+    public async Task<IEnumerable<OrderSummary>> GetOrdersFromUserAsync(Guid userId)
     {
         List<OrderAggregate.Order> orders = await this.orderRepository.ListAsync(new GetOrdersFromUserSpecification(userId));
 

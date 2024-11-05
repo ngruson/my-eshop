@@ -15,7 +15,7 @@ public class ShipOrderCommandHandler(IRepository<Domain.AggregatesModel.OrderAgg
     /// <returns></returns>
     public async Task<bool> Handle(ShipOrderCommand command, CancellationToken cancellationToken)
     {
-        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate = await this._orderRepository.GetByIdAsync(command.OrderNumber, cancellationToken);
+        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate = await this._orderRepository.GetByIdAsync(command.ObjectId, cancellationToken);
         if (orderToUpdate is null)
         {
             return false;

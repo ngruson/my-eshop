@@ -165,7 +165,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
 
         DateTime cardExpirationDate = DateTime.Now.AddYears(1);
         OrderDto orderRequest = new(order.UserId, order.UserName, null, null, null, null, null,
-            order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, cardType.ObjectId, null,
+            order.CardNumber, order.CardHolderName, cardExpirationDate, order.CardSecurityNumber, cardType.ObjectId, order.UserId,
             [orderItem with {  Discount = 0 }]);
         StringContent content = new(JsonSerializer.Serialize(orderRequest), Encoding.UTF8, "application/json")
         {

@@ -29,7 +29,7 @@ public class CancelOrderCommandValidatorUnitTests
     {
         // Arrange
 
-        CancelOrderCommand command = new(0);
+        CancelOrderCommand command = new(Guid.Empty);
 
         // Act
 

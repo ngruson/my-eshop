@@ -17,7 +17,7 @@ public class CancelOrderCommandUnitTests
     {
         // Arrange
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.GetByIdAsync(command.ObjectId, default)
             .Returns(order);
 
         // Act
@@ -45,7 +45,7 @@ public class CancelOrderCommandUnitTests
         order.SetStockConfirmedStatus();
         order.SetPaidStatus();
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.GetByIdAsync(command.ObjectId, default)
             .Returns(order);
 
         // Act
@@ -74,7 +74,7 @@ public class CancelOrderCommandUnitTests
         order.SetPaidStatus();
         order.SetShippedStatus();
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.GetByIdAsync(command.ObjectId, default)
             .Returns(order);
 
         // Act

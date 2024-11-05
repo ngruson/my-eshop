@@ -48,9 +48,9 @@ public class GracePeriodManagerService(
             logger.LogDebug("Checking confirmed grace period orders");
         }
 
-        List<int> orderIds = await this.GetConfirmedGracePeriodOrders();
+        List<Guid> orderIds = await this.GetConfirmedGracePeriodOrders();
 
-        foreach (int orderId in orderIds)
+        foreach (Guid orderId in orderIds)
         {
             GracePeriodConfirmedIntegrationEvent confirmGracePeriodEvent = new(orderId);
 
@@ -60,26 +60,26 @@ public class GracePeriodManagerService(
         }
     }
 
-    private async ValueTask<List<int>> GetConfirmedGracePeriodOrders()
+    private async ValueTask<List<Guid>> GetConfirmedGracePeriodOrders()
     {
         try
         {
             using NpgsqlConnection conn = dataSource.CreateConnection();
             using NpgsqlCommand command = conn.CreateCommand();
             command.CommandText = """
-                SELECT "Id"
+                SELECT "ObjectId"
                 FROM ordering.orders
                 WHERE CURRENT_TIMESTAMP - "OrderDate" >= @GracePeriodTime AND "OrderStatus" = 'Submitted'
                 """;
             command.Parameters.AddWithValue("GracePeriodTime", TimeSpan.FromMinutes(this._options.GracePeriodTime));
 
-            List<int> ids = [];
+            List<Guid> ids = [];
 
             await conn.OpenAsync();
             using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                ids.Add(reader.GetInt32(0));
+                ids.Add(reader.GetGuid(0));
             }
 
             return ids;

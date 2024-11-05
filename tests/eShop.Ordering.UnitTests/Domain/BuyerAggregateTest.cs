@@ -1,3 +1,5 @@
+using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
+
 namespace eShop.Ordering.UnitTests.Domain;
 
 public class BuyerAggregateTest
@@ -10,7 +12,7 @@ public class BuyerAggregateTest
     {
         //Arrange
 
-        string identity = new Guid().ToString();
+        Guid identity = Guid.NewGuid();
         string name = "fakeUser";
 
         //Act
@@ -26,7 +28,7 @@ public class BuyerAggregateTest
     {
         //Arrange
 
-        string identity = string.Empty;
+        Guid identity = Guid.Empty;
         string name = "fakeUser";
 
         //Act - Assert
@@ -36,23 +38,27 @@ public class BuyerAggregateTest
 
     [Theory, AutoNSubstituteData]
     public void add_payment_success(
+        Order order,
         CardType cardType)
     {
-        //Arrange    
+        // Arrange
+
         string alias = "fakeAlias";
         string cardNumber = "124";
         string securityNumber = "1234";
         string cardHolderName = "FakeHolderNAme";
         DateTime expiration = DateTime.UtcNow.AddYears(1);
-        int orderId = 1;
+        Guid orderId = Guid.NewGuid();
         string name = "fakeUser";
-        string identity = new Guid().ToString();
+        Guid identity = Guid.NewGuid();
         Buyer fakeBuyerItem = new(identity, name);
 
-        //Act
-        PaymentMethod result = fakeBuyerItem.VerifyOrAddPaymentMethod(cardType, alias, cardNumber, securityNumber, cardHolderName, expiration, orderId);
+        // Act
 
-        //Assert
+        PaymentMethod result = fakeBuyerItem.VerifyOrAddPaymentMethod(cardType, alias, cardNumber, securityNumber, cardHolderName, expiration, order);
+
+        // Assert
+
         Assert.NotNull(result);
     }
 
@@ -106,11 +112,12 @@ public class BuyerAggregateTest
 
     [Theory, AutoNSubstituteData]
     public void Add_new_paymentMethod_raises_new_event(
+        Order order,
         CardType cardType)
     {
-        //Arrange    
+        // Arrange
+
         string alias = "fakeAlias";
-        int orderId = 1;
         string cardNumber = "12";
         string cardSecurityNumber = "123";
         string cardHolderName = "FakeName";
@@ -119,8 +126,8 @@ public class BuyerAggregateTest
         string name = "fakeUser";
 
         //Act 
-        Buyer fakeBuyer = new(Guid.NewGuid().ToString(), name);
-        fakeBuyer.VerifyOrAddPaymentMethod(cardType, alias, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration, orderId);
+        Buyer fakeBuyer = new(Guid.NewGuid(), name);
+        fakeBuyer.VerifyOrAddPaymentMethod(cardType, alias, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration, order);
 
         //Assert
         Assert.Equal(fakeBuyer.DomainEvents.Count, expectedResult);

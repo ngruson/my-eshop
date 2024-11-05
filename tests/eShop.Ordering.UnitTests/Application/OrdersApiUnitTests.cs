@@ -169,10 +169,13 @@ public class OrdersApiUnitTests
 
     [Theory, AutoNSubstituteData]
     public async Task Get_orders_success(
-        //[Substitute, Frozen] IMediator mediator,
+        [Substitute, Frozen] IIdentityService identityService,
         OrderServices orderServices)
     {
         // Arrange
+
+        identityService.GetUserIdentity()
+            .Returns(Guid.NewGuid());
 
         // Act
 

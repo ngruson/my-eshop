@@ -32,11 +32,11 @@ public class ShipOrderCommandValidatorUnitTests
 
         // Act
 
-        TestValidationResult<ShipOrderCommand> result = sut.TestValidate(command with { OrderNumber = 0 });
+        TestValidationResult<ShipOrderCommand> result = sut.TestValidate(command with { ObjectId = Guid.Empty });
 
         //Assert
 
         Assert.False(result.IsValid);
-        Assert.Contains(nameof(command.OrderNumber), result.Errors.Select(_ => _.PropertyName));
+        Assert.Contains(nameof(command.ObjectId), result.Errors.Select(_ => _.PropertyName));
     }
 }

@@ -1,3 +1,3 @@
 namespace eShop.Webhooks.API.IntegrationEvents;
 
-public record OrderStatusChangedToPaidIntegrationEvent(int OrderId, IEnumerable<OrderStockItem> OrderStockItems) : IntegrationEvent;
+public record OrderStatusChangedToPaidIntegrationEvent(Guid OrderId, OrderStockItem[] OrderStockItems) : IntegrationEvent;

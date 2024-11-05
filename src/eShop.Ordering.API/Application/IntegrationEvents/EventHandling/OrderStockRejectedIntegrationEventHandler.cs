@@ -19,8 +19,8 @@ public class OrderStockRejectedIntegrationEventHandler(
         logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
             command.GetGenericTypeName(),
-            nameof(command.OrderNumber),
-            command.OrderNumber,
+            nameof(command.ObjectId),
+            command.ObjectId,
             command);
 
         await mediator.Send(command, cancellationToken);

@@ -13,11 +13,11 @@
     {
         if (firstRender)
         {
-            string? buyerId = await AuthenticationStateProvider.GetBuyerIdAsync();
-            if (!string.IsNullOrEmpty(buyerId))
+            Guid? buyerId = await AuthenticationStateProvider.GetBuyerIdAsync();
+            if (buyerId != Guid.Empty)
             {
                 orderStatusChangedSubscription = OrderStatusNotificationService.SubscribeToOrderStatusNotifications(
-                    buyerId, () => InvokeAsync(HandleOrderStatusChanged));
+                    buyerId!.Value, () => InvokeAsync(HandleOrderStatusChanged));
             }
         }
     }
