@@ -49,17 +49,17 @@ public abstract class IdentifiedCommandHandler<T, R>(
                 {
                     case CreateOrderCommand createOrderCommand:
                         idProperty = nameof(createOrderCommand.UserId);
-                        commandId = createOrderCommand.UserId;
+                        commandId = createOrderCommand.UserId.ToString();
                         break;
 
                     case CancelOrderCommand cancelOrderCommand:
-                        idProperty = nameof(cancelOrderCommand.OrderNumber);
-                        commandId = $"{cancelOrderCommand.OrderNumber}";
+                        idProperty = nameof(cancelOrderCommand.ObjectId);
+                        commandId = $"{cancelOrderCommand.ObjectId}";
                         break;
 
                     case ShipOrderCommand shipOrderCommand:
-                        idProperty = nameof(shipOrderCommand.OrderNumber);
-                        commandId = $"{shipOrderCommand.OrderNumber}";
+                        idProperty = nameof(shipOrderCommand.ObjectId);
+                        commandId = $"{shipOrderCommand.ObjectId}";
                         break;
 
                     default:

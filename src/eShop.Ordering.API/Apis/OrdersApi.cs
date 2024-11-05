@@ -56,8 +56,8 @@ public static class OrdersApi
         services.Logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
             requestCancelOrder.GetGenericTypeName(),
-            nameof(requestCancelOrder.Command.OrderNumber),
-            requestCancelOrder.Command.OrderNumber,
+            nameof(requestCancelOrder.Command.ObjectId),
+            requestCancelOrder.Command.ObjectId,
             requestCancelOrder);
 
         bool commandResult = await services.Mediator.Send(requestCancelOrder);
@@ -85,8 +85,8 @@ public static class OrdersApi
         services.Logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
             requestShipOrder.GetGenericTypeName(),
-            nameof(requestShipOrder.Command.OrderNumber),
-            requestShipOrder.Command.OrderNumber,
+            nameof(requestShipOrder.Command.ObjectId),
+            requestShipOrder.Command.ObjectId,
             requestShipOrder);
 
         bool commandResult = await services.Mediator.Send(requestShipOrder);
@@ -101,8 +101,8 @@ public static class OrdersApi
 
     public static async Task<Ok<IEnumerable<OrderSummary>>> GetOrdersByUserAsync([AsParameters] OrderServices services)
     {
-        string? userId = services.IdentityService.GetUserIdentity();
-        IEnumerable<OrderSummary> orders = await services.Queries.GetOrdersFromUserAsync(userId!);
+        Guid? userId = services.IdentityService.GetUserIdentity();
+        IEnumerable<OrderSummary> orders = await services.Queries.GetOrdersFromUserAsync(userId!.Value);
         return TypedResults.Ok(orders);
     }
 

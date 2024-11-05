@@ -85,7 +85,7 @@ public class BasketState(
             checkoutInfo.RequestId = Guid.NewGuid();
         }
 
-        string buyerId = await authenticationStateProvider.GetBuyerIdAsync() ?? throw new InvalidOperationException("User does not have a buyer ID");
+        Guid buyerId = await authenticationStateProvider.GetBuyerIdAsync() ?? throw new InvalidOperationException("User does not have a buyer ID");
         string userName = await authenticationStateProvider.GetUserNameAsync() ?? throw new InvalidOperationException("User does not have a user name");
 
         // Get details for the items in the basket

@@ -36,7 +36,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler(
             domainEvent.CardSecurityNumber,
             domainEvent.CardHolderName,
             domainEvent.CardExpiration,
-            domainEvent.Order.Id);
+            domainEvent.Order);
 
         if (!buyerExisted)
         {
@@ -47,7 +47,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler(
             await this._buyerRepository.UpdateAsync(buyer, cancellationToken);
         }
 
-        OrderStatusChangedToSubmittedIntegrationEvent integrationEvent = new(domainEvent.Order.Id, domainEvent.Order.OrderStatus, buyer.Name!, buyer.IdentityGuid!);
+        OrderStatusChangedToSubmittedIntegrationEvent integrationEvent = new(domainEvent.Order.ObjectId, domainEvent.Order.OrderStatus, buyer.Name!, buyer.IdentityGuid!);
         await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
         OrderingApiTrace.LogOrderBuyerAndPaymentValidatedOrUpdated(_logger, buyer.Id, domainEvent.Order.Id);
     }

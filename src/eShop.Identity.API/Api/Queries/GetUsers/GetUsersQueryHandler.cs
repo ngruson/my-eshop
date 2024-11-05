@@ -17,11 +17,9 @@ public class GetUsersQueryHandler(
         {
             this.logger.LogInformation("Getting users...");
 
-            List<ApplicationUser> tmp = [.. this.userManager.Users];
-
             List<UserDto> users =
                 [.. this.userManager.Users.Select(_ => new UserDto(
-                    _.Id, _.UserName!, _.FirstName!, _.LastName!))];
+                    Guid.Parse(_.Id), _.UserName!, _.FirstName!, _.LastName!))];
 
             this.logger.LogInformation("Users retrieved");
 

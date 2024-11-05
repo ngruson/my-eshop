@@ -6,6 +6,6 @@ public class ShipOrderCommandValidator : AbstractValidator<ShipOrderCommand>
 {
     public ShipOrderCommandValidator()
     {
-        this.RuleFor(order => order.OrderNumber).NotEmpty().WithMessage("No orderId found");
+        this.RuleFor(order => order.ObjectId).NotEmpty().WithMessage("No orderId found");
     }
 }

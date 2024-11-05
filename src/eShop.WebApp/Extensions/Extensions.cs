@@ -156,11 +156,18 @@ public static class Extensions
         }
     }
 
-    public static async Task<string?> GetBuyerIdAsync(this AuthenticationStateProvider authenticationStateProvider)
+    public static async Task<Guid?> GetBuyerIdAsync(this AuthenticationStateProvider authenticationStateProvider)
     {
         AuthenticationState authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         ClaimsPrincipal user = authState.User;
-        return user.FindFirst("sub")?.Value;
+        string? subValue = user.FindFirst("sub")?.Value;
+
+        if (Guid.TryParse(subValue, out Guid buyerId))
+        {
+            return buyerId;
+        }
+
+        return null;
     }
 
     public static async Task<string?> GetUserNameAsync(this AuthenticationStateProvider authenticationStateProvider)

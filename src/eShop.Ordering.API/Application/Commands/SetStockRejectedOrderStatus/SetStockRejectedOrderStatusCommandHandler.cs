@@ -1,3 +1,4 @@
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 
 namespace eShop.Ordering.API.Application.Commands.SetStockRejectedOrderStatus;
@@ -18,7 +19,8 @@ public class SetStockRejectedOrderStatusCommandHandler(IRepository<Domain.Aggreg
         // Simulate a work time for rejecting the stock
         await Task.Delay(10000, cancellationToken);
 
-        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate = await this._orderRepository.GetByIdAsync(command.OrderNumber, cancellationToken);
+        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate =
+            await this._orderRepository.SingleOrDefaultAsync(new GetOrderSpecification(command.ObjectId), cancellationToken);
 
         if (orderToUpdate is null)
         {

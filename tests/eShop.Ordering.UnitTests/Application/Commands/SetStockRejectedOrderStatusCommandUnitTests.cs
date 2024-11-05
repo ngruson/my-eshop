@@ -2,6 +2,7 @@ using System.Text.Json;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Ordering.API.Application.Commands.SetStockRejectedOrderStatus;
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 
@@ -21,7 +22,7 @@ public class SetStockRejectedOrderStatusCommandUnitTests
 
         order.SetAwaitingValidationStatus();
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.SingleOrDefaultAsync(Arg.Any<GetOrderSpecification>(), default)
             .Returns(order);
 
         // Act
@@ -44,7 +45,7 @@ public class SetStockRejectedOrderStatusCommandUnitTests
     {
         // Arrange
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.SingleOrDefaultAsync(Arg.Any<GetOrderSpecification>(), default)
             .Returns(order);
 
         // Act
@@ -92,7 +93,7 @@ public class SetStockRejectedOrderStatusCommandUnitTests
 
         //Assert
 
-        Assert.Equal(command.OrderNumber, deserializedCommand.OrderNumber);
+        Assert.Equal(command.ObjectId, deserializedCommand.ObjectId);
 
         //Assert for List<int>
 

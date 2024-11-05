@@ -2,6 +2,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Ordering.API.Application.DomainEventHandlers;
 using eShop.Ordering.API.Application.IntegrationEvents.Events;
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
@@ -20,7 +21,7 @@ public class OrderStatusChangedToAwaitingValidationDomainEventHandlerUnitTests
     {
         // Arrange
 
-        List<OrderItem> orderItems =
+        OrderItem[] orderItems =
         [
             new OrderItem(Guid.NewGuid(), "Product 1", 25, 0, null),
             new OrderItem(Guid.NewGuid(), "Product 2", 30, 0, null),
@@ -28,10 +29,10 @@ public class OrderStatusChangedToAwaitingValidationDomainEventHandlerUnitTests
 
 
         OrderStatusChangedToAwaitingValidationDomainEvent evt = new(
-            order.Id,
+            order.ObjectId,
             orderItems);
 
-        orderRepository.GetByIdAsync(evt.OrderId, default)
+        orderRepository.SingleOrDefaultAsync(Arg.Any<GetOrderSpecification>(), default)
             .Returns(order);
 
         buyerRepository.GetByIdAsync(order.BuyerId.Value, default)

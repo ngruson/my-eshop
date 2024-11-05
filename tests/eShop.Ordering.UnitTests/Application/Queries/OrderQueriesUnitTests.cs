@@ -53,11 +53,10 @@ public class OrderQueriesUnitTests
     {
         [Theory, AutoNSubstituteData]
         internal async Task WhenOrdersFound_ReturnsOrders(
-        [Substitute, Frozen] IRepository<Ordering.Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
-        OrderQueries sut,
-        List<Ordering.Domain.AggregatesModel.OrderAggregate.Order> orders,
-        string userId
-        )
+            [Substitute, Frozen] IRepository<Ordering.Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
+            OrderQueries sut,
+            List<Ordering.Domain.AggregatesModel.OrderAggregate.Order> orders,
+            Guid userId)
         {
             // Arrange
 

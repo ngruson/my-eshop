@@ -44,7 +44,7 @@ namespace Ordering.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false),
                     ObjectId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IdentityGuid = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    IdentityGuid = table.Column<string>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>

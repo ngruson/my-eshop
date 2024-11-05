@@ -22,13 +22,13 @@ public class CreateOrderCommandHandler(
     public async Task<bool> Handle(CreateOrderCommand message, CancellationToken cancellationToken)
     {
         // Add Integration event to clean the basket
-        OrderStartedIntegrationEvent orderStartedIntegrationEvent = new(message.UserId!);
+        OrderStartedIntegrationEvent orderStartedIntegrationEvent = new(message.UserId);
         await this._orderingIntegrationEventService.AddAndSaveEventAsync(orderStartedIntegrationEvent, cancellationToken);
 
         CardType cardType = await this._cardTypeRepository.SingleOrDefaultAsync(new CardTypeSpecification(message.CardType), cancellationToken)
             ?? throw new KeyNotFoundException($"Card Type {message.CardType} not found.");
         Address address = new(message.Street!, message.City!, message.State!, message.Country!, message.ZipCode!);
-        Order order = new(message.UserId!, message.UserName!, address,
+        Order order = new(message.UserId, message.UserName!, address,
             cardType, message.CardNumber!, message.CardSecurityNumber!, message.CardHolderName!, message.CardExpiration);
 
         foreach (OrderItemDto item in message.OrderItems)

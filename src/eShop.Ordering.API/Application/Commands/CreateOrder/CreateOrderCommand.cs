@@ -4,7 +4,7 @@ using eShop.Ordering.Contracts.CreateOrder;
 
 public record CreateOrderCommand(
     OrderItemDto[] OrderItems,
-    string UserId,
+    Guid UserId,
     string UserName,
     string City,
     string Street,

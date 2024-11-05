@@ -11,9 +11,6 @@ public class OrderStatusChangedToStockConfirmedIntegrationEventHandler(
     public async Task Handle(OrderStatusChangedToStockConfirmedIntegrationEvent @event, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
-        if (@event.BuyerIdentityGuid is not null)
-        {
-            await orderStatusNotificationService.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
-        }
+        await orderStatusNotificationService.NotifyOrderStatusChangedAsync(@event.BuyerIdentityGuid);
     }
 }

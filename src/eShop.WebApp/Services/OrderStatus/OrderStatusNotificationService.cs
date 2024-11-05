@@ -4,9 +4,9 @@ public class OrderStatusNotificationService
 {
     // Locking manually because we need multiple values per key, and only need to lock very briefly
     private readonly Lock _subscriptionsLock = new();
-    private readonly Dictionary<string, HashSet<Subscription>> _subscriptionsByBuyerId = [];
+    private readonly Dictionary<Guid, HashSet<Subscription>> _subscriptionsByBuyerId = [];
 
-    public IDisposable SubscribeToOrderStatusNotifications(string buyerId, Func<Task> callback)
+    public IDisposable SubscribeToOrderStatusNotifications(Guid buyerId, Func<Task> callback)
     {
         Subscription subscription = new(this, buyerId, callback);
 
@@ -24,7 +24,7 @@ public class OrderStatusNotificationService
         return subscription;
     }
 
-    public Task NotifyOrderStatusChangedAsync(string buyerId)
+    public Task NotifyOrderStatusChangedAsync(Guid buyerId)
     {
         lock (this._subscriptionsLock)
         {
@@ -34,7 +34,7 @@ public class OrderStatusNotificationService
         }
     }
 
-    private void Unsubscribe(string buyerId, Subscription subscription)
+    private void Unsubscribe(Guid buyerId, Subscription subscription)
     {
         lock (this._subscriptionsLock)
         {
@@ -49,7 +49,7 @@ public class OrderStatusNotificationService
         }
     }
 
-    private class Subscription(OrderStatusNotificationService owner, string buyerId, Func<Task> callback) : IDisposable
+    private class Subscription(OrderStatusNotificationService owner, Guid buyerId, Func<Task> callback) : IDisposable
     {
         public Task NotifyAsync()
         {

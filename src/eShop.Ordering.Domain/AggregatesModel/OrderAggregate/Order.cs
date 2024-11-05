@@ -49,7 +49,7 @@ public class Order
         this._isDraft = false;
     }
 
-    public Order(string userId, string userName, Address address, CardType cardType, string cardNumber, string cardSecurityNumber,
+    public Order(Guid userId, string userName, Address address, CardType cardType, string cardNumber, string cardSecurityNumber,
             string cardHolderName, DateTime cardExpiration, int? buyerId = null, int? paymentMethodId = null) : this()
     {
         this.ObjectId = Guid.NewGuid();
@@ -109,7 +109,7 @@ public class Order
     {
         if (this.OrderStatus == OrderStatus.Submitted)
         {
-            this.AddDomainEvent(new OrderStatusChangedToAwaitingValidationDomainEvent(this.Id, this._orderItems));
+            this.AddDomainEvent(new OrderStatusChangedToAwaitingValidationDomainEvent(this.ObjectId, [.. this._orderItems]));
             this.OrderStatus = OrderStatus.AwaitingValidation;
         }
     }
@@ -118,7 +118,7 @@ public class Order
     {
         if (this.OrderStatus == OrderStatus.AwaitingValidation)
         {
-            this.AddDomainEvent(new OrderStatusChangedToStockConfirmedDomainEvent(this.Id));
+            this.AddDomainEvent(new OrderStatusChangedToStockConfirmedDomainEvent(this.ObjectId));
 
             this.OrderStatus = OrderStatus.StockConfirmed;
             this.Description = "All the items were confirmed with available stock.";
@@ -129,7 +129,7 @@ public class Order
     {
         if (this.OrderStatus == OrderStatus.StockConfirmed)
         {
-            this.AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(this.Id, this.OrderItems));
+            this.AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(this.ObjectId, [.. this.OrderItems]));
 
             this.OrderStatus = OrderStatus.Paid;
             this.Description = "The payment was performed at a simulated \"American Bank checking bank account ending on XX35071\"";
@@ -176,7 +176,7 @@ public class Order
         }
     }
 
-    private void AddOrderStartedDomainEvent(string userId, string userName, CardType cardType, string cardNumber,
+    private void AddOrderStartedDomainEvent(Guid userId, string userName, CardType cardType, string cardNumber,
             string cardSecurityNumber, string cardHolderName, DateTime cardExpiration)
     {
         OrderStartedDomainEvent orderStartedDomainEvent = new(this, userId, userName, cardType,

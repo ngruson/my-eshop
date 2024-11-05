@@ -2,7 +2,7 @@ using eShop.Shared.Data;
 
 namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
-public class Address(string street, string city, string state, string country, string zipCode) : ValueObject
+public class Address(string street, string city, string? state, string country, string zipCode) : ValueObject
 {
     public string Street { get; private set; } = street;
     public string City { get; private set; } = city;

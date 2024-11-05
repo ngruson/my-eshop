@@ -22,8 +22,7 @@ public class SetPaidOrderStatusCommandHandler(
         await Task.Delay(10000, cancellationToken);
 
         Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate = await this._orderRepository.SingleOrDefaultAsync(
-            new GetOrderSpecification(command.OrderId),
-            cancellationToken);
+            new GetOrderSpecification(command.OrderId), cancellationToken);
 
         if (orderToUpdate is null)
         {
