@@ -1,13 +1,14 @@
 namespace eShop.Ordering.API.Application.Commands.CreateOrderDraft;
 
+using Ardalis.Result;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
 // Regular CommandHandler
 public class CreateOrderDraftCommandHandler
-    : IRequestHandler<CreateOrderDraftCommand, OrderDraftDTO>
+    : IRequestHandler<CreateOrderDraftCommand, Result<OrderDraftDTO>>
 {
-    public Task<OrderDraftDTO> Handle(CreateOrderDraftCommand message, CancellationToken cancellationToken)
+    public Task<Result<OrderDraftDTO>> Handle(CreateOrderDraftCommand message, CancellationToken cancellationToken)
     {
         Order order = Order.NewDraft();
 
@@ -16,7 +17,7 @@ public class CreateOrderDraftCommandHandler
             order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, item.Discount, item.PictureUrl, item.Units);
         }
 
-        return Task.FromResult(OrderDraftDTO.FromOrder(order));
+        return Task.FromResult(Result.Success(OrderDraftDTO.FromOrder(order)));
     }
 }
 

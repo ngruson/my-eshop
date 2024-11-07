@@ -1,11 +1,13 @@
+using Ardalis.Result;
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 
 namespace eShop.Ordering.API.Application.Commands.CancelOrder;
 
 // Regular CommandHandler
-public class CancelOrderCommandHandler(IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository) : IRequestHandler<CancelOrderCommand, bool>
+public class CancelOrderCommandHandler(IRepository<Order> orderRepository) : IRequestHandler<CancelOrderCommand, Result>
 {
-    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
+    private readonly IRepository<Order> _orderRepository = orderRepository;
 
     /// <summary>
     /// Handler which processes the command when
@@ -13,19 +15,19 @@ public class CancelOrderCommandHandler(IRepository<Domain.AggregatesModel.OrderA
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<bool> Handle(CancelOrderCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CancelOrderCommand command, CancellationToken cancellationToken)
     {
-        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate =
-            await this._orderRepository.GetByIdAsync(command.ObjectId, cancellationToken);
+        Order? orderToUpdate =
+            await this._orderRepository.SingleOrDefaultAsync(new GetOrderSpecification(command.ObjectId), cancellationToken);
 
         if (orderToUpdate is null)
         {
-            return false;
+            return Result.NotFound();
         }
 
         orderToUpdate.SetCancelledStatus();
         await this._orderRepository.UpdateAsync(orderToUpdate, cancellationToken);
-        return true;
+        return Result.Success();
     }
 }
 
@@ -33,10 +35,10 @@ public class CancelOrderCommandHandler(IRepository<Domain.AggregatesModel.OrderA
 public class CancelOrderIdentifiedCommandHandler(
     IMediator mediator,
     IRequestManager requestManager,
-    ILogger<IdentifiedCommandHandler<CancelOrderCommand, bool>> logger) : IdentifiedCommandHandler<CancelOrderCommand, bool>(mediator, requestManager, logger)
+    ILogger<IdentifiedCommandHandler<CancelOrderCommand, Result>> logger) : IdentifiedCommandHandler<CancelOrderCommand, Result>(mediator, requestManager, logger)
 {
-    protected override bool CreateResultForDuplicateRequest()
+    protected override Result CreateResultForDuplicateRequest()
     {
-        return true; // Ignore duplicate requests for processing order.
+        return Result.Success(); // Ignore duplicate requests for processing order.
     }
 }

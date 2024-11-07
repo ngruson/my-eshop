@@ -1,21 +1,22 @@
+using Ardalis.Result;
 using eShop.Ordering.API.Application.Commands.CreateOrder;
 using eShop.Ordering.API.Application.Validations;
 using FluentValidation.TestHelper;
 
-namespace Ordering.UnitTests.Application.Validations;
+namespace eShop.Ordering.UnitTests.Application.Validations;
 public class IdentifiedCommandValidatorUnitTests
 {
     [Theory, AutoNSubstituteData]
     internal void valid(
         IdentifiedCommandValidator sut,
-        IdentifiedCommand<CreateOrderCommand, bool> command
+        IdentifiedCommand<CreateOrderCommand, Result> command
     )
     {
         // Arrange
 
         // Act
 
-        TestValidationResult<IdentifiedCommand<CreateOrderCommand, bool>> result = sut.TestValidate(command);
+        TestValidationResult<IdentifiedCommand<CreateOrderCommand, Result>> result = sut.TestValidate(command);
 
         //Assert
 
@@ -30,11 +31,11 @@ public class IdentifiedCommandValidatorUnitTests
     {
         // Arrange
 
-        IdentifiedCommand<CreateOrderCommand, bool> request = new(command, Guid.Empty);
+        IdentifiedCommand<CreateOrderCommand, Result> request = new(command, Guid.Empty);
 
         // Act
 
-        TestValidationResult<IdentifiedCommand<CreateOrderCommand, bool>> result = sut.TestValidate(request);
+        TestValidationResult<IdentifiedCommand<CreateOrderCommand, Result>> result = sut.TestValidate(request);
 
         //Assert
 

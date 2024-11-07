@@ -1,9 +1,10 @@
 namespace eShop.Ordering.API.Application.Commands.CreateOrder;
 
+using Ardalis.Result;
 using eShop.Ordering.Contracts.CreateOrder;
 
 public record CreateOrderCommand(
-    OrderItemDto[] OrderItems,
+    OrderItemDto[] Items,
     Guid UserId,
     string UserName,
     string City,
@@ -15,4 +16,4 @@ public record CreateOrderCommand(
     string CardHolderName,
     DateTime CardExpiration,
     string CardSecurityNumber,
-    Guid CardType) : IRequest<bool>;
+    Guid CardType) : IRequest<Result>;

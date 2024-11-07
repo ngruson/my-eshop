@@ -748,6 +748,6 @@ public class CreateOrderCommandValidatorUnitTests
         //Assert
 
         Assert.False(result.IsValid);
-        Assert.Contains(nameof(command.OrderItems), result.Errors.Select(_ => _.PropertyName));
+        Assert.Contains(nameof(command.Items), result.Errors.Select(_ => _.PropertyName));
     }
 }

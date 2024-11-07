@@ -1,4 +1,6 @@
 namespace eShop.Ordering.API.Application.Commands.CreateOrder;
+
+using Ardalis.Result;
 using eShop.Ordering.API.Application.Commands;
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Contracts.CreateOrder;
@@ -12,26 +14,27 @@ public class CreateOrderCommandHandler(
     IRepository<Order> orderRepository,
     IRepository<CardType> cardTypeRepository,
     ILogger<CreateOrderCommandHandler> logger)
-        : IRequestHandler<CreateOrderCommand, bool>
+        : IRequestHandler<CreateOrderCommand, Result>
 {
     private readonly IRepository<Order> _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
     private readonly IRepository<CardType> _cardTypeRepository = cardTypeRepository ?? throw new ArgumentNullException(nameof(cardTypeRepository));
     private readonly IIntegrationEventService _orderingIntegrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
     private readonly ILogger<CreateOrderCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-    public async Task<bool> Handle(CreateOrderCommand message, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
         // Add Integration event to clean the basket
-        OrderStartedIntegrationEvent orderStartedIntegrationEvent = new(message.UserId);
+        OrderStartedIntegrationEvent orderStartedIntegrationEvent = new(request.UserId);
         await this._orderingIntegrationEventService.AddAndSaveEventAsync(orderStartedIntegrationEvent, cancellationToken);
 
-        CardType cardType = await this._cardTypeRepository.SingleOrDefaultAsync(new CardTypeSpecification(message.CardType), cancellationToken)
-            ?? throw new KeyNotFoundException($"Card Type {message.CardType} not found.");
-        Address address = new(message.Street!, message.City!, message.State!, message.Country!, message.ZipCode!);
-        Order order = new(message.UserId, message.UserName!, address,
-            cardType, message.CardNumber!, message.CardSecurityNumber!, message.CardHolderName!, message.CardExpiration);
+        string maskedCCNumber = request.CardNumber[^4..].PadLeft(request.CardNumber.Length, 'X');
+        CardType cardType = await this._cardTypeRepository.SingleOrDefaultAsync(new CardTypeSpecification(request.CardType), cancellationToken)
+            ?? throw new KeyNotFoundException($"Card Type {request.CardType} not found.");
+        Address address = new(request.Street!, request.City!, request.State!, request.Country!, request.ZipCode!);
+        Order order = new(request.UserId, request.UserName!, address,
+            cardType, maskedCCNumber, request.CardSecurityNumber!, request.CardHolderName!, request.CardExpiration);
 
-        foreach (OrderItemDto item in message.OrderItems)
+        foreach (OrderItemDto item in request.Items)
         {
             order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, item.Discount, item.PictureUrl, item.Units);
         }
@@ -40,7 +43,7 @@ public class CreateOrderCommandHandler(
 
         await this._orderRepository.AddAsync(order, cancellationToken);
 
-        return true;
+        return Result.Success();
     }
 }
 
@@ -48,10 +51,10 @@ public class CreateOrderCommandHandler(
 public class CreateOrderIdentifiedCommandHandler(
     IMediator mediator,
     IRequestManager requestManager,
-    ILogger<IdentifiedCommandHandler<CreateOrderCommand, bool>> logger) : IdentifiedCommandHandler<CreateOrderCommand, bool>(mediator, requestManager, logger)
+    ILogger<IdentifiedCommandHandler<CreateOrderCommand, Result>> logger) : IdentifiedCommandHandler<CreateOrderCommand, Result>(mediator, requestManager, logger)
 {
-    protected override bool CreateResultForDuplicateRequest()
+    protected override Result CreateResultForDuplicateRequest()
     {
-        return true; // Ignore duplicate requests for creating order.
+        return Result.Success(); // Ignore duplicate requests for creating order.
     }
 }
