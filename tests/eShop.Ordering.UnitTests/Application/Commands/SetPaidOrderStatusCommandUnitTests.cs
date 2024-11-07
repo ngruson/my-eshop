@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Ordering.API.Application.Commands.SetPaidOrderStatus;
@@ -25,10 +26,11 @@ public class SetPaidOrderStatusCommandUnitTests
 
         //Act
 
-        await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         //Assert
 
+        Assert.True(result.IsSuccess);
         Assert.Equal(OrderStatus.Paid, order.OrderStatus);
 
         await orderRepository.Received().UpdateAsync(order, default);
@@ -48,10 +50,11 @@ public class SetPaidOrderStatusCommandUnitTests
 
         //Act
 
-        await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         //Assert
 
+        Assert.True(result.IsSuccess);
         Assert.NotEqual(OrderStatus.Paid, order.OrderStatus);
 
         await orderRepository.Received().UpdateAsync(order, default);
@@ -67,11 +70,11 @@ public class SetPaidOrderStatusCommandUnitTests
 
         //Act
 
-        bool result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         //Assert
 
-        Assert.False(result);
+        Assert.False(result.IsSuccess);
 
         await orderRepository.DidNotReceive().UpdateAsync(Arg.Any<Order>(), default);
     }

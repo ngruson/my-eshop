@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Ordering.API.Application.Commands.SetAwaitingValidationOrderStatus;
@@ -67,11 +68,11 @@ public class SetAwaitingValidationOrderStatusCommandUnitTests
 
         //Act
 
-        bool result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         //Assert
 
-        Assert.False(result);
+        Assert.False(result.IsSuccess);
 
         await orderRepository.DidNotReceive().UpdateAsync(Arg.Any<Order>(), default);
     }

@@ -22,12 +22,12 @@ public class CreateOrderCommandUnitTests
         cardTypeRepositoryMock.SingleOrDefaultAsync(Arg.Any<CardTypeSpecification>(), default)
             .Returns(cardType);
 
-        OrderItemDto[] orderItems = command.OrderItems.Select(
+        OrderItemDto[] orderItems = command.Items.Select(
             x => new OrderItemDto(x.ProductId, x.ProductName, Math.Abs(x.UnitPrice), 0, x.Units, x.PictureUrl)).ToArray();
 
         //Act
 
-        await sut.Handle(command with { CardType = cardType.ObjectId, OrderItems = orderItems }, default);
+        await sut.Handle(command with { CardType = cardType.ObjectId, Items = orderItems }, default);
 
         //Assert
 

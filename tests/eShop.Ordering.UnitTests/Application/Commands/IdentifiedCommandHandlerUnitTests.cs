@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Ordering.API.Application.Commands.CancelOrder;
@@ -9,7 +10,7 @@ using eShop.Ordering.API.Application.Commands.SetStockRejectedOrderStatus;
 using eShop.Ordering.API.Application.Commands.ShipOrder;
 using NSubstitute.ExceptionExtensions;
 
-namespace Ordering.UnitTests.Application.Commands;
+namespace eShop.Ordering.UnitTests.Application.Commands;
 
 public class IdentifiedCommandHandlerUnitTests
 {
@@ -18,7 +19,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         CreateOrderIdentifiedCommandHandler sut,
-        IdentifiedCommand<CreateOrderCommand, bool> command
+        IdentifiedCommand<CreateOrderCommand, Result> command
     )
     {
         // Arrange
@@ -26,16 +27,16 @@ public class IdentifiedCommandHandlerUnitTests
         requestManager.ExistAsync(Arg.Any<Guid>())
             .Returns(Task.FromResult(false));
 
-        mediator.Send(Arg.Any<IRequest<bool>>(), default)
-            .Returns(Task.FromResult(true));
+        mediator.Send(Arg.Any<IRequest<Result>>(), default)
+            .Returns(Task.FromResult(Result.Success()));
 
         // Act
 
-        bool result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         // Assert
-        Assert.True(result);
-        await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
+        Assert.True(result.IsSuccess);
+        await mediator.Received().Send(Arg.Any<IRequest<Result>>(), default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -43,7 +44,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         CancelOrderIdentifiedCommandHandler sut,
-        IdentifiedCommand<CancelOrderCommand, bool> command
+        IdentifiedCommand<CancelOrderCommand, Result> command
     )
     {
         // Arrange
@@ -51,16 +52,16 @@ public class IdentifiedCommandHandlerUnitTests
         requestManager.ExistAsync(Arg.Any<Guid>())
             .Returns(Task.FromResult(false));
 
-        mediator.Send(Arg.Any<IRequest<bool>>(), default)
-            .Returns(Task.FromResult(true));
+        mediator.Send(Arg.Any<IRequest<Result>>(), default)
+            .Returns(Task.FromResult(Result.Success()));
 
         // Act
 
-        bool result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         // Assert
-        Assert.True(result);
-        await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
+        Assert.True(result.IsSuccess);
+        await mediator.Received().Send(Arg.Any<IRequest<Result>>(), default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -68,7 +69,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         ShipOrderIdentifiedCommandHandler sut,
-        IdentifiedCommand<ShipOrderCommand, bool> command
+        IdentifiedCommand<ShipOrderCommand, Result> command
     )
     {
         // Arrange
@@ -76,17 +77,17 @@ public class IdentifiedCommandHandlerUnitTests
         requestManager.ExistAsync(Arg.Any<Guid>())
             .Returns(Task.FromResult(false));
 
-        mediator.Send(Arg.Any<IRequest<bool>>(), default)
-            .Returns(Task.FromResult(true));
+        mediator.Send(Arg.Any<IRequest<Result>>(), default)
+            .Returns(Task.FromResult(Result.Success()));
 
         // Act
 
-        bool result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         // Assert
 
-        Assert.True(result);
-        await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
+        Assert.True(result.IsSuccess);
+        await mediator.Received().Send(Arg.Any<IRequest<Result>>(), default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -94,7 +95,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         SetPaidIdentifiedOrderStatusCommandHandler sut,
-        IdentifiedCommand<SetPaidOrderStatusCommand, bool> command
+        IdentifiedCommand<SetPaidOrderStatusCommand, Result> command
     )
     {
         // Arrange
@@ -102,17 +103,17 @@ public class IdentifiedCommandHandlerUnitTests
         requestManager.ExistAsync(Arg.Any<Guid>())
             .Returns(Task.FromResult(false));
 
-        mediator.Send(Arg.Any<IRequest<bool>>(), default)
-            .Returns(Task.FromResult(true));
+        mediator.Send(Arg.Any<IRequest<Result>>(), default)
+            .Returns(Task.FromResult(Result.Success()));
 
         // Act
 
-        bool result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         // Assert
 
-        Assert.True(result);
-        await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
+        Assert.True(result.IsSuccess);
+        await mediator.Received().Send(Arg.Any<IRequest<Result>>(), default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -120,7 +121,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         SetAwaitingValidationIdentifiedOrderStatusCommandHandler sut,
-        IdentifiedCommand<SetAwaitingValidationOrderStatusCommand, bool> command
+        IdentifiedCommand<SetAwaitingValidationOrderStatusCommand, Result> command
     )
     {
         // Arrange
@@ -128,16 +129,16 @@ public class IdentifiedCommandHandlerUnitTests
         requestManager.ExistAsync(Arg.Any<Guid>())
             .Returns(Task.FromResult(false));
 
-        mediator.Send(Arg.Any<IRequest<bool>>(), default)
-            .Returns(Task.FromResult(true));
+        mediator.Send(Arg.Any<IRequest<Result>>(), default)
+            .Returns(Task.FromResult(Result.Success()));
 
         // Act
 
-        bool result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         // Assert
-        Assert.True(result);
-        await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
+        Assert.True(result.IsSuccess);
+        await mediator.Received().Send(Arg.Any<IRequest<Result>>(), default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -196,7 +197,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         CreateOrderIdentifiedCommandHandler sut,
-        IdentifiedCommand<CreateOrderCommand, bool> message
+        IdentifiedCommand<CreateOrderCommand, Result> message
     )
     {
         // Arrange
@@ -206,11 +207,11 @@ public class IdentifiedCommandHandlerUnitTests
 
         // Act
 
-        bool result = await sut.Handle(message, default);
+        Result result = await sut.Handle(message, default);
 
         // Assert
 
-        Assert.True (result);
+        Assert.True(result.IsSuccess);
 
         await mediator.DidNotReceive().Send(Arg.Any<IRequest<bool>>(), default);
     }
@@ -220,7 +221,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         CreateOrderIdentifiedCommandHandler sut,
-        IdentifiedCommand<CreateOrderCommand, bool> message
+        IdentifiedCommand<CreateOrderCommand, Result> message
     )
     {
         // Arrange
@@ -233,12 +234,12 @@ public class IdentifiedCommandHandlerUnitTests
 
         // Act
 
-        bool result = await sut.Handle(message, default);
+        Result result = await sut.Handle(message, default);
 
         // Assert
 
-        Assert.False(result);
+        Assert.Null(result);
 
-        await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
+        await mediator.Received().Send(Arg.Any<IRequest<Result>>(), default);
     }
 }

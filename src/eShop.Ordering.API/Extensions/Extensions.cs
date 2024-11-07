@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using eShop.EventBus.Dapr;
 using eShop.EventBusRabbitMQ;
 using eShop.Ordering.API.Application.Commands.CancelOrder;
@@ -62,10 +63,9 @@ internal static class Extensions
         // Register the command validators for the validator behavior (validators based on FluentValidation library)
         builder.Services.AddSingleton<IValidator<CancelOrderCommand>, CancelOrderCommandValidator>();
         builder.Services.AddSingleton<IValidator<CreateOrderCommand>, CreateOrderCommandValidator>();
-        builder.Services.AddSingleton<IValidator<IdentifiedCommand<CreateOrderCommand, bool>>, IdentifiedCommandValidator>();
+        builder.Services.AddSingleton<IValidator<IdentifiedCommand<CreateOrderCommand, Result>>, IdentifiedCommandValidator>();
         builder.Services.AddSingleton<IValidator<ShipOrderCommand>, ShipOrderCommandValidator>();
 
-        builder.Services.AddScoped<IOrderQueries, OrderQueries>();
         builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         builder.Services.AddScoped<IRequestManager, RequestManager>();
     }

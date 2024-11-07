@@ -1,14 +1,13 @@
+using Ardalis.Result;
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 
 namespace eShop.Ordering.API.Application.Commands.SetPaidOrderStatus;
 
 // Regular CommandHandler
-public class SetPaidOrderStatusCommandHandler(
-    IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository)
-        : IRequestHandler<SetPaidOrderStatusCommand, bool>
+public class SetPaidOrderStatusCommandHandler(IRepository<Order> orderRepository) : IRequestHandler<SetPaidOrderStatusCommand, Result>
 {
-    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
+    private readonly IRepository<Order> _orderRepository = orderRepository;
 
     /// <summary>
     /// Handler which processes the command when
@@ -16,22 +15,23 @@ public class SetPaidOrderStatusCommandHandler(
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<bool> Handle(SetPaidOrderStatusCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(SetPaidOrderStatusCommand command, CancellationToken cancellationToken)
     {
         // Simulate a work time for validating the payment
         await Task.Delay(10000, cancellationToken);
 
-        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate = await this._orderRepository.SingleOrDefaultAsync(
+        Order? orderToUpdate = await this._orderRepository.SingleOrDefaultAsync(
             new GetOrderSpecification(command.OrderId), cancellationToken);
 
         if (orderToUpdate is null)
         {
-            return false;
+            return Result.NotFound();
         }
 
         orderToUpdate.SetPaidStatus();
         await this._orderRepository.UpdateAsync(orderToUpdate, cancellationToken);
-        return true;
+
+        return Result.Success();
     }
 }
 
@@ -40,11 +40,11 @@ public class SetPaidOrderStatusCommandHandler(
 public class SetPaidIdentifiedOrderStatusCommandHandler(
     IMediator mediator,
     IRequestManager requestManager,
-    ILogger<IdentifiedCommandHandler<SetPaidOrderStatusCommand, bool>> logger)
-        : IdentifiedCommandHandler<SetPaidOrderStatusCommand, bool>(mediator, requestManager, logger)
+    ILogger<IdentifiedCommandHandler<SetPaidOrderStatusCommand, Result>> logger)
+        : IdentifiedCommandHandler<SetPaidOrderStatusCommand, Result>(mediator, requestManager, logger)
 {
-    protected override bool CreateResultForDuplicateRequest()
+    protected override Result CreateResultForDuplicateRequest()
     {
-        return true; // Ignore duplicate requests for processing order.
+        return Result.Success(); // Ignore duplicate requests for processing order.
     }
 }
