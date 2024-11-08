@@ -62,7 +62,7 @@ internal partial class GenerateOrdersCommandHandler(
                 CustomerDto customer = customers[random.Next(customers.Length)];
                 UserDto user = users.Single(_ => _.UserName == customer.UserName);
 
-                int orderItemsCount = random.Next(0, 5);
+                int orderItemsCount = random.Next(1, 5);
                 OrderItemDto[] orderItems = new OrderItemDto[orderItemsCount];
 
                 for (int j = 0; j < orderItemsCount; j++)

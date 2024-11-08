@@ -7,7 +7,7 @@ namespace eShop.ServiceInvocation.MasterDataApiClient.Dapr;
 public class MasterDataApiClient(DaprClient daprClient, AccessTokenAccessor accessTokenAccessor)
     : BaseDaprApiClient(daprClient, accessTokenAccessor), IMasterDataApiClient
 {
-    protected override string AppId => "masterData-api";
+    protected override string AppId => "masterdata-api";
 
     public async Task<CountryDto[]> GetCountries()
     {

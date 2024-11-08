@@ -17,6 +17,13 @@ public class ProfileService(UserManager<ApplicationUser> userManager) : IProfile
     {
         ArgumentNullException.ThrowIfNull(context.Subject, nameof(context.Subject));
 
+        string? authMethod = context.Subject.Claims.Where(_ => _.Type == JwtClaimTypes.AuthenticationMethod).FirstOrDefault()?.Value;
+        if (authMethod == "external")
+        {
+            context.IsActive = true;
+            return;
+        }
+
         string? subjectId = context.Subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
         ApplicationUser? user = await userManager.FindByIdAsync(subjectId!);
 
