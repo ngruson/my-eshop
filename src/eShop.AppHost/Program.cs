@@ -68,7 +68,7 @@ IResourceBuilder<ProjectResource> orderingApi = builder.AddProject<Projects.eSho
     .WithReference(orderDb)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
-IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eShop_MasterData_API>("masterData-api")
+IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eShop_MasterData_API>("masterdata-api")
     .WithDaprSidecar()
     .WithEnvironment("Identity__Url", identityEndpoint);
 
