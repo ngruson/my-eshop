@@ -17,7 +17,7 @@ public class ProfileService(UserManager<ApplicationUser> userManager) : IProfile
     {
         ArgumentNullException.ThrowIfNull(context.Subject, nameof(context.Subject));
 
-        string authMethod = context.Subject.Claims.Where(_ => _.Type == JwtClaimTypes.AuthenticationMethod).FirstOrDefault()?.Value;
+        string? authMethod = context.Subject.Claims.Where(_ => _.Type == JwtClaimTypes.AuthenticationMethod).FirstOrDefault()?.Value;
         if (authMethod == "external")
         {
             context.IsActive = true;

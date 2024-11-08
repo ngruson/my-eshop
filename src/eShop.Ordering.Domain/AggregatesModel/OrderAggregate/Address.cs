@@ -10,7 +10,7 @@ public class Address(string street, string city, string? state, string country, 
     public string Country { get; private set; } = country;
     public string ZipCode { get; private set; } = zipCode;
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    protected override IEnumerable<object?> GetEqualityComponents()
     {
         // Using a yield return statement to return each element one at a time
         yield return this.Street;
