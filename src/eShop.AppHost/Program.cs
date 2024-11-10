@@ -35,6 +35,7 @@ IResourceBuilder<ProjectResource> identityApi = builder.AddProject<Projects.eSho
 EndpointReference identityEndpoint = identityApi.GetEndpoint(launchProfileName);
 
 IResourceBuilder<ProjectResource> basketApi = builder.AddProject<Projects.eShop_Basket_API>("basket-api")
+    .WithDaprSidecar()
     .WithReference(redis)
     .WithReference(rabbitMq)
     .WithEnvironment("Identity__Url", identityEndpoint)

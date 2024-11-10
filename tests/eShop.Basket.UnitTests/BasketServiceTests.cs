@@ -8,6 +8,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using Microsoft.Extensions.Logging;
 using Grpc.Core;
+using eShop.Basket.Contracts.Grpc;
 
 namespace eShop.Basket.UnitTests;
 

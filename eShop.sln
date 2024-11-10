@@ -124,6 +124,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.ServiceInvocation", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.ServiceInvocation.UnitTests", "tests\eShop.ServiceInvocation.UnitTests\eShop.ServiceInvocation.UnitTests.csproj", "{6AAA35C1-FDA9-44D4-ADC1-3B07008AC241}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.Basket.Contracts", "src\eShop.Basket.Contracts\eShop.Basket.Contracts.csproj", "{96C974FC-6BFD-40F5-BDAD-286AE650F2A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -322,6 +324,10 @@ Global
 		{6AAA35C1-FDA9-44D4-ADC1-3B07008AC241}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AAA35C1-FDA9-44D4-ADC1-3B07008AC241}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AAA35C1-FDA9-44D4-ADC1-3B07008AC241}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96C974FC-6BFD-40F5-BDAD-286AE650F2A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96C974FC-6BFD-40F5-BDAD-286AE650F2A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96C974FC-6BFD-40F5-BDAD-286AE650F2A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96C974FC-6BFD-40F5-BDAD-286AE650F2A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -377,6 +383,7 @@ Global
 		{ED7020D3-805A-4C05-9B51-76F5CD5B0E28} = {932D8224-11F6-4D07-B109-DA28AD288A63}
 		{ED9201F6-3182-45EE-971E-A8643402F4A9} = {932D8224-11F6-4D07-B109-DA28AD288A63}
 		{6AAA35C1-FDA9-44D4-ADC1-3B07008AC241} = {A857AD10-40FF-4303-BEC2-FF1C58D5735E}
+		{96C974FC-6BFD-40F5-BDAD-286AE650F2A6} = {932D8224-11F6-4D07-B109-DA28AD288A63}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25728519-5F0F-4973-8A64-0A81EB4EA8D9}
