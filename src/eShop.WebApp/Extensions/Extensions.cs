@@ -21,6 +21,9 @@ using eShop.ServiceInvocation.CatalogApiClient;
 using eShop.ServiceInvocation.OrderingApiClient;
 using eShop.Shared.Auth;
 using eShop.WebApp.Services.OrderStatus;
+using static eShop.Basket.Contracts.Grpc.Basket;
+using eShop.ServiceInvocation.BasketApiClient;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace eShop.WebApp.Extensions;
 
@@ -38,14 +41,9 @@ public static class Extensions
         // Application services
         builder.Services.AddScoped<BasketState>();
         builder.Services.AddScoped<LogOutService>();
-        builder.Services.AddSingleton<BasketService>();
         builder.Services.AddSingleton<OrderStatusNotificationService>();
         builder.Services.AddSingleton<IProductImageUrlProvider, ProductImageUrlProvider>();
         builder.AddAIServices();
-
-        // HTTP and GRPC client registrations
-        builder.Services.AddGrpcClient<Basket.API.Grpc.Basket.BasketClient>(o => o.Address = new("http://basket-api"))
-            .AddAuthToken();
 
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
 
@@ -55,16 +53,22 @@ public static class Extensions
         }
         else
         {
-            builder.AddRefitServices();
+            builder.AddRefitServices();            
         }
     }
 
     private static void AddDaprServices(this IHostApplicationBuilder builder)
     {
+        builder.Services.AddGrpc();
         builder.Services.AddDaprClient();        
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddScoped<AccessTokenAccessor>();
 
+        string? grpcEndpoint = builder.Configuration["DAPR_GRPC_ENDPOINT"];
+        builder.Services.AddGrpcClient<BasketClient>(o => o.Address = new(grpcEndpoint!))
+            .AddAuthToken();
+
+        builder.Services.AddScoped<IBasketApiClient, ServiceInvocation.BasketApiClient.Dapr.BasketApiClient>();
         builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Dapr.CatalogApiClient>();
         builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Dapr.CustomerApiClient>();
         builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Dapr.OrderingApiClient>();
@@ -72,6 +76,9 @@ public static class Extensions
 
     private static void AddRefitServices(this IHostApplicationBuilder builder)
     {
+        builder.Services.AddGrpcClient<BasketClient>(o => o.Address = new("http://basket-api"))
+            .AddAuthToken();
+
         builder.Services
                 .AddRefitClient<ICatalogApi>()
                 .ConfigureHttpClient(c =>
@@ -90,6 +97,7 @@ public static class Extensions
                 c.BaseAddress = new Uri("http://ordering-api"))
             .AddAuthToken();
 
+        builder.Services.AddScoped<IBasketApiClient, ServiceInvocation.BasketApiClient.Refit.BasketApiClient>();
         builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Refit.CatalogApiClient>();
         builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Refit.CustomerApiClient>();
         builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Refit.OrderingApiClient>();

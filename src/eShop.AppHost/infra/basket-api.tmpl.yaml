@@ -12,6 +12,11 @@ properties:
     runtime:
       dotnet:
         autoConfigureDataProtection: true
+    dapr:
+      appId: basket-api
+      appPort: 8080
+      appProtocol: grpc
+      enabled: true
     ingress:
       external: false
       targetPort: {{ targetPortOrDefault 8080 }}

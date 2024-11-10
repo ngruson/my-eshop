@@ -11,10 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\eShop.Basket.Contracts\eShop.Basket.Contracts.csproj" />
     <ProjectReference Include="..\eShop.Customer.Contracts\eShop.Customer.Contracts.csproj" />
     <ProjectReference Include="..\eShop.EventBusRabbitMQ\eShop.EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\eShop.Ordering.Contracts\eShop.Ordering.Contracts.csproj" />
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\eShop.ServiceInvocation\eShop.ServiceInvocation.csproj" />
     <ProjectReference Include="..\eShop.Shared\eShop.Shared.csproj" />
     <ProjectReference Include="..\eShop.WebAppComponents\eShop.WebAppComponents.csproj" />
   </ItemGroup>
@@ -30,10 +32,6 @@
     <PackageReference Include="Grpc.Tools" PrivateAssets="All" />
     <PackageReference Include="IdentityModel" />
     <PackageReference Include="Refit.HttpClientFactory" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="..\eShop.Basket.API\Proto\basket.proto" GrpcServices="Client" />
-  </ItemGroup>
+  </ItemGroup>  
 
 </Project>

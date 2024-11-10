@@ -1,12 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using eShop.Basket.API.Repositories;
 using eShop.Basket.API.Model;
+using static eShop.Basket.Contracts.Grpc.Basket;
+using eShop.Basket.Contracts.Grpc;
 
 namespace eShop.Basket.API.Grpc;
 
 public class BasketService(
     IBasketRepository repository,
-    ILogger<BasketService> logger) : Basket.BasketBase
+    ILogger<BasketService> logger) : BasketBase
 {
     [AllowAnonymous]
     public override async Task<CustomerBasketResponse> GetBasket(GetBasketRequest request, ServerCallContext context)
@@ -79,7 +81,7 @@ public class BasketService(
 
         foreach (Model.BasketItem item in customerBasket.Items)
         {
-            response.Items.Add(new BasketItem()
+            response.Items.Add(new Contracts.Grpc.BasketItem()
             {
                 ProductId = item.ProductId.ToString(),
                 Quantity = item.Quantity,
@@ -96,7 +98,7 @@ public class BasketService(
             BuyerId = userId
         };
 
-        foreach (BasketItem item in customerBasketRequest.Items)
+        foreach (Contracts.Grpc.BasketItem item in customerBasketRequest.Items)
         {
             response.Items.Add(new()
             {

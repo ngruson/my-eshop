@@ -5,20 +5,22 @@ using eShop.Ordering.Contracts.CreateOrder;
 using eShop.WebApp.Extensions;
 using eShop.ServiceInvocation.CatalogApiClient;
 using eShop.ServiceInvocation.OrderingApiClient;
+using eShop.ServiceInvocation.BasketApiClient;
+using eShop.Basket.Contracts.Grpc;
 
 namespace eShop.WebApp.Services;
 
 public class BasketState(
-    BasketService basketService,
+    IBasketApiClient basketApiClient,
     ICatalogApiClient catalogApiClient,
     IOrderingApiClient orderingApiClient,
     AuthenticationStateProvider authenticationStateProvider) : IBasketState
 {
-    private Task<IReadOnlyCollection<BasketItem>>? _cachedBasket;
+    private Task<BasketItem[]>? _cachedBasket;
     private readonly HashSet<BasketStateChangedSubscription> _changeSubscriptions = [];
 
     public Task DeleteBasketAsync()
-        => basketService.DeleteBasketAsync();
+        => basketApiClient.DeleteBasketAsync();
 
     public async Task<IReadOnlyCollection<BasketItem>> GetBasketItemsAsync()
         => (await this.GetUserAsync()).Identity?.IsAuthenticated == true
@@ -34,27 +36,40 @@ public class BasketState(
 
     public async Task AddAsync(CatalogItemViewModel item)
     {
-        List<BasketQuantity> items = (await this.FetchBasketItemsAsync())
-            .Select(i => new BasketQuantity(i.ProductId, i.Quantity)).ToList();
+        BasketItem[] items = await this.FetchBasketItemsAsync();
         bool found = false;
-        for (int i = 0; i < items.Count; i++)
+        for (int i = 0; i < items.Count(); i++)
         {
-            BasketQuantity existing = items[i];
+            BasketItem existing = items[i];
             if (existing.ProductId == item.ObjectId)
             {
-                items[i] = existing with { Quantity = existing.Quantity + 1 };
+                items[i].Quantity = existing.Quantity + 1;
                 found = true;
                 break;
             }
         }
 
+        UpdateBasketRequest updateBasketRequest = new();
+        foreach (BasketItem basketQuantity in items)
+        {
+            updateBasketRequest.Items.Add(new Basket.Contracts.Grpc.BasketItem
+            {
+                ProductId = basketQuantity.ProductId.ToString(),
+                Quantity = basketQuantity.Quantity
+            });
+        }
+
         if (!found)
         {
-            items.Add(new BasketQuantity(item.ObjectId, 1));
+            updateBasketRequest.Items.Add(new Basket.Contracts.Grpc.BasketItem
+            {
+                ProductId = item.ObjectId.ToString(),
+                Quantity = 1
+            });
         }
 
         this._cachedBasket = null;
-        await basketService.UpdateBasketAsync(items);
+        await basketApiClient.UpdateBasketAsync(updateBasketRequest);
         await this.NotifyChangeSubscribersAsync();
     }
 
@@ -72,8 +87,18 @@ public class BasketState(
                 existingItems.Remove(row);
             }
 
+            UpdateBasketRequest updateBasketRequest = new();
+            foreach (BasketItem basketItem in existingItems)
+            {
+                updateBasketRequest.Items.Add(new Basket.Contracts.Grpc.BasketItem
+                {
+                    ProductId = basketItem.ProductId.ToString(),
+                    Quantity = basketItem.Quantity
+                });
+            }
+
             this._cachedBasket = null;
-            await basketService.UpdateBasketAsync(existingItems.Select(i => new BasketQuantity(i.ProductId, i.Quantity)).ToList());
+            await basketApiClient.UpdateBasketAsync(updateBasketRequest);
             await this.NotifyChangeSubscribersAsync();
         }
     }
@@ -119,25 +144,26 @@ public class BasketState(
     private async Task<ClaimsPrincipal> GetUserAsync()
         => (await authenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-    private Task<IReadOnlyCollection<BasketItem>> FetchBasketItemsAsync()
+    private Task<BasketItem[]> FetchBasketItemsAsync()
     {
         return this._cachedBasket ??= FetchCoreAsync();
 
-        async Task<IReadOnlyCollection<BasketItem>> FetchCoreAsync()
+        async Task<BasketItem[]> FetchCoreAsync()
         {
-            IReadOnlyCollection<BasketQuantity> quantities = await basketService.GetBasketAsync();
-            if (quantities.Count == 0)
+            CustomerBasketResponse basket = await basketApiClient.GetBasketAsync();            
+            if (basket.Items.Count == 0)
             {
                 return [];
             }
 
             // Get details for the items in the basket
             List<BasketItem> basketItems = [];
-            Guid[] productIds = quantities.Select(row => row.ProductId).ToArray();
+            Guid[] productIds = basket.Items.Select(row => Guid.Parse(row.ProductId)).ToArray();
             Dictionary<Guid, CatalogItemViewModel> catalogItems = (await catalogApiClient.GetCatalogItems(productIds)).ToDictionary(k => k.ObjectId, v => v);
-            foreach (BasketQuantity item in quantities)
+            foreach (Basket.Contracts.Grpc.BasketItem item in basket.Items)
             {
-                CatalogItemViewModel catalogItem = catalogItems[item.ProductId];
+                Guid productId = Guid.Parse(item.ProductId);
+                CatalogItemViewModel catalogItem = catalogItems[productId];
                 BasketItem orderItem = new()
                 {
                     Id = Guid.NewGuid().ToString(), // TODO: this value is meaningless, use ProductId instead.
@@ -150,7 +176,7 @@ public class BasketState(
                 basketItems.Add(orderItem);
             }
 
-            return basketItems;
+            return basketItems.ToArray();
         }
     }
 

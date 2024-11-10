@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\eShop.Basket.Contracts\eShop.Basket.Contracts.csproj" />
     <ProjectReference Include="..\eShop.Catalog.Contracts\eShop.Catalog.Contracts.csproj" />
     <ProjectReference Include="..\eShop.Customer.Contracts\eShop.Customer.Contracts.csproj" />
     <ProjectReference Include="..\eShop.Identity.Contracts\eShop.Identity.Contracts.csproj" />
