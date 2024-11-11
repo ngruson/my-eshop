@@ -25,6 +25,8 @@ properties:
       - server: {{ .Env.AZURE_CONTAINER_REGISTRY_ENDPOINT }}
         identity: {{ .Env.AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID }}
     secrets:
+      - name: connectionstrings--appinsights
+        value: {{ .Env.APPINSIGHTS_CONNECTIONSTRING }}
       - name: connectionstrings--catalogdb
         value: Host=postgres;Port=5432;Username=postgres;Password={{ securedParameter "postgres_password" }};Database=catalogdb
       - name: connectionstrings--eventbus
@@ -46,6 +48,8 @@ properties:
             value: "true"
           - name: OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY
             value: in_memory
+          - name: ConnectionStrings__appinsights
+            secretRef: connectionstrings--appinsights
           - name: ConnectionStrings__catalogdb
             secretRef: connectionstrings--catalogdb
           - name: ConnectionStrings__eventbus
