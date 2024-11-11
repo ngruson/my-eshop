@@ -26,6 +26,8 @@ properties:
       - server: {{ .Env.AZURE_CONTAINER_REGISTRY_ENDPOINT }}
         identity: {{ .Env.AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID }}
     secrets:
+      - name: connectionstrings--appinsights
+        value: {{ .Env.APPINSIGHTS_CONNECTIONSTRING }}
       - name: connectionstrings--identitydb
         value: Host=postgres;Port=5432;Username=postgres;Password={{ securedParameter "postgres_password" }};Database=identitydb
   template:
@@ -61,6 +63,8 @@ properties:
             value: http://webhooks-api.internal.{{ .Env.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN }}
           - name: WebhooksWebClient
             value: https://webhooksclient.internal.{{ .Env.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN }}
+          - name: ConnectionStrings__appinsights
+            secretRef: connectionstrings--appinsights
           - name: ConnectionStrings__identitydb
             secretRef: connectionstrings--identitydb
           - name: Entra__TenantId

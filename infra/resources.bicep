@@ -76,6 +76,15 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-02-02-p
 
 }
 
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = { 
+  name: 'ain-${resourceToken}'
+  location: location 
+  kind: 'web' 
+  properties: { 
+    Application_Type: 'web'
+  } 
+}
+
 resource explicitContributorUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(containerAppEnvironment.id, principalId, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c'))
   scope: containerAppEnvironment
@@ -148,5 +157,6 @@ output AZURE_CONTAINER_REGISTRY_NAME string = containerRegistry.name
 output AZURE_CONTAINER_APPS_ENVIRONMENT_NAME string = containerAppEnvironment.name
 output AZURE_CONTAINER_APPS_ENVIRONMENT_ID string = containerAppEnvironment.id
 output AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN string = containerAppEnvironment.properties.defaultDomain
+output APPINSIGHTS_CONNECTIONSTRING string = applicationInsights.properties.ConnectionString
 //output IDENTITY_CLIENTID string = 'Clientid' //appRegistration.properties.outputs.appId
 //output IDENTITY_CLIENTSECRET string = 'ClientSecret' //appRegistration.properties.outputs.spPassword

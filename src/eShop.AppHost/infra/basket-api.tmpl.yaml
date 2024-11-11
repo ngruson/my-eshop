@@ -26,6 +26,8 @@ properties:
       - server: {{ .Env.AZURE_CONTAINER_REGISTRY_ENDPOINT }}
         identity: {{ .Env.AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID }}
     secrets:
+      - name: connectionstrings--appinsights
+        value: {{ .Env.APPINSIGHTS_CONNECTIONSTRING }}
       - name: connectionstrings--eventbus
         value: amqp://guest:{{ securedParameter "eventbus_password" }}@eventbus:5672
       - name: connectionstrings--redis
@@ -49,6 +51,8 @@ properties:
             value: "true"
           - name: OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY
             value: in_memory
+          - name: ConnectionStrings__appinsights
+            secretRef: connectionstrings--appinsights
           - name: ConnectionStrings__eventbus
             secretRef: connectionstrings--eventbus
           - name: ConnectionStrings__redis
