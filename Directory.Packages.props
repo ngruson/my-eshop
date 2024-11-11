@@ -59,7 +59,7 @@
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.3.1" />
     <PackageVersion Include="Microsoft.Identity.Web.UI" Version="3.3.1" />
     <PackageVersion Include="MSTest.TestAdapter" Version="3.4.3" />
-    <PackageVersion Include="MSTest.TestFramework" Version="3.4.3" />
+    <PackageVersion Include="MSTest.TestFramework" Version="3.6.2" />
     <!-- Version together with EF -->
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0-rc.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0-rc.2.24474.1" />
