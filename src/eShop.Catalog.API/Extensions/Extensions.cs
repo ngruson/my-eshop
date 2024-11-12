@@ -23,7 +23,7 @@ public static class Extensions
         builder.Services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<CatalogContext>());
 
         // REVIEW: This is done for development ease but shouldn't be here in production
-        builder.Services.AddMigration<CatalogContext>(typeof(CatalogSeed));
+        builder.Services.AddMigration<CatalogContext>(builder.Configuration, typeof(CatalogSeed));
         builder.Services.AddScoped<CatalogSeed>();
 
         builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));

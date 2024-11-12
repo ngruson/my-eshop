@@ -1,8 +1,5 @@
-﻿using eShop.EventBus.Extensions;
+using eShop.EventBus.Extensions;
 using eShop.EventBusRabbitMQ;
-using eShop.Webhooks.API.Infrastructure;
-using eShop.Webhooks.API.IntegrationEvents;
-using eShop.Webhooks.API.Services;
 
 internal static class Extensions
 {
@@ -15,7 +12,7 @@ internal static class Extensions
 
         builder.AddNpgsqlDbContext<WebhooksContext>("webhooksdb");
 
-        builder.Services.AddMigration<WebhooksContext>();
+        builder.Services.AddMigration<WebhooksContext>(builder.Configuration);
 
         builder.Services.AddTransient<IGrantUrlTesterService, GrantUrlTesterService>();
         builder.Services.AddTransient<IWebhooksRetriever, WebhooksRetriever>();

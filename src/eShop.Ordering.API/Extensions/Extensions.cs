@@ -28,7 +28,7 @@ internal static class Extensions
         builder.Services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<OrderingContext>());
         builder.EnrichNpgsqlDbContext<OrderingContext>();
 
-        builder.Services.AddMigration<OrderingContext>(typeof(CardTypesSeed));
+        builder.Services.AddMigration<OrderingContext>(builder.Configuration, typeof(CardTypesSeed));
 
         // Add the integration services that consume the DbContext
         builder.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService>();

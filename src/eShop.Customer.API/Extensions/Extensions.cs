@@ -21,7 +21,7 @@ internal static class Extensions
         builder.Services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<CustomerDbContext>());
         builder.EnrichNpgsqlDbContext<CustomerDbContext>();
 
-        builder.Services.AddMigration<CustomerDbContext>(typeof(CustomersSeed));
+        builder.Services.AddMigration<CustomerDbContext>(builder.Configuration, typeof(CustomersSeed));
 
         builder.Services.AddHttpContextAccessor();
 
