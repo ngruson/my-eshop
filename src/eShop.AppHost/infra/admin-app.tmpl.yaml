@@ -24,6 +24,9 @@ properties:
     registries:
       - server: {{ .Env.AZURE_CONTAINER_REGISTRY_ENDPOINT }}
         identity: {{ .Env.AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID }}
+    secrets:
+      - name: connectionstrings--appinsights
+        value: {{ .Env.APPINSIGHTS_CONNECTIONSTRING }}
   template:
     containers:
       - image: {{ .Image }}
@@ -61,6 +64,8 @@ properties:
             value: http://ordering-api.internal.{{ .Env.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN }}
           - name: services__ordering-api__https__0
             value: https://ordering-api.internal.{{ .Env.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN }}
+          - name: ConnectionStrings__appinsights
+            secretRef: connectionstrings--appinsights
     scale:
       minReplicas: 1
 tags:

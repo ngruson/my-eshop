@@ -23,7 +23,6 @@ using eShop.Shared.Auth;
 using eShop.WebApp.Services.OrderStatus;
 using static eShop.Basket.Contracts.Grpc.Basket;
 using eShop.ServiceInvocation.BasketApiClient;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace eShop.WebApp.Extensions;
 
