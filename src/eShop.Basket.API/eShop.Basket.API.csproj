@@ -5,8 +5,13 @@
     <PublishAot Condition="'$(EnableAotPublishing)' == 'true'">true</PublishAot>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Ardalis.Result" />
+    <PackageReference Include="Ardalis.SmartEnum.EFCore" />
     <PackageReference Include="Aspire.StackExchange.Redis" />
     <PackageReference Include="Grpc.AspNetCore" />
+    <PackageReference Include="Microsoft.Identity.Web" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using NSubstitute.ExceptionExtensions;
@@ -23,7 +24,7 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+        bool result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result);
@@ -47,7 +48,7 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+        bool result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result);
@@ -71,7 +72,7 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+        bool result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result);
@@ -95,7 +96,7 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+        bool result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result);
@@ -107,23 +108,23 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         SetAwaitingValidationIdentifiedOrderStatusCommandHandler sut,
-        IdentifiedCommand<SetAwaitingValidationOrderStatusCommand, bool> command
+        IdentifiedCommand<SetAwaitingValidationOrderStatusCommand, Result> command
     )
     {
         // Arrange
 
-        requestManager.ExistAsync(Arg.Any<Guid>())
+        requestManager.ExistAsync(command.Id)
             .Returns(Task.FromResult(false));
 
-        mediator.Send(Arg.Any<IRequest<bool>>(), default)
-            .Returns(Task.FromResult(true));
+        mediator.Send(command.Command, default)
+            .Returns(Result.Success());
 
         // Act
-        var result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         // Assert
-        Assert.True(result);
-        await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
+        Assert.True(result.IsSuccess);
+        await mediator.Received().Send(command.Command, default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -143,7 +144,7 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+        bool result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result);
@@ -167,7 +168,7 @@ public class IdentifiedCommandHandlerUnitTests
             .Returns(Task.FromResult(true));
 
         // Act
-        var result = await sut.Handle(command, default);
+        bool result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result);
@@ -189,7 +190,7 @@ public class IdentifiedCommandHandlerUnitTests
 
         // Act
 
-        var result = await sut.Handle(message, default);
+        bool result = await sut.Handle(message, default);
 
         // Assert
 
@@ -216,7 +217,7 @@ public class IdentifiedCommandHandlerUnitTests
 
         // Act
 
-        var result = await sut.Handle(message, default);
+        bool result = await sut.Handle(message, default);
 
         // Assert
 

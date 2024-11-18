@@ -1,11 +1,11 @@
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
-  name: rabbitmq-pubsub
+  name: pubsub
   namespace: default
 spec:
   type: pubsub.rabbitmq
-  version: v1
+  version: v1  
   metadata:
   - name: protocol
     value: amqp
@@ -15,3 +15,11 @@ spec:
     value: guest
   - name: password
     value: 4V0BaY8GJuWPgQEZ3aGPYr
+  - name: exchangeKind
+    value: direct
+  - name: deliveryMode
+    value: 2
+  - name: durable
+    value: false
+  - name: deletedWhenUnused
+    value: false  

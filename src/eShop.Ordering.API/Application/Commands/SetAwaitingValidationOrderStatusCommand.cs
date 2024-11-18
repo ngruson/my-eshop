@@ -1,3 +1,5 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
+using Ardalis.Result;
 
-public record SetAwaitingValidationOrderStatusCommand(int OrderNumber) : IRequest<bool>;
+namespace eShop.Ordering.API.Application.Commands;
+
+public record SetAwaitingValidationOrderStatusCommand(int OrderNumber) : IRequest<Result>;

@@ -5,7 +5,7 @@ namespace eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 public class CardType
         : Entity, IAggregateRoot
 {
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
     public CardType(string name)
     {

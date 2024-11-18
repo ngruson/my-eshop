@@ -1,3 +1,5 @@
+using Ardalis.Result;
+
 namespace eShop.EventBus.Abstractions;
 
 public interface IIntegrationEventHandler<in TIntegrationEvent> : IIntegrationEventHandler

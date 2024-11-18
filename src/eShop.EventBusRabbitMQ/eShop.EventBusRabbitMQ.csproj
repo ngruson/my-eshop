@@ -14,7 +14,9 @@
   <ItemGroup>
     <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Aspire.RabbitMQ.Client" />
+    <PackageReference Include="CloudNative.CloudEvents" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     <PackageReference Include="Polly.Core" />
   </ItemGroup>
 

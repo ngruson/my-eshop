@@ -1,4 +1,3 @@
-using Dapr.Client;
 using eShop.EventBus.Dapr;
 using eShop.EventBusRabbitMQ;
 using eShop.Ordering.API.Configuration;
@@ -27,7 +26,7 @@ internal static class Extensions
         services.AddScoped<eShopDbContext>(sp => sp.GetRequiredService<OrderingContext>());
         builder.EnrichNpgsqlDbContext<OrderingContext>();
 
-        services.AddMigration<OrderingContext>(typeof(CardTypesSeed));
+        services.AddMigration<OrderingContext>(builder.Configuration, typeof(CardTypesSeed));
 
         // Add the integration services that consume the DbContext
         services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService>();
@@ -37,8 +36,8 @@ internal static class Extensions
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
         if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
         {
-            services.AddDaprClient();
-            services.AddSingleton<IEventBus, DaprEventBus>();
+            builder.AddDaprEventBus()
+                .AddEventBusSubscriptions();
         }
         else
         {
@@ -52,7 +51,7 @@ internal static class Extensions
         // Configure Mediator
         services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
+            cfg.RegisterServicesFromAssemblyContaining<Program>();
 
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidatorBehavior<,>));

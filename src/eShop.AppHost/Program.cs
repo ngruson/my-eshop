@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-using Aspire.Hosting;
 using Aspire.Hosting.Dapr;
 using eShop.AppHost;
 using Microsoft.Extensions.Configuration;
@@ -10,8 +8,11 @@ builder.AddForwardedHeaders();
 IResourceBuilder<RedisResource> redis = builder.AddRedis("redis");
 
 //IResourceBuilder<ParameterResource> rabbitMqPassword = builder.AddParameter("rabbitMqDefaultPassword");
-IResourceBuilder<RabbitMQServerResource> rabbitMq = builder.AddRabbitMQ(
-    "eventbus", null, null, 5672);
+IResourceBuilder<RabbitMQServerResource> rabbitMq = builder.AddRabbitMQ("eventbus")
+    .WithManagementPlugin()
+    .WithEndpoint("tcp", e => e.Port = 5672)
+    .WithEndpoint("management", e => e.Port = 15672);
+
 IResourceBuilder<PostgresServerResource> pg = builder.AddPostgres("postgres")
     .WithImage("ankane/pgvector")
     .WithImageTag("latest");
@@ -44,16 +45,21 @@ IResourceBuilder<ProjectResource> customerApi = builder.AddProject<Projects.eSho
     .WithReference(customerDb)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
-//IResourceBuilder<IDaprComponentResource> pubSub = builder.AddDaprPubSub("pubSub")
-    //.WaitFor(rabbitMq);
+IResourceBuilder<IDaprComponentResource> pubSub = builder.AddDaprPubSub("pubsub",
+    new DaprComponentOptions
+    {
+        LocalPath = "./components/pubsub.yaml"
+    })
+    .WaitFor(rabbitMq);
 
 IResourceBuilder<ProjectResource> orderingApi = builder.AddProject<Projects.eShop_Ordering_API>("ordering-api")
     .WithDaprSidecar(new DaprSidecarOptions
     {
-        ResourcesPaths = ImmutableHashSet.Create("./components")
+        LogLevel = "debug"
     })
     .WithReference(rabbitMq)
     .WithReference(orderDb)
+    .WithReference(pubSub)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
 IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eShop_MasterData_API>("masterData-api")
@@ -61,15 +67,18 @@ IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eS
 
 builder.AddProject<Projects.eShop_OrderProcessor>("order-processor")
     .WithReference(rabbitMq)
-    .WithReference(orderDb);
+    .WithReference(orderDb)
+    .WaitFor(rabbitMq);
 
 builder.AddProject<Projects.eShop_PaymentProcessor>("payment-processor")
-    .WithReference(rabbitMq);
+    .WithReference(rabbitMq);    
 
 IResourceBuilder<ProjectResource> webHooksApi = builder.AddProject<Projects.eShop_Webhooks_API>("webhooks-api")
     .WithReference(rabbitMq)
     .WithReference(webhooksDb)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WaitFor(webhooksDb)
+    .WaitFor(rabbitMq);
 
 // Reverse proxies
 builder.AddProject<Projects.eShop_Mobile_Bff_Shopping>("mobile-bff")

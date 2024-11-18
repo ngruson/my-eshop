@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ardalis.Result" />
+    <PackageReference Include="Ardalis.SmartEnum.EFCore" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\eShop.Shared\eShop.Shared.csproj" />
   </ItemGroup>
 

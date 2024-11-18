@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 
@@ -6,7 +7,7 @@ namespace eShop.Ordering.API.Application.Commands;
 // Regular CommandHandler
 public class SetAwaitingValidationOrderStatusCommandHandler(
     IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository) 
-        : IRequestHandler<SetAwaitingValidationOrderStatusCommand, bool>
+        : IRequestHandler<SetAwaitingValidationOrderStatusCommand, Result>
 {
     private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
 
@@ -16,7 +17,7 @@ public class SetAwaitingValidationOrderStatusCommandHandler(
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<bool> Handle(SetAwaitingValidationOrderStatusCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(SetAwaitingValidationOrderStatusCommand command, CancellationToken cancellationToken)
     {
         var orderToUpdate = await this._orderRepository.SingleOrDefaultAsync(
             new GetOrderSpecification(command.OrderNumber),
@@ -24,13 +25,13 @@ public class SetAwaitingValidationOrderStatusCommandHandler(
 
         if (orderToUpdate is null)
         {
-            return false;
+            return Result.NotFound();
         }
 
         orderToUpdate.SetAwaitingValidationStatus();
 
         await this._orderRepository.UpdateAsync(orderToUpdate, cancellationToken);
-        return true;
+        return Result.Success();
     }
 }
 
@@ -39,11 +40,11 @@ public class SetAwaitingValidationOrderStatusCommandHandler(
 public class SetAwaitingValidationIdentifiedOrderStatusCommandHandler(
     IMediator mediator,
     IRequestManager requestManager,
-    ILogger<IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, bool>> logger) 
-        : IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, bool>(mediator, requestManager, logger)
+    ILogger<IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, Result>> logger) 
+        : IdentifiedCommandHandler<SetAwaitingValidationOrderStatusCommand, Result>(mediator, requestManager, logger)
 {
-    protected override bool CreateResultForDuplicateRequest()
+    protected override Result CreateResultForDuplicateRequest()
     {
-        return true; // Ignore duplicate requests for processing order.
+        return Result.Success(); // Ignore duplicate requests for processing order.
     }
 }

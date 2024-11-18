@@ -14,6 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ardalis.Result" />
+    <PackageReference Include="Ardalis.SmartEnum.EFCore" />
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="Duende.AccessTokenManagement" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">

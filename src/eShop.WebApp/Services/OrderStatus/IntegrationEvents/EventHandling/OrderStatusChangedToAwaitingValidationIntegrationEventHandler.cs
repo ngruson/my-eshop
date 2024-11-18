@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using eShop.EventBus.Abstractions;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
 

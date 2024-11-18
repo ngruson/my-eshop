@@ -1,23 +1,38 @@
+using Asp.Versioning;
+using Asp.Versioning.Builder;
+using eShop.EventBus.Options;
 using eShop.Ordering.API.Apis;
+using eShop.Ordering.API.Configuration;
+using Microsoft.Extensions.Options;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddApplicationServices();
 builder.Services.AddProblemDetails();
 
-var withApiVersioning = builder.Services.AddApiVersioning();
+IApiVersioningBuilder withApiVersioning = builder.Services.AddApiVersioning();
 
 builder.AddDefaultOpenApi(withApiVersioning);
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-var orders = app.NewVersionedApi("Orders");
+IVersionedEndpointRouteBuilder orders = app.NewVersionedApi("Orders");
 
 orders.MapOrdersApiV1()
       .RequireAuthorization();
+
+FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+{
+    //app.UseCloudEvents();
+    app.MapSubscribeHandler();
+
+    IOptions<EventBusOptions> eventbusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>();
+    app.MapSubscriptionEndpoints(eventbusOptions);
+}
 
 app.UseDefaultOpenApi();
 app.Run();
