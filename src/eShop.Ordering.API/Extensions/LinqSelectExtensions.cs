@@ -19,27 +19,27 @@ public static class LinqSelectExtensions
         }
     }
 
-    public static IEnumerable<TResult> OnCaughtException<TSource, TResult>(this IEnumerable<SelectTryResult<TSource, TResult>> enumerable, Func<Exception, TResult> exceptionHandler)
+    public static IEnumerable<TResult?> OnCaughtException<TSource, TResult>(this IEnumerable<SelectTryResult<TSource, TResult>> enumerable, Func<Exception, TResult> exceptionHandler)
     {
         return enumerable.Select(x => x.CaughtException == null ? x.Result : exceptionHandler(x.CaughtException));
     }
 
-    public static IEnumerable<TResult> OnCaughtException<TSource, TResult>(this IEnumerable<SelectTryResult<TSource, TResult>> enumerable, Func<TSource, Exception, TResult> exceptionHandler)
+    public static IEnumerable<TResult?> OnCaughtException<TSource, TResult>(this IEnumerable<SelectTryResult<TSource, TResult>> enumerable, Func<TSource, Exception, TResult> exceptionHandler)
     {
         return enumerable.Select(x => x.CaughtException == null ? x.Result : exceptionHandler(x.Source, x.CaughtException));
     }
 
     public class SelectTryResult<TSource, TResult>
     {
-        internal SelectTryResult(TSource source, TResult result, Exception exception)
+        internal SelectTryResult(TSource source, TResult? result, Exception? exception)
         {
-            Source = source;
-            Result = result;
-            CaughtException = exception;
+            this.Source = source;
+            this.Result = result;
+            this.CaughtException = exception;
         }
 
         public TSource Source { get; private set; }
-        public TResult Result { get; private set; }
-        public Exception CaughtException { get; private set; }
+        public TResult? Result { get; private set; }
+        public Exception? CaughtException { get; private set; }
     }
 }

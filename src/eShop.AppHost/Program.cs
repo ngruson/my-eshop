@@ -27,23 +27,40 @@ string launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
 
 // Services
 IResourceBuilder<ProjectResource> identityApi = builder.AddProject<Projects.eShop_Identity_API>("identity-api", launchProfileName)
+    .WithDaprSidecar(new DaprSidecarOptions
+    {
+        AppProtocol = launchProfileName
+    })
     .WithExternalHttpEndpoints()
-    .WithReference(identityDb);
+    .WithReference(identityDb)
+    .WaitFor(identityDb);
 
 EndpointReference identityEndpoint = identityApi.GetEndpoint(launchProfileName);
 
 IResourceBuilder<ProjectResource> basketApi = builder.AddProject<Projects.eShop_Basket_API>("basket-api")
+    .WithDaprSidecar()
     .WithReference(redis)
     .WithReference(rabbitMq)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WaitFor(redis)
+    .WaitFor(rabbitMq)
+    .WaitFor(identityApi);
 
 IResourceBuilder<ProjectResource> catalogApi = builder.AddProject<Projects.eShop_Catalog_API>("catalog-api")
+    .WithDaprSidecar()
     .WithReference(rabbitMq)
-    .WithReference(catalogDb);
+    .WithReference(catalogDb)
+    .WaitFor(rabbitMq)
+    .WaitFor(catalogDb);
 
 IResourceBuilder<ProjectResource> customerApi = builder.AddProject<Projects.eShop_Customer_API>("customer-api")
+    .WithDaprSidecar()
     .WithReference(customerDb)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WaitFor(customerDb);
+
+//IResourceBuilder<IDaprComponentResource> pubSub = builder.AddDaprPubSub("pubSub")
+    //.WaitFor(rabbitMq);
 
 IResourceBuilder<IDaprComponentResource> pubSub = builder.AddDaprPubSub("pubsub",
     new DaprComponentOptions
@@ -62,7 +79,8 @@ IResourceBuilder<ProjectResource> orderingApi = builder.AddProject<Projects.eSho
     .WithReference(pubSub)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
-IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eShop_MasterData_API>("masterData-api")
+IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eShop_MasterData_API>("masterdata-api")
+    .WithDaprSidecar()
     .WithEnvironment("Identity__Url", identityEndpoint);
 
 builder.AddProject<Projects.eShop_OrderProcessor>("order-processor")
@@ -93,13 +111,16 @@ IResourceBuilder<ProjectResource> webhooksClient = builder.AddProject<Projects.e
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
 IResourceBuilder<ProjectResource> webApp = builder.AddProject<Projects.eShop_WebApp>("webapp", launchProfileName)
+    .WithDaprSidecar()
     .WithExternalHttpEndpoints()
     .WithReference(basketApi)
     .WithReference(catalogApi)
     .WithReference(customerApi)
     .WithReference(orderingApi)
     .WithReference(rabbitMq)
-    .WithEnvironment("IdentityUrl", identityEndpoint);
+    .WithEnvironment("IdentityUrl", identityEndpoint)
+    .WaitFor(rabbitMq)
+    .WaitFor(catalogApi);
 
 // set to true if you want to use OpenAI
 bool useOpenAI = false;
@@ -141,13 +162,18 @@ if (useOpenAI)
         .WithEnvironment("AI__OPENAI__CHATMODEL", chatModelName);
 }
 
-var adminApp = builder.AddProject<Projects.eShop_AdminApp>("admin-app")
+IResourceBuilder<ProjectResource> adminApp = builder.AddProject<Projects.eShop_AdminApp>("admin-app")
+    .WithDaprSidecar()
     .WithExternalHttpEndpoints()
     .WithReference(catalogApi)
     .WithReference(customerApi)
     .WithReference(orderingApi)
     .WithReference(masterDataApi)
-    .WithEnvironment("IdentityUrl", identityEndpoint);
+    .WithEnvironment("IdentityUrl", identityEndpoint)
+    .WaitFor(catalogApi)
+    .WaitFor(customerApi)
+    .WaitFor(orderingApi)
+    .WaitFor(masterDataApi);
 
 // Wire up the callback urls (self referencing)
 webApp.WithEnvironment("CallBackUrl", webApp.GetEndpoint(launchProfileName));
@@ -172,7 +198,7 @@ builder.Build().Run();
 static bool ShouldUseHttpForEndpoints()
 {
     const string EnvVarName = "ESHOP_USE_HTTP_ENDPOINTS";
-    var envValue = Environment.GetEnvironmentVariable(EnvVarName);
+    string? envValue = Environment.GetEnvironmentVariable(EnvVarName);
 
     // Attempt to parse the environment variable value; return true if it's exactly "1".
     return int.TryParse(envValue, out int result) && result == 1;

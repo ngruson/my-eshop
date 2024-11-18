@@ -1,3 +1,5 @@
+using eShop.Ordering.API.Application.Commands.SetStockRejectedOrderStatus;
+
 namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 public class OrderStockRejectedIntegrationEventHandler(
     IMediator mediator,
@@ -7,18 +9,18 @@ public class OrderStockRejectedIntegrationEventHandler(
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var orderStockRejectedItems = @event.OrderStockItems
+        List<Guid> orderStockRejectedItems = @event.OrderStockItems
             .FindAll(c => !c.HasStock)
             .Select(c => c.ProductId)
             .ToList();
 
-        var command = new SetStockRejectedOrderStatusCommand(@event.OrderId, orderStockRejectedItems);
+        SetStockRejectedOrderStatusCommand command = new(@event.OrderId, orderStockRejectedItems);
 
         logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
             command.GetGenericTypeName(),
-            nameof(command.OrderNumber),
-            command.OrderNumber,
+            nameof(command.ObjectId),
+            command.ObjectId,
             command);
 
         await mediator.Send(command, cancellationToken);

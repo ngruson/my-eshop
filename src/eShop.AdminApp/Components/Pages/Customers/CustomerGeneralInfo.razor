@@ -3,7 +3,8 @@
 @using eShop.AdminApp.Application.Commands.Customer.UpdateCustomer
 @using eShop.AdminApp.Application.Queries.Customer.GetCustomer
 @using eShop.MasterData.Contracts
-@inject IMasterDataApi MasterDataApi
+@using eShop.ServiceInvocation.MasterDataApiClient
+@inject IMasterDataApiClient MasterDataService
 @inject IMediator Mediator
 @inject NavigationManager Navigation
 @inject IToastService ToastService
@@ -103,8 +104,8 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        this.countries = await MasterDataApi.GetCountries();
-        this.states = await MasterDataApi.GetStates();
+        this.countries = await MasterDataService.GetCountries();
+        this.states = await MasterDataService.GetStates();
 
         if (Customer is not null)
         {
@@ -170,7 +171,7 @@ else
             return new List<Option<string>>();
         }
 
-        var options = this.states.Select(_ => new Option<string>
+        List<Option<string>> options = this.states.Select(_ => new Option<string>
             {
                 Text = _.Name,
                 Value = _.Code

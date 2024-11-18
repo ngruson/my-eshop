@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapr.Client" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\eShop.Basket.Contracts\eShop.Basket.Contracts.csproj" />
+    <ProjectReference Include="..\eShop.Catalog.Contracts\eShop.Catalog.Contracts.csproj" />
+    <ProjectReference Include="..\eShop.Customer.Contracts\eShop.Customer.Contracts.csproj" />
+    <ProjectReference Include="..\eShop.Identity.Contracts\eShop.Identity.Contracts.csproj" />
+    <ProjectReference Include="..\eShop.MasterData.Contracts\eShop.MasterData.Contracts.csproj" />
+    <ProjectReference Include="..\eShop.Ordering.Contracts\eShop.Ordering.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

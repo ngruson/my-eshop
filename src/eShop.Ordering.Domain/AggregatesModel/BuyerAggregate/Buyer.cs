@@ -6,7 +6,7 @@ namespace eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 public class Buyer : Entity, IAggregateRoot
 {
     [Required]
-    public string? IdentityGuid { get; private set; }
+    public Guid IdentityGuid { get; private set; }
 
     public string? Name { get; private set; }
 
@@ -20,32 +20,32 @@ public class Buyer : Entity, IAggregateRoot
         this._paymentMethods = [];
     }
 
-    public Buyer(string identity, string name) : this()
+    public Buyer(Guid identity, string name) : this()
     {
         this.ObjectId = Guid.NewGuid();
-        this.IdentityGuid = !string.IsNullOrWhiteSpace(identity) ? identity : throw new ArgumentNullException(nameof(identity));
+        this.IdentityGuid = identity != Guid.Empty ? identity : throw new ArgumentNullException(nameof(identity));
         this.Name = !string.IsNullOrWhiteSpace(name) ? name : throw new ArgumentNullException(nameof(name));
     }
 
     public PaymentMethod VerifyOrAddPaymentMethod(
         CardType cardType, string alias, string cardNumber,
-        string securityNumber, string cardHolderName, DateTime expiration, int orderId)
+        string securityNumber, string cardHolderName, DateTime expiration, Order order)
     {
-        var existingPayment = this._paymentMethods
+        PaymentMethod? existingPayment = this._paymentMethods
             .SingleOrDefault(p => p.IsEqualTo(cardType, cardNumber, expiration));
 
         if (existingPayment is not null)
         {
-            this.AddDomainEvent(new BuyerAndPaymentMethodVerifiedDomainEvent(this, existingPayment, orderId));
+            this.AddDomainEvent(new BuyerAndPaymentMethodVerifiedDomainEvent(this, existingPayment, order));
 
             return existingPayment;
         }
 
-        var payment = new PaymentMethod(cardType, alias, cardNumber, securityNumber, cardHolderName, expiration);
+        PaymentMethod payment = new(cardType, alias, cardNumber, securityNumber, cardHolderName, expiration);
 
         this._paymentMethods.Add(payment);
 
-        this.AddDomainEvent(new BuyerAndPaymentMethodVerifiedDomainEvent(this, payment, orderId));
+        this.AddDomainEvent(new BuyerAndPaymentMethodVerifiedDomainEvent(this, payment, order));
 
         return payment;
     }

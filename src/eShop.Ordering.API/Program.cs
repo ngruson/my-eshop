@@ -2,7 +2,7 @@ using Asp.Versioning;
 using Asp.Versioning.Builder;
 using eShop.EventBus.Options;
 using eShop.Ordering.API.Apis;
-using eShop.Ordering.API.Configuration;
+using eShop.Shared.Features;
 using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);

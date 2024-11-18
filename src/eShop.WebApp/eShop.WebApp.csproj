@@ -11,17 +11,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\eShop.Basket.Contracts\eShop.Basket.Contracts.csproj" />
     <ProjectReference Include="..\eShop.Customer.Contracts\eShop.Customer.Contracts.csproj" />
     <ProjectReference Include="..\eShop.EventBusRabbitMQ\eShop.EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\eShop.Ordering.Contracts\eShop.Ordering.Contracts.csproj" />
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\eShop.ServiceInvocation\eShop.ServiceInvocation.csproj" />
+    <ProjectReference Include="..\eShop.Shared\eShop.Shared.csproj" />
     <ProjectReference Include="..\eShop.WebAppComponents\eShop.WebAppComponents.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Asp.Versioning.Http.Client" />
-    <PackageReference Include="Aspire.Azure.AI.OpenAI" />
+    <PackageReference Include="Aspire.Azure.AI.OpenAI" />    
+    <PackageReference Include="Dapr.AspNetCore" />
     <PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" />
     <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="Microsoft.SemanticKernel" />
@@ -33,10 +37,6 @@
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="..\eShop.Basket.API\Proto\basket.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

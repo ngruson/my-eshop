@@ -1,3 +1,5 @@
+using eShop.Ordering.API.Application.Commands.SetStockConfirmedOrderStatus;
+
 namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
 public class OrderStockConfirmedIntegrationEventHandler(
@@ -9,13 +11,13 @@ public class OrderStockConfirmedIntegrationEventHandler(
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var command = new SetStockConfirmedOrderStatusCommand(@event.OrderId);
+        SetStockConfirmedOrderStatusCommand command = new(@event.OrderId);
 
         logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
             command.GetGenericTypeName(),
-            nameof(command.OrderNumber),
-            command.OrderNumber,
+            nameof(command.ObjectId),
+            command.ObjectId,
             command);
 
         await mediator.Send(command, cancellationToken);

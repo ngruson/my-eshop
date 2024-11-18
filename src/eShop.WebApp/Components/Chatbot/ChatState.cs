@@ -5,12 +5,15 @@ using Microsoft.SemanticKernel;
 using eShop.WebAppComponents.Services;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.ChatCompletion;
+using eShop.Shared.Data;
+using eShop.ServiceInvocation.CatalogApiClient;
+using Microsoft.Extensions.Logging;
 
-namespace eShop.WebApp.Chatbot;
+namespace eShop.WebApp.Components.Chatbot;
 
 public class ChatState
 {
-    private readonly ICatalogService _catalogService;
+    private readonly ICatalogApiClient _catalogApiClient;
     private readonly IBasketState _basketState;
     private readonly ClaimsPrincipal _user;
     private readonly ILogger _logger;
@@ -18,17 +21,17 @@ public class ChatState
     private readonly IProductImageUrlProvider _productImages;
     private readonly OpenAIPromptExecutionSettings _aiSettings = new() { ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions };
 
-    public ChatState(ICatalogService catalogService, IBasketState basketState, ClaimsPrincipal user, IProductImageUrlProvider productImages, Kernel kernel, ILoggerFactory loggerFactory)
+    public ChatState(ICatalogApiClient catalogApiClient, IBasketState basketState, ClaimsPrincipal user, IProductImageUrlProvider productImages, Kernel kernel, ILoggerFactory loggerFactory)
     {
-        this._catalogService = catalogService;
+        this._catalogApiClient = catalogApiClient;
         this._basketState = basketState;
         this._user = user;
         this._productImages = productImages;
-        this._logger = loggerFactory.CreateLogger(typeof(ChatState));
+        this._logger = loggerFactory.CreateLogger<ChatState>();
 
         if (this._logger.IsEnabled(LogLevel.Debug))
         {
-            var completionService = kernel.GetRequiredService<IChatCompletionService>();
+            IChatCompletionService completionService = kernel.GetRequiredService<IChatCompletionService>();
             this._logger.LogDebug("ChatName: {model}", completionService.Attributes["DeploymentName"]);
         }
 
@@ -81,7 +84,7 @@ public class ChatState
         [KernelFunction, Description("Gets information about the chat user")]
         public string GetUserInfo()
         {
-            var claims = chatState._user.Claims;
+            IEnumerable<Claim> claims = chatState._user.Claims;
             return JsonSerializer.Serialize(new
             {
                 Name = GetValue(claims, "name"),
@@ -104,8 +107,8 @@ public class ChatState
         {
             try
             {
-                var results = await chatState._catalogService.GetCatalogItemsWithSemanticRelevance(0, 8, productDescription!);
-                for (int i = 0; i < results.Data.Count; i++)
+                PaginatedItems<CatalogItemViewModel> results = await chatState._catalogApiClient.GetPaginatedCatalogItemsWithSemanticRelevance(productDescription!, 8, 0);
+                for (int i = 0; i < results.Data.Length; i++)
                 {
                     results.Data[i] = results.Data[i] with { PictureUrl = chatState._productImages.GetProductImageUrl(results.Data[i].ObjectId) };
                 }
@@ -123,7 +126,7 @@ public class ChatState
         {
             try
             {
-                var item = await chatState._catalogService.GetCatalogItem(itemId);
+                CatalogItemViewModel item = await chatState._catalogApiClient.GetCatalogItem(itemId);
                 await chatState._basketState.AddAsync(item!);
                 return "Item added to shopping cart.";
             }
@@ -142,7 +145,7 @@ public class ChatState
         {
             try
             {
-                var basketItems = await chatState._basketState.GetBasketItemsAsync();
+                IReadOnlyCollection<BasketItem> basketItems = await chatState._basketState.GetBasketItemsAsync();
                 return JsonSerializer.Serialize(basketItems);
             }
             catch (Exception e)
@@ -155,7 +158,7 @@ public class ChatState
         {
             if (chatState._logger.IsEnabled(LogLevel.Error))
             {
-                chatState._logger.LogError(e, message);
+                chatState._logger.LogError(e, "Error message: {ErrorMessage}", message);
             }
 
             return message;

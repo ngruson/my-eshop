@@ -4,8 +4,8 @@ public partial class RedirectService : IRedirectService
 {
     public string ExtractRedirectUriFromReturnUrl(string url)
     {
-        var decodedUrl = System.Net.WebUtility.HtmlDecode(url);
-        var results = MyRegex().Split(decodedUrl);
+        string decodedUrl = System.Net.WebUtility.HtmlDecode(url);
+        string[] results = MyRegex().Split(decodedUrl);
         if (results.Length < 2)
             return "";
 

@@ -1,9 +1,17 @@
+using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
+using eShop.Ordering.API.Application.Commands.CancelOrder;
+using eShop.Ordering.API.Application.Commands.CreateOrder;
+using eShop.Ordering.API.Application.Commands.CreateOrderDraft;
+using eShop.Ordering.API.Application.Commands.ShipOrder;
+using eShop.Ordering.API.Application.Commands.UpdateOrder;
+using eShop.Ordering.API.Application.Queries.GetCardTypes;
+using eShop.Ordering.API.Application.Queries.GetOrder;
 using eShop.Ordering.API.Application.Queries.GetOrders;
+using eShop.Ordering.API.Application.Queries.GetOrdersFromUser;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Contracts.GetCardTypes;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Order = eShop.Ordering.API.Application.Queries.Order;
 
 namespace eShop.Ordering.API.Apis;
 
@@ -11,169 +19,53 @@ public static class OrdersApi
 {
     public static RouteGroupBuilder MapOrdersApiV1(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("api/orders").HasApiVersion(1.0);
+        RouteGroupBuilder api = app.MapGroup("api/orders").HasApiVersion(1.0);
 
-        api.MapPut("/cancel", CancelOrderAsync);
-        api.MapPut("/ship", ShipOrderAsync);
+        api.MapPut("/cancel/{objectId}", async (
+            CancelOrderCommand command,
+            [FromServices] IMediator mediator,
+            [FromHeader(Name = "x-requestid")] Guid requestId) =>
+                (await mediator.Send(new IdentifiedCommand<CancelOrderCommand, Result>(command, requestId)))
+                    .ToMinimalApiResult());
+
+        api.MapPut("/ship/{objectId}", async (
+            ShipOrderCommand command,
+            [FromServices] IMediator mediator,
+            [FromHeader(Name = "x-requestid")] Guid requestId) =>
+                (await mediator.Send(new IdentifiedCommand<ShipOrderCommand, Result>(command, requestId)))
+                    .ToMinimalApiResult());
 
         api.MapGet("/all", async ([FromServices] IMediator mediator) =>
             (await mediator.Send(new GetOrdersQuery()))
                 .ToMinimalApiResult());
 
-        api.MapGet("{orderId:int}", GetOrderAsync);
-        api.MapGet("/", GetOrdersByUserAsync);
-        api.MapGet("/cardTypes", GetCardTypesAsync);
-        api.MapPost("/draft", CreateOrderDraftAsync);
-        api.MapPost("/", CreateOrderAsync);
+        api.MapGet("/{objectId}", async (Guid objectId, [FromServices] IMediator mediator) =>
+            (await mediator.Send(new GetOrderQuery(objectId)))
+                .ToMinimalApiResult());
+
+        api.MapGet("/", async ([FromServices] IMediator mediator) =>
+            (await mediator.Send(new GetOrdersFromUserQuery()))
+                .ToMinimalApiResult());
+
+        api.MapGet("/cardTypes", async ([FromServices] IMediator mediator) =>
+            (await mediator.Send(new GetCardTypesQuery()))
+                .ToMinimalApiResult());
+
+        api.MapPost("/draft", async ([FromBody] CreateOrderDraftCommand command, [FromServices] IMediator mediator) =>
+            (await mediator.Send(command))
+                .ToMinimalApiResult());
+
+        api.MapPost("/", async (
+            CreateOrderCommand command,
+            [FromServices] IMediator mediator,
+            [FromHeader(Name = "x-requestid")] Guid requestId) =>
+                (await mediator.Send(new IdentifiedCommand<CreateOrderCommand, Result>(command, requestId)))
+                    .ToMinimalApiResult());
+
+        api.MapPut("/{objectId}", async (Guid objectId, [FromBody] Contracts.UpdateOrder.OrderDto dto, [FromServices] IMediator mediator) =>
+            (await mediator.Send(new UpdateOrderCommand(objectId, dto)))
+                .ToMinimalApiResult());
 
         return api;
-    }
-
-    public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> CancelOrderAsync(
-        [FromHeader(Name = "x-requestid")] Guid requestId,
-        CancelOrderCommand command,
-        [AsParameters] OrderServices services)
-    {
-        if (requestId == Guid.Empty)
-        {
-            return TypedResults.BadRequest("Empty GUID is not valid for request ID");
-        }
-
-        var requestCancelOrder = new IdentifiedCommand<CancelOrderCommand, bool>(command, requestId);
-
-        services.Logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-            requestCancelOrder.GetGenericTypeName(),
-            nameof(requestCancelOrder.Command.OrderNumber),
-            requestCancelOrder.Command.OrderNumber,
-            requestCancelOrder);
-
-        var commandResult = await services.Mediator.Send(requestCancelOrder);
-
-        if (!commandResult)
-        {
-            return TypedResults.Problem(detail: "Cancel order failed to process.", statusCode: 500);
-        }
-
-        return TypedResults.Ok();
-    }
-
-    public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> ShipOrderAsync(
-        [FromHeader(Name = "x-requestid")] Guid requestId,
-        ShipOrderCommand command,
-        [AsParameters] OrderServices services)
-    {
-        if (requestId == Guid.Empty)
-        {
-            return TypedResults.BadRequest("Empty GUID is not valid for request ID");
-        }
-
-        var requestShipOrder = new IdentifiedCommand<ShipOrderCommand, bool>(command, requestId);
-
-        services.Logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-            requestShipOrder.GetGenericTypeName(),
-            nameof(requestShipOrder.Command.OrderNumber),
-            requestShipOrder.Command.OrderNumber,
-            requestShipOrder);
-
-        var commandResult = await services.Mediator.Send(requestShipOrder);
-
-        if (!commandResult)
-        {
-            return TypedResults.Problem(detail: "Ship order failed to process.", statusCode: 500);
-        }
-
-        return TypedResults.Ok();
-    }
-
-    public static async Task<Results<Ok<Order>, NotFound>> GetOrderAsync(int orderId, [AsParameters] OrderServices services)
-    {
-        try
-        {
-            var order = await services.Queries.GetOrderAsync(orderId);
-            return TypedResults.Ok(order);
-        }
-        catch
-        {
-            return TypedResults.NotFound();
-        }
-    }
-
-    public static async Task<Ok<IEnumerable<OrderSummary>>> GetOrdersByUserAsync([AsParameters] OrderServices services)
-    {
-        var userId = services.IdentityService.GetUserIdentity();
-        var orders = await services.Queries.GetOrdersFromUserAsync(userId!);
-        return TypedResults.Ok(orders);
-    }
-
-    public static async Task<Ok<IEnumerable<CardTypeDto>>> GetCardTypesAsync(IOrderQueries orderQueries)
-    {
-        var cardTypes = await orderQueries.GetCardTypesAsync();
-        return TypedResults.Ok(cardTypes);
-    }
-
-    public static async Task<OrderDraftDTO> CreateOrderDraftAsync(CreateOrderDraftCommand command, [AsParameters] OrderServices services)
-    {
-        services.Logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-            command.GetGenericTypeName(),
-            nameof(command.BuyerId),
-            command.BuyerId,
-            command);
-
-        return await services.Mediator.Send(command);
-    }
-
-    public static async Task<Results<Ok, BadRequest<string>>> CreateOrderAsync(
-        [FromHeader(Name = "x-requestid")] Guid requestId,
-        CreateOrderDto request,
-        [AsParameters] OrderServices services)
-    {
-
-        //mask the credit card number
-
-        services.Logger.LogInformation(
-            "Sending command: {CommandName} - {IdProperty}: {CommandId}",
-            request.GetGenericTypeName(),
-            nameof(request.UserId),
-            request.UserId); //don't log the request as it has CC number
-
-        if (requestId == Guid.Empty)
-        {
-            services.Logger.LogWarning("Invalid IntegrationEvent - RequestId is missing - {@IntegrationEvent}", request);
-            return TypedResults.BadRequest("RequestId is missing.");
-        }
-
-        using (services.Logger.BeginScope(new List<KeyValuePair<string, object>> { new("IdentifiedCommandId", requestId) }))
-        {
-            string maskedCCNumber = request.CardNumber[^4..].PadLeft(request.CardNumber.Length, 'X');
-            CreateOrderCommand createOrderCommand = new(request.Items, request.UserId, request.UserName, request.City, request.Street,
-                request.State, request.Country, request.ZipCode,
-                maskedCCNumber, request.CardHolderName, request.CardExpiration,
-                request.CardSecurityNumber, request.CardType);
-
-            IdentifiedCommand<CreateOrderCommand, bool> requestCreateOrder = new(createOrderCommand, requestId);
-
-            services.Logger.LogInformation(
-                "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
-                requestCreateOrder.GetGenericTypeName(),
-                nameof(requestCreateOrder.Id),
-                requestCreateOrder.Id,
-                requestCreateOrder);
-
-            bool result = await services.Mediator.Send(requestCreateOrder);
-
-            if (result)
-            {
-                services.Logger.LogInformation("CreateOrderCommand succeeded - RequestId: {RequestId}", requestId);
-            }
-            else
-            {
-                services.Logger.LogWarning("CreateOrderCommand failed - RequestId: {RequestId}", requestId);
-            }
-
-            return TypedResults.Ok();
-        }
     }
 }

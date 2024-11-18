@@ -1,4 +1,7 @@
-namespace Ordering.UnitTests.Application.Commands;
+using eShop.Ordering.API.Application.Commands.CreateOrderDraft;
+using eShop.Ordering.Contracts.CreateOrder;
+
+namespace eShop.Ordering.UnitTests.Application.Commands;
 public class CreateOrderDraftCommandUnitTests
 {
     [Theory, AutoNSubstituteData]
@@ -8,9 +11,12 @@ public class CreateOrderDraftCommandUnitTests
     {
         // Arrange
 
+        OrderItemDto[] items = command.Items.Select(
+            x => new OrderItemDto(x.ProductId, x.ProductName, Math.Abs(x.UnitPrice), 0, x.Units, x.PictureUrl)).ToArray();
+
         //Act
 
-        var result = await sut.Handle(command, default);
+        OrderDraftDTO result = await sut.Handle(command with { Items = items }, default);
 
         //Assert
 

@@ -30,7 +30,7 @@ internal class GetCatalogItemsByTypeAndBrandQueryHandler(
                     request.CatalogType, request.CatalogBrand, request.PageSize, request.PageIndex),
                     cancellationToken);
 
-            var foundResult = Ardalis.GuardClauses.Guard.Against.CatalogItemsNullOrEmpty(catalogItems, this.logger);
+            Result foundResult = Ardalis.GuardClauses.Guard.Against.CatalogItemsNullOrEmpty(catalogItems, this.logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;

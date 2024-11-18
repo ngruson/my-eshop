@@ -1,11 +1,10 @@
-﻿using eShop.WebAppComponents.Catalog;
+using eShop.ServiceInvocation.CatalogApiClient;
 
-namespace eShop.WebApp.Services
+namespace eShop.WebApp.Services;
+
+public interface IBasketState
 {
-    public interface IBasketState
-    {
-        public Task<IReadOnlyCollection<BasketItem>> GetBasketItemsAsync();
+    public Task<IReadOnlyCollection<BasketItem>> GetBasketItemsAsync();
 
-        public Task AddAsync(CatalogItem item);
-    }
+    public Task AddAsync(CatalogItemViewModel item);
 }

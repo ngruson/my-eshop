@@ -1,3 +1,4 @@
+using eShop.Ordering.API.Application.Commands.CreateOrder;
 using eShop.Ordering.API.Application.Validations;
 using eShop.Ordering.Contracts.CreateOrder;
 using FluentValidation.TestHelper;
@@ -747,6 +748,6 @@ public class CreateOrderCommandValidatorUnitTests
         //Assert
 
         Assert.False(result.IsValid);
-        Assert.Contains(nameof(command.OrderItems), result.Errors.Select(_ => _.PropertyName));
+        Assert.Contains(nameof(command.Items), result.Errors.Select(_ => _.PropertyName));
     }
 }

@@ -1,7 +1,7 @@
 namespace eShop.Identity.Contracts.GetUsers;
 
 public record UserDto(
-    string Id,
+    Guid Id,
     string UserName,
     string FirstName,
     string LastName);

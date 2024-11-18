@@ -1,10 +1,12 @@
 using System.Text.Json;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using eShop.Ordering.API.Application.Commands.SetStockRejectedOrderStatus;
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 
-namespace Ordering.UnitTests.Application.Commands;
+namespace eShop.Ordering.UnitTests.Application.Commands;
 
 public class SetStockRejectedOrderStatusCommandUnitTests
 {
@@ -20,7 +22,7 @@ public class SetStockRejectedOrderStatusCommandUnitTests
 
         order.SetAwaitingValidationStatus();
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.SingleOrDefaultAsync(Arg.Any<GetOrderSpecification>(), default)
             .Returns(order);
 
         // Act
@@ -43,7 +45,7 @@ public class SetStockRejectedOrderStatusCommandUnitTests
     {
         // Arrange
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.SingleOrDefaultAsync(Arg.Any<GetOrderSpecification>(), default)
             .Returns(order);
 
         // Act
@@ -68,7 +70,7 @@ public class SetStockRejectedOrderStatusCommandUnitTests
 
         // Act
 
-        var result = await sut.Handle(command, default);
+        bool result = await sut.Handle(command, default);
 
         //Assert
 
@@ -86,17 +88,19 @@ public class SetStockRejectedOrderStatusCommandUnitTests
 
         // Act
 
-        var json = JsonSerializer.Serialize(command);
-        var deserializedCommand = JsonSerializer.Deserialize<SetStockRejectedOrderStatusCommand>(json);
+        string json = JsonSerializer.Serialize(command);
+        SetStockRejectedOrderStatusCommand deserializedCommand = JsonSerializer.Deserialize<SetStockRejectedOrderStatusCommand>(json);
 
         //Assert
-        Assert.Equal(command.OrderNumber, deserializedCommand.OrderNumber);
+
+        Assert.Equal(command.ObjectId, deserializedCommand.ObjectId);
 
         //Assert for List<int>
+
         Assert.NotNull(deserializedCommand.OrderStockItems);
         Assert.Equal(command.OrderStockItems.Count, deserializedCommand.OrderStockItems.Count);
 
-        for (var i = 0; i < command.OrderStockItems.Count; i++)
+        for (int i = 0; i < command.OrderStockItems.Count; i++)
         {
             Assert.Equal(command.OrderStockItems[i], deserializedCommand.OrderStockItems[i]);
         }

@@ -2,6 +2,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Ordering.API.Application.DomainEventHandlers;
 using eShop.Ordering.API.Application.IntegrationEvents.Events;
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
@@ -21,7 +22,7 @@ public class OrderStatusChangedToStockConfirmedDomainEventHandlerUnitTests
     {
         // Arrange
 
-        orderRepository.GetByIdAsync(evt.OrderId, default)
+        orderRepository.SingleOrDefaultAsync(Arg.Any<GetOrderSpecification>(), default)
             .Returns(order);
 
         buyerRepository.GetByIdAsync(order.BuyerId.Value, default)

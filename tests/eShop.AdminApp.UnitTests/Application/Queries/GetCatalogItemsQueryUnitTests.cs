@@ -4,6 +4,7 @@ using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Queries.Catalog.GetCatalogItems;
 using eShop.Catalog.Contracts;
 using eShop.Catalog.Contracts.GetCatalogItems;
+using eShop.ServiceInvocation.CatalogApiClient;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -14,45 +15,47 @@ public class GetCatalogItemsQueryUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCatalogItemsExist(
         GetCatalogItemsQuery query,
-        [Substitute, Frozen] ICatalogApi catalogApi,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         GetCatalogItemsQueryHandler sut,
         CatalogItemDto[] catalogItems)
     {
         // Arrange
 
-        catalogApi.GetCatalogItems()
+        catalogApiClient.GetCatalogItems()
             .Returns(catalogItems);
 
         // Act
 
-        Result<CatalogItemViewModel[]> result = await sut.Handle(query, CancellationToken.None);
+        Result<AdminApp.Application.Queries.Catalog.GetCatalogItems.CatalogItemViewModel[]> result =
+            await sut.Handle(query, CancellationToken.None);
 
         // Assert
 
         Assert.True(result.IsSuccess);
 
-        await catalogApi.Received().GetCatalogItems();
+        await catalogApiClient.Received().GetCatalogItems();
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         GetCatalogItemsQuery query,
-        [Substitute, Frozen] ICatalogApi catalogApi,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         GetCatalogItemsQueryHandler sut)
     {
         // Arrange
 
-        catalogApi.GetCatalogItems()
+        catalogApiClient.GetCatalogItems()
             .ThrowsAsync<Exception>();
 
         // Act
 
-        Result<CatalogItemViewModel[]> result = await sut.Handle(query, CancellationToken.None);
+        Result<AdminApp.Application.Queries.Catalog.GetCatalogItems.CatalogItemViewModel[]> result =
+            await sut.Handle(query, CancellationToken.None);
 
         // Assert
 
         Assert.True(result.IsError());
 
-        await catalogApi.Received().GetCatalogItems();
+        await catalogApiClient.Received().GetCatalogItems();
     }
 }

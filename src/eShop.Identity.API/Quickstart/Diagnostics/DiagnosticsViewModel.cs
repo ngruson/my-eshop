@@ -5,24 +5,23 @@
 using System.Text;
 using System.Text.Json;
 
-namespace IdentityServerHost.Quickstart.UI;
+namespace eShop.Identity.API.Quickstart.Diagnostics;
 
 public class DiagnosticsViewModel
 {
     public DiagnosticsViewModel(AuthenticateResult result)
     {
-        AuthenticateResult = result;
+        this.AuthenticateResult = result;
 
-        if (result.Properties.Items.ContainsKey("client_list"))
+        if (result.Properties?.Items?.TryGetValue("client_list", out string? encoded) == true)
         {
-            var encoded = result.Properties.Items["client_list"];
-            var bytes = Base64Url.Decode(encoded);
-            var value = Encoding.UTF8.GetString(bytes);
+            byte[] bytes = Base64Url.Decode(encoded!);
+            string value = Encoding.UTF8.GetString(bytes);
 
-            Clients = JsonSerializer.Deserialize<string[]>(value);
+            this.Clients = JsonSerializer.Deserialize<string[]>(value);
         }
     }
 
     public AuthenticateResult AuthenticateResult { get; }
-    public IEnumerable<string> Clients { get; } = new List<string>();
+    public IEnumerable<string>? Clients { get; } = [];
 }

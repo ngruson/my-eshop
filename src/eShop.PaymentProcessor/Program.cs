@@ -1,7 +1,7 @@
-﻿using eShop.EventBus.Extensions;
+using eShop.EventBus.Extensions;
 using eShop.EventBusRabbitMQ;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
@@ -11,7 +11,7 @@ builder.AddRabbitMqEventBus("EventBus")
 builder.Services.AddOptions<PaymentOptions>()
     .BindConfiguration(nameof(PaymentOptions));
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
 

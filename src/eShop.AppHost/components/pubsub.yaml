@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   type: pubsub.rabbitmq
-  version: v1  
+  version: v1
   metadata:
   - name: protocol
     value: amqp

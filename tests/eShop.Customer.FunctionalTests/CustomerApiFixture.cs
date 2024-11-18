@@ -16,8 +16,8 @@ public sealed class CustomerApiFixture : WebApplicationFactory<Program>, IAsyncL
 
     public CustomerApiFixture()
     {
-        var options = new DistributedApplicationOptions { AssemblyName = typeof(CustomerApiFixture).Assembly.FullName, DisableDashboard = true };
-        var appBuilder = DistributedApplication.CreateBuilder(options);
+        DistributedApplicationOptions options = new() { AssemblyName = typeof(CustomerApiFixture).Assembly.FullName, DisableDashboard = true };
+        IDistributedApplicationBuilder appBuilder = DistributedApplication.CreateBuilder(options);
 
         this.Postgres = appBuilder.AddPostgres("customerDb");
         this.IdentityDB = appBuilder.AddPostgres("IdentityDB");

@@ -24,7 +24,8 @@ public class RequestManagerUnitTests
             RequestManager sut = new(context);
 
             // Act
-            var result = await sut.ExistAsync(clientRequest.Id);
+
+            bool result = await sut.ExistAsync(clientRequest.Id);
 
             // Assert
             Assert.True(result);
@@ -45,7 +46,8 @@ public class RequestManagerUnitTests
             RequestManager sut = new(context);
 
             // Act
-            var result = await sut.ExistAsync(clientRequest.Id);
+
+            bool result = await sut.ExistAsync(clientRequest.Id);
 
             // Assert
             Assert.False(result);
@@ -61,6 +63,7 @@ public class RequestManagerUnitTests
             ClientRequest clientRequest)
         {
             // Arrange
+
             optionsBuilder.UseInMemoryDatabase(databaseName: "testDatabase");
             OrderingContext context = new(optionsBuilder.Options, mediator);
             context.Database.EnsureCreated();
@@ -95,7 +98,7 @@ public class RequestManagerUnitTests
 
             // Assert
 
-            var result = await context.Set<ClientRequest>().FindAsync(clientRequest.Id);
+            ClientRequest result = await context.Set<ClientRequest>().FindAsync(clientRequest.Id);
             Assert.NotNull(result);
         }
     }

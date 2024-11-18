@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Azure.Monitor.OpenTelemetry.Exporter;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -56,6 +58,12 @@ public static partial class Extensions
         {
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
+
+            if (builder.Configuration.GetConnectionString("appinsights") is not null)
+            {
+                logging.AddAzureMonitorLogExporter(options =>
+                    options.ConnectionString = builder.Configuration.GetConnectionString("appinsights"));
+            }
         });
 
         builder.Services.AddOpenTelemetry()
@@ -66,7 +74,13 @@ public static partial class Extensions
                     .AddRuntimeInstrumentation();
 
                 // Configure Semantic Kernel telemetry
-                metrics.AddMeter("Microsoft.SemanticKernel*");                    
+                metrics.AddMeter("Microsoft.SemanticKernel*");
+
+                if (builder.Configuration.GetConnectionString("appinsights") is not null)
+                {
+                    metrics.AddAzureMonitorMetricExporter(options =>
+                        options.ConnectionString = builder.Configuration.GetConnectionString("appinsights"));
+                }
             })
             .WithTracing(tracing =>
             {
@@ -81,7 +95,13 @@ public static partial class Extensions
                     .AddHttpClientInstrumentation();
 
                 // Configure Semantic Kernel telemetry
-                tracing.AddSource("Microsoft.SemanticKernel*");                    
+                tracing.AddSource("Microsoft.SemanticKernel*");
+
+                if (builder.Configuration.GetConnectionString("appinsights") is not null)
+                {
+                    tracing.AddAzureMonitorTraceExporter(options =>
+                        options.ConnectionString = builder.Configuration.GetConnectionString("appinsights"));
+                }
             });
 
         builder.AddOpenTelemetryExporters();
@@ -91,7 +111,7 @@ public static partial class Extensions
 
     private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
     {
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+        bool useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
 
         if (useOtlpExporter)
         {

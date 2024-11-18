@@ -40,7 +40,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         user = authState.User;
     }
 
@@ -55,7 +55,7 @@
         if (string.IsNullOrWhiteSpace(fullName))
             return string.Empty;
 
-        var initials = fullName.Split(' ')
+        IEnumerable<char> initials = fullName.Split(' ')
                                .Where(name => !string.IsNullOrWhiteSpace(name) && char.IsLetter(name[0]))
                                .Select(name => char.ToUpper(name[0]));
 

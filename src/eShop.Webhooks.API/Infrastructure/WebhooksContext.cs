@@ -1,4 +1,6 @@
-﻿namespace Webhooks.API.Infrastructure;
+using eShop.Webhooks.API.Model;
+
+namespace eShop.Webhooks.API.Infrastructure;
 
 /// <remarks>
 /// Add migrations using the following command inside the 'Webhooks.API' project directory:

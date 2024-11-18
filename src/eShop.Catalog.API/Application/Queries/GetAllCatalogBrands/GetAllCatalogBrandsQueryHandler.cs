@@ -24,7 +24,7 @@ internal class GetAllCatalogBrandsQueryHandler(
                 new GetAllCatalogBrandsSpecification(),
                 cancellationToken);
 
-            var foundResult = Ardalis.GuardClauses.Guard.Against.CatalogBrandsNullOrEmpty(catalogBrands, this.logger);
+            Result foundResult = Ardalis.GuardClauses.Guard.Against.CatalogBrandsNullOrEmpty(catalogBrands, this.logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;

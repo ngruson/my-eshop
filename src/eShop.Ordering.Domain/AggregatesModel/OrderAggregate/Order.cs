@@ -36,7 +36,7 @@ public class Order
 
     public static Order NewDraft()
     {
-        var order = new Order
+        Order order = new()
         {
             _isDraft = true
         };
@@ -49,9 +49,10 @@ public class Order
         this._isDraft = false;
     }
 
-    public Order(string userId, string userName, Address address, CardType cardType, string cardNumber, string cardSecurityNumber,
+    public Order(Guid userId, string userName, Address address, CardType cardType, string cardNumber, string cardSecurityNumber,
             string cardHolderName, DateTime cardExpiration, int? buyerId = null, int? paymentMethodId = null) : this()
     {
+        this.ObjectId = Guid.NewGuid();
         this.BuyerId = buyerId;
         this.PaymentId = paymentMethodId;
         this.OrderStatus = OrderStatus.Submitted;
@@ -67,10 +68,10 @@ public class Order
     // DDD Patterns comment
     // This Order AggregateRoot's method "AddOrderItem()" should be the only way to add Items to the Order,
     // so any behavior (discounts, etc.) and validations are controlled by the AggregateRoot 
-    // in order to maintain consistency between the whole Aggregate. 
+    // in order to maintain consistency between the whole Aggregate.
     public void AddOrderItem(Guid productId, string productName, decimal unitPrice, decimal discount, string pictureUrl, int units = 1)
     {
-        var existingOrderForProduct = this._orderItems.SingleOrDefault(o => o.ProductId == productId);
+        OrderItem? existingOrderForProduct = this._orderItems.SingleOrDefault(o => o.ProductId == productId);
 
         if (existingOrderForProduct is not null)
         {
@@ -85,8 +86,16 @@ public class Order
         else
         {
             //add validated new order item
-            var orderItem = new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units);
+            OrderItem orderItem = new(productId, productName, unitPrice, discount, pictureUrl, units);
             this._orderItems.Add(orderItem);
+        }
+    }
+
+    public void SetAddress(Address address)
+    {
+        if (this.Address != address)
+        {
+            this.Address = address;
         }
     }
 
@@ -100,7 +109,7 @@ public class Order
     {
         if (this.OrderStatus == OrderStatus.Submitted)
         {
-            this.AddDomainEvent(new OrderStatusChangedToAwaitingValidationDomainEvent(this.Id, this._orderItems));
+            this.AddDomainEvent(new OrderStatusChangedToAwaitingValidationDomainEvent(this.ObjectId, [.. this._orderItems]));
             this.OrderStatus = OrderStatus.AwaitingValidation;
         }
     }
@@ -109,7 +118,7 @@ public class Order
     {
         if (this.OrderStatus == OrderStatus.AwaitingValidation)
         {
-            this.AddDomainEvent(new OrderStatusChangedToStockConfirmedDomainEvent(this.Id));
+            this.AddDomainEvent(new OrderStatusChangedToStockConfirmedDomainEvent(this.ObjectId));
 
             this.OrderStatus = OrderStatus.StockConfirmed;
             this.Description = "All the items were confirmed with available stock.";
@@ -120,7 +129,7 @@ public class Order
     {
         if (this.OrderStatus == OrderStatus.StockConfirmed)
         {
-            this.AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(this.Id, this.OrderItems));
+            this.AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(this.ObjectId, [.. this.OrderItems]));
 
             this.OrderStatus = OrderStatus.Paid;
             this.Description = "The payment was performed at a simulated \"American Bank checking bank account ending on XX35071\"";
@@ -158,19 +167,19 @@ public class Order
         {
             this.OrderStatus = OrderStatus.Cancelled;
 
-            var itemsStockRejectedProductNames = this.OrderItems
+            IEnumerable<string?> itemsStockRejectedProductNames = this.OrderItems
                 .Where(c => orderStockRejectedItems.Contains(c.ProductId))
                 .Select(c => c.ProductName);
 
-            var itemsStockRejectedDescription = string.Join(", ", itemsStockRejectedProductNames);
+            string itemsStockRejectedDescription = string.Join(", ", itemsStockRejectedProductNames);
             this.Description = $"The product items don't have stock: ({itemsStockRejectedDescription}).";
         }
     }
 
-    private void AddOrderStartedDomainEvent(string userId, string userName, CardType cardType, string cardNumber,
+    private void AddOrderStartedDomainEvent(Guid userId, string userName, CardType cardType, string cardNumber,
             string cardSecurityNumber, string cardHolderName, DateTime cardExpiration)
     {
-        var orderStartedDomainEvent = new OrderStartedDomainEvent(this, userId, userName, cardType,
+        OrderStartedDomainEvent orderStartedDomainEvent = new(this, userId, userName, cardType,
                                                                     cardNumber, cardSecurityNumber,
                                                                     cardHolderName, cardExpiration);
 

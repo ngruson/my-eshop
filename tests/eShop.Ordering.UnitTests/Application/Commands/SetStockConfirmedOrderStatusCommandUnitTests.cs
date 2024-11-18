@@ -1,5 +1,7 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using eShop.Ordering.API.Application.Commands.SetStockConfirmedOrderStatus;
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 
@@ -17,7 +19,7 @@ public class SetStockConfirmedOrderStatusCommandUnitTests
 
         order.SetAwaitingValidationStatus();
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.SingleOrDefaultAsync(Arg.Any<GetOrderSpecification>(), default)
             .Returns(order);
 
         //Act
@@ -40,7 +42,7 @@ public class SetStockConfirmedOrderStatusCommandUnitTests
     {
         // Arrange
 
-        orderRepository.GetByIdAsync(command.OrderNumber, default)
+        orderRepository.SingleOrDefaultAsync(Arg.Any<GetOrderSpecification>(), default)
             .Returns(order);
 
         //Act

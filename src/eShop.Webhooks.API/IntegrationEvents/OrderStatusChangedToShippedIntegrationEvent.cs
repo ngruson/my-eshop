@@ -1,3 +1,3 @@
-﻿namespace Webhooks.API.IntegrationEvents;
+namespace eShop.Webhooks.API.IntegrationEvents;
 
-public record OrderStatusChangedToShippedIntegrationEvent(int OrderId, string OrderStatus, string BuyerName) : IntegrationEvent;
+public record OrderStatusChangedToShippedIntegrationEvent(Guid OrderId, string OrderStatus, string BuyerName) : IntegrationEvent;

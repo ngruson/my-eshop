@@ -1,17 +1,21 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+using Asp.Versioning;
+using Asp.Versioning.Builder;
+using eShop.Webhooks.API.Apis;
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddApplicationServices();
 
-var withApiVersioning = builder.Services.AddApiVersioning();
+IApiVersioningBuilder withApiVersioning = builder.Services.AddApiVersioning();
 
 builder.AddDefaultOpenApi(withApiVersioning);
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-var webHooks = app.NewVersionedApi("Web Hooks");
+IVersionedEndpointRouteBuilder webHooks = app.NewVersionedApi("Web Hooks");
 
 webHooks.MapWebHooksApiV1()
         .RequireAuthorization();

@@ -12,14 +12,15 @@ public class OrderAggregateTest
     {
         //Arrange    
         Guid productId = Guid.NewGuid();
-        var productName = "FakeProductName";
-        var unitPrice = 12;
-        var discount = 15;
-        var pictureUrl = "FakeUrl";
-        var units = 5;
+        string productName = "FakeProductName";
+        int unitPrice = 12;
+        int discount = 15;
+        string pictureUrl = "FakeUrl";
+        int units = 5;
 
-        //Act 
-        var fakeOrderItem = new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units);
+        //Act
+
+        OrderItem fakeOrderItem = new(productId, productName, unitPrice, discount, pictureUrl, units);
 
         //Assert
         Assert.NotNull(fakeOrderItem);
@@ -30,13 +31,14 @@ public class OrderAggregateTest
     {
         //Arrange    
         Guid productId = Guid.NewGuid();
-        var productName = "FakeProductName";
-        var unitPrice = 12;
-        var discount = 15;
-        var pictureUrl = "FakeUrl";
-        var units = -1;
+        string productName = "FakeProductName";
+        int unitPrice = 12;
+        int discount = 15;
+        string pictureUrl = "FakeUrl";
+        int units = -1;
 
         //Act - Assert
+
         Assert.Throws<OrderingDomainException>(() => new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units));
     }
 
@@ -45,13 +47,14 @@ public class OrderAggregateTest
     {
         //Arrange    
         Guid productId = Guid.NewGuid();
-        var productName = "FakeProductName";
-        var unitPrice = 12;
-        var discount = 15;
-        var pictureUrl = "FakeUrl";
-        var units = 1;
+        string productName = "FakeProductName";
+        int unitPrice = 12;
+        int discount = 15;
+        string pictureUrl = "FakeUrl";
+        int units = 1;
         
         //Act - Assert
+
         Assert.Throws<OrderingDomainException>(() => new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units));       
     }
 
@@ -60,34 +63,39 @@ public class OrderAggregateTest
     {
         //Arrange    
         Guid productId = Guid.NewGuid();
-        var productName = "FakeProductName";
-        var unitPrice = 12;
-        var discount = 15;
-        var pictureUrl = "FakeUrl";
-        var units = 5;
+        string productName = "FakeProductName";
+        int unitPrice = 12;
+        int discount = 15;
+        string pictureUrl = "FakeUrl";
+        int units = 5;
 
-        //Act 
-        var fakeOrderItem = new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units);
+        //Act
+
+        OrderItem fakeOrderItem = new(productId, productName, unitPrice, discount, pictureUrl, units);
 
         //Assert
+
         Assert.Throws<OrderingDomainException>(() => fakeOrderItem.SetNewDiscount(-1));
     }
 
     [Fact]
     public void Invalid_units_setting()
     {
-        //Arrange    
-        Guid productId = Guid.NewGuid();
-        var productName = "FakeProductName";
-        var unitPrice = 12;
-        var discount = 15;
-        var pictureUrl = "FakeUrl";
-        var units = 5;
+        // Arrange
 
-        //Act 
-        var fakeOrderItem = new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units);
+        Guid productId = Guid.NewGuid();
+        string productName = "FakeProductName";
+        int unitPrice = 12;
+        int discount = 15;
+        string pictureUrl = "FakeUrl";
+        int units = 5;
+
+        //Act
+
+        OrderItem fakeOrderItem = new(productId, productName, unitPrice, discount, pictureUrl, units);
 
         //Assert
+
         Assert.Throws<OrderingDomainException>(() => fakeOrderItem.AddUnits(-1));
     }
 
@@ -127,7 +135,7 @@ public class OrderAggregateTest
         int expectedResult = 1;
 
         //Act 
-        Order fakeOrder = new("1", "fakeName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        Order fakeOrder = new(Guid.NewGuid(), "fakeName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
 
         //Assert
         Assert.Equal(fakeOrder.DomainEvents.Count, expectedResult);
@@ -150,8 +158,8 @@ public class OrderAggregateTest
         int expectedResult = 2;
 
         //Act 
-        Order fakeOrder = new("1", "fakeName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
-        fakeOrder.AddDomainEvent(new OrderStartedDomainEvent(fakeOrder, "fakeName", "1", cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration));
+        Order fakeOrder = new(Guid.NewGuid(), "fakeName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        fakeOrder.AddDomainEvent(new OrderStartedDomainEvent(fakeOrder, Guid.NewGuid(), "1", cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration));
         //Assert
         Assert.Equal(fakeOrder.DomainEvents.Count, expectedResult);
     }
@@ -170,8 +178,8 @@ public class OrderAggregateTest
         string cardSecurityNumber = "123";
         string cardHolderName = "FakeName";
         DateTime cardExpiration = DateTime.UtcNow.AddYears(1);
-        Order fakeOrder = new("1", "fakeName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
-        OrderStartedDomainEvent fakeEvent = new(fakeOrder, "1", "fakeName", cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        Order fakeOrder = new(Guid.NewGuid(), "fakeName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        OrderStartedDomainEvent fakeEvent = new(fakeOrder, Guid.NewGuid(), "fakeName", cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
         int expectedResult = 1;
 
         //Act         

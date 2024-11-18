@@ -1,4 +1,4 @@
-﻿namespace Webhooks.API.Model;
+namespace eShop.Webhooks.API.Model;
 
 public enum WebhookType
 {

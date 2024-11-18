@@ -3,6 +3,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Commands.Catalog.DeleteCatalogItem;
 using eShop.Catalog.Contracts;
+using eShop.ServiceInvocation.CatalogApiClient;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -13,7 +14,7 @@ public class DeleteCatalogItemCommandUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCatalogItemDeleted(
         DeleteCatalogItemCommand command,
-        [Substitute, Frozen] ICatalogApi catalogApi,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         DeleteCatalogItemCommandHandler sut)
     {
         // Arrange
@@ -26,18 +27,18 @@ public class DeleteCatalogItemCommandUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await catalogApi.Received().DeleteCatalogItem(command.ObjectId);
+        await catalogApiClient.Received().DeleteCatalogItem(command.ObjectId);
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         DeleteCatalogItemCommand command,
-        [Substitute, Frozen] ICatalogApi catalogApi,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         DeleteCatalogItemCommandHandler sut)
     {
         // Arrange
 
-        catalogApi.DeleteCatalogItem(command.ObjectId)
+        catalogApiClient.DeleteCatalogItem(command.ObjectId)
             .ThrowsAsync<Exception>();
 
         // Act
@@ -48,6 +49,6 @@ public class DeleteCatalogItemCommandUnitTests
 
         Assert.True(result.IsError());
 
-        await catalogApi.Received().DeleteCatalogItem(command.ObjectId);
+        await catalogApiClient.Received().DeleteCatalogItem(command.ObjectId);
     }
 }

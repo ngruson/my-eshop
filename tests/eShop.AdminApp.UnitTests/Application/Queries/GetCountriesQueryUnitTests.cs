@@ -3,6 +3,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Queries.MasterData.GetCountries;
 using eShop.MasterData.Contracts;
+using eShop.ServiceInvocation.MasterDataApiClient;
 using Microsoft.Extensions.Caching.Memory;
 using NSubstitute;
 
@@ -13,13 +14,13 @@ public class GetCountriesQueryUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnCountriesGivenCacheMiss(
         GetCountriesQuery query,
-        [Substitute, Frozen] IMasterDataApi masterDataApi,
+        [Substitute, Frozen] IMasterDataApiClient masterDataApiClient,
         GetCountriesQueryHandler sut,
         CountryDto[] countries)
     {
         // Arrange
 
-        masterDataApi.GetCountries()
+        masterDataApiClient.GetCountries()
             .Returns(countries);
 
         // Act
@@ -30,14 +31,14 @@ public class GetCountriesQueryUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await masterDataApi.Received().GetCountries();
+        await masterDataApiClient.Received().GetCountries();
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnCountriesGivenCacheHit(
         GetCountriesQuery query,
         [Substitute, Frozen] IMemoryCache cache,
-        [Substitute, Frozen] IMasterDataApi masterDataApi,
+        [Substitute, Frozen] IMasterDataApiClient masterDataApiClient,
         GetCountriesQueryHandler sut,
         CountryViewModel[] countries)
     {
@@ -57,6 +58,6 @@ public class GetCountriesQueryUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await masterDataApi.DidNotReceive().GetCountries();
+        await masterDataApiClient.DidNotReceive().GetCountries();
     }
 }

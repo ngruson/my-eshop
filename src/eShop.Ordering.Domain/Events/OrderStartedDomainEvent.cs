@@ -6,7 +6,7 @@ namespace eShop.Ordering.Domain.Events;
 /// </summary>
 public record class OrderStartedDomainEvent(
     Order Order, 
-    string UserId,
+    Guid UserId,
     string UserName,
     CardType CardType,
     string CardNumber,

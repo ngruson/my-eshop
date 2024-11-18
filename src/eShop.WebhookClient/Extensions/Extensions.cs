@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
@@ -23,16 +23,13 @@ public static class Extensions
 
     public static void AddAuthenticationServices(this IHostApplicationBuilder builder)
     {
-        var configuration = builder.Configuration;
-        var services = builder.Services;
-
-        var identityUrl = configuration.GetRequiredValue("IdentityUrl");
-        var callBackUrl = configuration.GetRequiredValue("CallBackUrl");
-        var sessionCookieLifetime = configuration.GetValue("SessionCookieLifetimeMinutes", 60);
+        string identityUrl = builder.Configuration.GetRequiredValue("IdentityUrl");
+        string callBackUrl = builder.Configuration.GetRequiredValue("CallBackUrl");
+        int sessionCookieLifetime = builder.Configuration.GetValue("SessionCookieLifetimeMinutes", 60);
 
         // Add Authentication services
-        services.AddAuthorization();
-        services.AddAuthentication(options =>
+        builder.Services.AddAuthorization();
+        builder.Services.AddAuthentication(options =>
         {
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -60,7 +57,7 @@ public static class Extensions
             options.Scope.Add("webhooks");
         });
 
-        services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
-        services.AddCascadingAuthenticationState();
+        builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+        builder.Services.AddCascadingAuthenticationState();
     }
 }

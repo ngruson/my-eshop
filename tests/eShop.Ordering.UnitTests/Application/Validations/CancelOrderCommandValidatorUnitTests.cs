@@ -1,3 +1,4 @@
+using eShop.Ordering.API.Application.Commands.CancelOrder;
 using eShop.Ordering.API.Application.Validations;
 using FluentValidation.TestHelper;
 
@@ -28,7 +29,7 @@ public class CancelOrderCommandValidatorUnitTests
     {
         // Arrange
 
-        CancelOrderCommand command = new(0);
+        CancelOrderCommand command = new(Guid.Empty);
 
         // Act
 

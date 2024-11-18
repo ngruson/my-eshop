@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using eShop.Ordering.API.Application.Commands.SetAwaitingValidationOrderStatus;
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;

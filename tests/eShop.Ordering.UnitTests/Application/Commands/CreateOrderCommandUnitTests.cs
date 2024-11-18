@@ -1,5 +1,6 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using eShop.Ordering.API.Application.Commands.CreateOrder;
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
@@ -21,12 +22,12 @@ public class CreateOrderCommandUnitTests
         cardTypeRepositoryMock.SingleOrDefaultAsync(Arg.Any<CardTypeSpecification>(), default)
             .Returns(cardType);
 
-        OrderItemDto[] orderItems = command.OrderItems.Select(
+        OrderItemDto[] orderItems = command.Items.Select(
             x => new OrderItemDto(x.ProductId, x.ProductName, Math.Abs(x.UnitPrice), 0, x.Units, x.PictureUrl)).ToArray();
 
         //Act
 
-        await sut.Handle(command with { CardType = cardType.ObjectId }, default);
+        await sut.Handle(command with { CardType = cardType.ObjectId, Items = orderItems }, default);
 
         //Assert
 

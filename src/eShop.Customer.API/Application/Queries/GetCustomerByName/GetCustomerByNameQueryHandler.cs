@@ -26,7 +26,7 @@ public class GetCustomerByNameQueryHandler(
                     new GetCustomerByNameSpecification(request.Name),
                     cancellationToken);
 
-            var foundResult = Guard.Against.CustomerNull(customer, this.logger);
+            Result foundResult = Guard.Against.CustomerNull(customer, this.logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;

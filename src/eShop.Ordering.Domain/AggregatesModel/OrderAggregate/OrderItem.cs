@@ -18,6 +18,8 @@ public class OrderItem : Entity
 
     public Guid ProductId { get; private set; }
 
+    public decimal Total => (this.UnitPrice * this.Units) - this.Discount;
+
     protected OrderItem() { }
 
     public OrderItem(Guid productId, string productName, decimal unitPrice, decimal discount, string pictureUrl, int units = 1)

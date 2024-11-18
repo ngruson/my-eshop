@@ -15,10 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Proto\basket.proto" GrpcServices="Server" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\eShop.Basket.Contracts\eShop.Basket.Contracts.csproj" />
     <ProjectReference Include="..\eShop.EventBusRabbitMQ\eShop.EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
     <ProjectReference Include="..\eShop.Shared\eShop.Shared.csproj" />

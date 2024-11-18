@@ -34,21 +34,21 @@ internal class UpdateCatalogItemCommandHandler(
                 new GetCatalogItemByObjectIdSpecification(request.ObjectId),
                 cancellationToken);
 
-            var foundResult = Guard.Against.CatalogItemNull(catalogItem, logger);
+            Result foundResult = Guard.Against.CatalogItemNull(catalogItem, logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;
             }
 
             CatalogType? catalogType = await this.GetCatalogType(request.Dto.CatalogType, cancellationToken);
-            var catalogTypeFoundResult = Guard.Against.CatalogTypeNull(catalogType, logger);
+            Result catalogTypeFoundResult = Guard.Against.CatalogTypeNull(catalogType, logger);
             if (!catalogTypeFoundResult.IsSuccess)
             {
                 return catalogTypeFoundResult;
             }
 
             CatalogBrand? catalogBrand = catalogBrand = await this.GetCatalogBrand(request.Dto.CatalogBrand, cancellationToken);
-            var catalogBrandFoundResult = Guard.Against.CatalogBrandNull(catalogBrand, logger);
+            Result catalogBrandFoundResult = Guard.Against.CatalogBrandNull(catalogBrand, logger);
             if (!catalogBrandFoundResult.IsSuccess)
             {
                 return catalogBrandFoundResult;
@@ -64,7 +64,7 @@ internal class UpdateCatalogItemCommandHandler(
             if (priceModified) // Save product's data and publish integration event through the Event Bus if price has changed
             {
                 //Create Integration Event to be published through the Event Bus
-                var priceChangedEvent = new ProductPriceChangedIntegrationEvent(catalogItem.ObjectId, request.Dto.Price, priceOriginalValue);
+                ProductPriceChangedIntegrationEvent priceChangedEvent = new(catalogItem.ObjectId, request.Dto.Price, priceOriginalValue);
 
                 // Achieving atomicity between original Catalog database operation and the IntegrationEventLog thanks to a local transaction
                 await eventService.AddAndSaveEventAsync(priceChangedEvent, cancellationToken);

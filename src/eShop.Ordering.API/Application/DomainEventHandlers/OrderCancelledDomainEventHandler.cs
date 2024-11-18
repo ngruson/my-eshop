@@ -1,3 +1,4 @@
+using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
 using Order = eShop.Ordering.Domain.AggregatesModel.OrderAggregate.Order;
@@ -18,12 +19,13 @@ public partial class OrderCancelledDomainEventHandler(
 
     public async Task Handle(OrderCancelledDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.Order.Id, OrderStatus.Cancelled);
+        OrderingApiTrace.LogOrderStatusUpdated(this._logger, domainEvent.Order.ObjectId, OrderStatus.Cancelled);
 
-        var order = await this._orderRepository.GetByIdAsync(domainEvent.Order.Id, cancellationToken);
-        var buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
+        Order? order = await this._orderRepository.SingleOrDefaultAsync(
+            new GetOrderSpecification(domainEvent.Order.ObjectId), cancellationToken);
+        Buyer? buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
 
-        var integrationEvent = new OrderStatusChangedToCancelledIntegrationEvent(order.Id, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!);
+        OrderStatusChangedToCancelledIntegrationEvent integrationEvent = new(order.ObjectId, order.OrderStatus, buyer!.Name!, buyer.IdentityGuid!);
         await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
     }
 }

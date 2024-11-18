@@ -4,7 +4,7 @@ using OrderAggregate = eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 namespace eShop.Ordering.API.Application.Specifications;
 public class GetOrdersFromUserSpecification : Specification<OrderAggregate.Order>
 {
-    public GetOrdersFromUserSpecification(string userId)
+    public GetOrdersFromUserSpecification(Guid userId)
     {
         this.Query
             .Include(_ => _.OrderItems)

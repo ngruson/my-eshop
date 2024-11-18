@@ -4,10 +4,9 @@ using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Queries.Customer.GetCustomers;
 using eShop.AdminApp.Application.Queries.MasterData.GetCountries;
 using eShop.AdminApp.Application.Queries.MasterData.GetStates;
-using eShop.Customer.Contracts;
 using eShop.Customer.Contracts.GetCustomers;
+using eShop.ServiceInvocation.CustomerApiClient;
 using MediatR;
-using Microsoft.AspNetCore.Components.Forms;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -18,7 +17,7 @@ public class GetCustomersQueryUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCustomerCreated(
         GetCustomersQuery query,
-        [Substitute, Frozen] ICustomerApi customerApi,
+        [Substitute, Frozen] ICustomerApiClient customerApiClient,
         [Substitute, Frozen] IMediator mediator,
         GetCustomersQueryHandler sut,
         CustomerDto[] customers,
@@ -27,7 +26,7 @@ public class GetCustomersQueryUnitTests
     {
         // Arrange
 
-        customerApi.GetCustomers()
+        customerApiClient.GetCustomers()
             .Returns(customers);
 
         mediator.Send(Arg.Any<GetCountriesQuery>(), Arg.Any<CancellationToken>())
@@ -43,7 +42,7 @@ public class GetCustomersQueryUnitTests
 
         Assert.True(result.IsSuccess);
 
-        await customerApi.Received().GetCustomers();
+        await customerApiClient.Received().GetCustomers();
         await mediator.Received().Send(Arg.Any<GetCountriesQuery>(), Arg.Any<CancellationToken>());
         await mediator.Received().Send(Arg.Any<GetStatesQuery>(), Arg.Any<CancellationToken>());
     }
@@ -51,13 +50,13 @@ public class GetCustomersQueryUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         GetCustomersQuery query,
-        [Substitute, Frozen] ICustomerApi customerApi,
+        [Substitute, Frozen] ICustomerApiClient customerApiClient,
         [Substitute, Frozen] IMediator mediator,
         GetCustomersQueryHandler sut)
     {
         // Arrange
 
-        customerApi.GetCustomers()
+        customerApiClient.GetCustomers()
             .ThrowsAsync<Exception>();
 
         // Act
@@ -68,7 +67,7 @@ public class GetCustomersQueryUnitTests
 
         Assert.True(result.IsError());
 
-        await customerApi.Received().GetCustomers();
+        await customerApiClient.Received().GetCustomers();
         await mediator.DidNotReceive().Send(Arg.Any<GetCountriesQuery>(), Arg.Any<CancellationToken>());
         await mediator.DidNotReceive().Send(Arg.Any<GetStatesQuery>(), Arg.Any<CancellationToken>());
     }

@@ -28,7 +28,7 @@ internal class GetPaginatedCatalogItemsQueryHandler(
                 new GetCatalogItemsSpecification(false),
                 cancellationToken);
 
-            var foundResult = Ardalis.GuardClauses.Guard.Against.CatalogItemsNullOrEmpty(catalogItems, this.logger);
+            Result foundResult = Ardalis.GuardClauses.Guard.Against.CatalogItemsNullOrEmpty(catalogItems, this.logger);
             if (!foundResult.IsSuccess)
             {
                 return foundResult;

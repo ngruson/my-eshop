@@ -31,27 +31,54 @@ public static class Extensions
         // Application services
         builder.Services.AddScoped<BasketState>();
         builder.Services.AddScoped<LogOutService>();
-        builder.Services.AddSingleton<BasketService>();
         builder.Services.AddSingleton<OrderStatusNotificationService>();
         builder.Services.AddSingleton<IProductImageUrlProvider, ProductImageUrlProvider>();
         builder.AddAIServices();
 
-        // HTTP and GRPC client registrations
-        builder.Services.AddGrpcClient<Basket.API.Grpc.Basket.BasketClient>(o => o.Address = new("http://basket-api"))
+        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+
+        if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Dapr)
+        {
+            builder.AddDaprServices();
+        }
+        else
+        {
+            builder.AddRefitServices();            
+        }
+    }
+
+    private static void AddDaprServices(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddGrpc();
+        builder.Services.AddDaprClient();        
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<AccessTokenAccessor>();
+
+        string? grpcEndpoint = builder.Configuration["DAPR_GRPC_ENDPOINT"];
+        builder.Services.AddGrpcClient<BasketClient>(o => o.Address = new(grpcEndpoint!))
             .AddAuthToken();
 
-        builder.Services.AddHttpClient<CatalogService>(o => o.BaseAddress = new("http://catalog-api"))
-            .AddApiVersion(1.0)
+        builder.Services.AddScoped<IBasketApiClient, ServiceInvocation.BasketApiClient.Dapr.BasketApiClient>();
+        builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Dapr.CatalogApiClient>();
+        builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Dapr.CustomerApiClient>();
+        builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Dapr.OrderingApiClient>();
+    }
+
+    private static void AddRefitServices(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddGrpcClient<BasketClient>(o => o.Address = new("http://basket-api"))
             .AddAuthToken();
 
-        builder.Services.AddHttpClient<OrderingService>(o => o.BaseAddress = new("http://ordering-api"))
-            .AddApiVersion(1.0)
-            .AddAuthToken();
+        builder.Services
+                .AddRefitClient<ICatalogApi>()
+                .ConfigureHttpClient(c =>
+                    c.BaseAddress = new Uri("http://catalog-api"))
+                .AddAuthToken();
 
         builder.Services
             .AddRefitClient<ICustomerApi>()
             .ConfigureHttpClient(c =>
-                c.BaseAddress = new Uri($"{builder.Configuration["services:customer-api:http:0"]}"))
+                c.BaseAddress = new Uri("http://customer-api"))
             .AddAuthToken();
 
         builder.Services
@@ -59,6 +86,11 @@ public static class Extensions
             .ConfigureHttpClient(c =>
                 c.BaseAddress = new Uri("http://ordering-api"))
             .AddAuthToken();
+
+        builder.Services.AddScoped<IBasketApiClient, ServiceInvocation.BasketApiClient.Refit.BasketApiClient>();
+        builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Refit.CatalogApiClient>();
+        builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Refit.CustomerApiClient>();
+        builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Refit.OrderingApiClient>();
     }
 
     public static void AddEventBusSubscriptions(this IEventBusBuilder eventBus)
@@ -73,18 +105,15 @@ public static class Extensions
 
     public static void AddAuthenticationServices(this IHostApplicationBuilder builder)
     {
-        var configuration = builder.Configuration;
-        var services = builder.Services;
-
         JsonWebTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 
-        var identityUrl = configuration.GetRequiredValue("IdentityUrl");
-        var callBackUrl = configuration.GetRequiredValue("CallBackUrl");
-        var sessionCookieLifetime = configuration.GetValue("SessionCookieLifetimeMinutes", 60);
+        string identityUrl = builder.Configuration.GetRequiredValue("IdentityUrl");
+        string callBackUrl = builder.Configuration.GetRequiredValue("CallBackUrl");
+        int sessionCookieLifetime = builder.Configuration.GetValue("SessionCookieLifetimeMinutes", 60);
 
         // Add Authentication services
-        services.AddAuthorization();
-        services.AddAuthentication(options =>
+        builder.Services.AddAuthorization();
+        builder.Services.AddAuthentication(options =>
         {
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -108,14 +137,14 @@ public static class Extensions
         });
 
         // Blazor auth services
-        services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
-        services.AddCascadingAuthenticationState();
+        builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+        builder.Services.AddCascadingAuthenticationState();
     }
 
     private static void AddAIServices(this IHostApplicationBuilder builder)
     {
-        var openAIOptions = builder.Configuration.GetSection("AI").Get<AIOptions>()?.OpenAI;
-        var deploymentName = openAIOptions?.ChatModel;
+        OpenAIOptions? openAIOptions = builder.Configuration.GetSection("AI").Get<AIOptions>()?.OpenAI;
+        string? deploymentName = openAIOptions?.ChatModel;
 
         if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("openai")) && !string.IsNullOrWhiteSpace(deploymentName))
         {
@@ -125,17 +154,24 @@ public static class Extensions
         }
     }
 
-    public static async Task<string?> GetBuyerIdAsync(this AuthenticationStateProvider authenticationStateProvider)
+    public static async Task<Guid?> GetBuyerIdAsync(this AuthenticationStateProvider authenticationStateProvider)
     {
-        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        return user.FindFirst("sub")?.Value;
+        AuthenticationState authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        ClaimsPrincipal user = authState.User;
+        string? subValue = user.FindFirst("sub")?.Value;
+
+        if (Guid.TryParse(subValue, out Guid buyerId))
+        {
+            return buyerId;
+        }
+
+        return null;
     }
 
     public static async Task<string?> GetUserNameAsync(this AuthenticationStateProvider authenticationStateProvider)
     {
-        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        AuthenticationState authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        ClaimsPrincipal user = authState.User;
         return user.FindFirst(ClaimTypes.Name)?.Value;
     }
 }

@@ -1,20 +1,16 @@
 using Ardalis.Result;
-using eShop.AdminApp.Application.Queries.MasterData.GetCountries;
-using eShop.AdminApp.Application.Queries.MasterData.GetStates;
-using eShop.Customer.Contracts;
 using eShop.Customer.Contracts.GetCustomer;
+using eShop.ServiceInvocation.CustomerApiClient;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Queries.Customer.GetCustomer;
 
 public class GetCustomerQueryHandler(
     ILogger<GetCustomerQueryHandler> logger,
-    ICustomerApi customerApi,
-    IMediator mediator) : IRequestHandler<GetCustomerQuery, Result<CustomerViewModel>>
+    ICustomerApiClient customerApiClient) : IRequestHandler<GetCustomerQuery, Result<CustomerViewModel>>
 {
     private readonly ILogger<GetCustomerQueryHandler> logger = logger;
-    private readonly ICustomerApi customerApi = customerApi;
-    private readonly IMediator mediator = mediator;
+    private readonly ICustomerApiClient customerApiClient = customerApiClient;
 
     public async Task<Result<CustomerViewModel>> Handle(GetCustomerQuery request, CancellationToken cancellationToken)
     {
@@ -22,12 +18,9 @@ public class GetCustomerQueryHandler(
         {
             this.logger.LogInformation("Retrieving customer {ObjectId} from API...", request.ObjectId);
 
-            CustomerDto customer = await this.customerApi.GetCustomer(request.ObjectId);
+            CustomerDto customer = await this.customerApiClient.GetCustomer(request.ObjectId);
 
             this.logger.LogInformation("Retrieved customer {ObjectId} from API", request.ObjectId);
-
-            //Result<CountryViewModel[]> countries = await this.mediator.Send(new GetCountriesQuery(), cancellationToken);
-            //Result<StateViewModel[]> states = await this.mediator.Send(new GetStatesQuery(), cancellationToken);
 
            return customer
                 .MapToCustomerViewModel();

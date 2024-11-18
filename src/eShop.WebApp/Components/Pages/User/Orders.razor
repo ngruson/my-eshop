@@ -1,7 +1,9 @@
-﻿@page "/user/orders"
+@page "/user/orders"
+@using eShop.Ordering.Contracts.GetOrders
+@using eShop.ServiceInvocation.OrderingApiClient
 @attribute [Authorize]
 @attribute [StreamRendering]
-@inject OrderingService OrderingService
+@inject IOrderingApiClient OrderingApiClient
 
 <PageTitle>Orders | AdventureWorks</PageTitle>
 <SectionContent SectionName="page-header-title">Orders</SectionContent>
@@ -25,21 +27,21 @@ else
             <div class="total-header">Total</div>
             <div>Status</div>
         </li>
-        @foreach (var order in orders)
+        @foreach (OrderDto order in orders)
         {
             <li class="orders-item">
                 <div class="order-number">
                     @order.OrderNumber
                 </div>
                 <div class="order-date">
-                    @order.Date
+                    @order.OrderDate
                 </div>
                 <div class="order-total">
                    $@order.Total.ToString("0.00")
                 </div>
                 <div class="order-status">
-                    <span class="status @order.Status.ToLower()">
-                        @order.Status
+                    <span class="status @order.OrderStatus.ToLower()">
+                        @order.OrderStatus
                     </span>
                 </div>
             </li>
@@ -49,10 +51,10 @@ else
 </div>
 
 @code {
-    private OrderRecord[]? orders;
+    private OrderDto[]? orders;
 
     protected override async Task OnInitializedAsync()
     {
-        orders = await OrderingService.GetOrders();
+        orders = await OrderingApiClient.GetOrders();
     }
 }

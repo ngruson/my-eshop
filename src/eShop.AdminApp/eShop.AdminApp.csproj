@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Asp.Versioning.Http.Client" />
+    <PackageReference Include="Dapr.AspNetCore" />
     <PackageReference Include="IdentityModel" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
@@ -26,8 +27,8 @@
     <ProjectReference Include="..\eShop.Customer.Contracts\eShop.Customer.Contracts.csproj" />
     <ProjectReference Include="..\eShop.Identity.Contracts\eShop.Identity.Contracts.csproj" />
     <ProjectReference Include="..\eShop.MasterData.Contracts\eShop.MasterData.Contracts.csproj" />
-    <ProjectReference Include="..\eShop.Ordering.Contracts\eShop.Ordering.Contracts.csproj" />
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\eShop.ServiceInvocation\eShop.ServiceInvocation.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +41,9 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="Components\Pages\Catalog\CatalogCreate.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Components\Pages\Orders\OrderAddressCard.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
   </ItemGroup>

@@ -3,7 +3,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.AdminApp.Application.Queries.Catalog.GetCatalogItem;
 using eShop.Catalog.Contracts;
-using eShop.Catalog.Contracts.GetCatalogItem;
+using eShop.ServiceInvocation.CatalogApiClient;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -14,45 +14,47 @@ public class GetCatalogItemQueryUnitTests
     [Theory, AutoNSubstituteData]
     internal async Task ReturnSuccessWhenCatalogItemExist(
         GetCatalogItemQuery query,
-        [Substitute, Frozen] ICatalogApi catalogApi,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         GetCatalogItemQueryHandler sut,
-        CatalogItemDto catalogItem)
+        ServiceInvocation.CatalogApiClient.CatalogItemViewModel catalogItem)
     {
         // Arrange
 
-        catalogApi.GetCatalogItem(query.ObjectId)
+        catalogApiClient.GetCatalogItem(query.ObjectId)
             .Returns(catalogItem);
 
         // Act
 
-        Result<CatalogItemViewModel> result = await sut.Handle(query, CancellationToken.None);
+        Result<AdminApp.Application.Queries.Catalog.GetCatalogItem.CatalogItemViewModel> result =
+            await sut.Handle(query, CancellationToken.None);
 
         // Assert
 
         Assert.True(result.IsSuccess);
 
-        await catalogApi.Received().GetCatalogItem(query.ObjectId);
+        await catalogApiClient.Received().GetCatalogItem(query.ObjectId);
     }
 
     [Theory, AutoNSubstituteData]
     internal async Task ReturnErrorWhenExceptionIsThrown(
         GetCatalogItemQuery query,
-        [Substitute, Frozen] ICatalogApi catalogApi,
+        [Substitute, Frozen] ICatalogApiClient catalogApiClient,
         GetCatalogItemQueryHandler sut)
     {
         // Arrange
 
-        catalogApi.GetCatalogItem(query.ObjectId)
+        catalogApiClient.GetCatalogItem(query.ObjectId)
             .ThrowsAsync<Exception>();
 
         // Act
 
-        Result<CatalogItemViewModel> result = await sut.Handle(query, CancellationToken.None);
+        Result<AdminApp.Application.Queries.Catalog.GetCatalogItem.CatalogItemViewModel> result =
+            await sut.Handle(query, CancellationToken.None);
 
         // Assert
 
         Assert.True(result.IsError());
 
-        await catalogApi.Received().GetCatalogItem(query.ObjectId);
+        await catalogApiClient.Received().GetCatalogItem(query.ObjectId);
     }
 }

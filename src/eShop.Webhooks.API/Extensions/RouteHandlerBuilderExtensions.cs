@@ -1,4 +1,4 @@
-﻿namespace Webhooks.API.Extensions;
+namespace eShop.Webhooks.API.Extensions;
 
 public static class RouteHandlerBuilderExtensions
 {
@@ -6,14 +6,14 @@ public static class RouteHandlerBuilderExtensions
     {
         return routeHandlerBuilder.AddEndpointFilter(async (context, next) =>
         {
-            var webhookSubscriptionRequest = context.Arguments.OfType<WebhookSubscriptionRequest>().SingleOrDefault();
+            WebhookSubscriptionRequest? webhookSubscriptionRequest = context.Arguments.OfType<WebhookSubscriptionRequest>().SingleOrDefault();
 
             if (webhookSubscriptionRequest == null)
             {
                 return TypedResults.BadRequest("No WebhookSubscriptionRequest found.");
             }
 
-            var validationResults = webhookSubscriptionRequest.Validate(new ValidationContext(webhookSubscriptionRequest));
+            IEnumerable<ValidationResult> validationResults = webhookSubscriptionRequest.Validate(new ValidationContext(webhookSubscriptionRequest));
 
             if (validationResults.Any())
             {
@@ -28,19 +28,19 @@ public static class RouteHandlerBuilderExtensions
     {
         Dictionary<string, string[]> errors = [];
 
-        foreach (var validationResult in validationResults)
+        foreach (ValidationResult validationResult in validationResults)
         {
-            var propertyNames = validationResult.MemberNames.Any() ? validationResult.MemberNames : [string.Empty];
+            IEnumerable<string> propertyNames = validationResult.MemberNames.Any() ? validationResult.MemberNames : [string.Empty];
 
             foreach (string propertyName in propertyNames)
             {
-                if (errors.TryGetValue(propertyName, out var value))
+                if (errors.TryGetValue(propertyName, out string[]? value))
                 {
-                    errors[propertyName] = [..value, validationResult.ErrorMessage];
+                    errors[propertyName] = [.. value, validationResult.ErrorMessage!];
                 }
                 else
                 {
-                    errors.Add(propertyName, [validationResult.ErrorMessage]);  
+                    errors.Add(propertyName, [validationResult.ErrorMessage!]);
                 }
             }
         }

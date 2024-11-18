@@ -1,6 +1,10 @@
 @page "/"
+@using eShop.Catalog.Contracts
+@using eShop.Catalog.Contracts.GetCatalogItems
+@using eShop.ServiceInvocation.CatalogApiClient
+@using eShop.Shared.Data
 @inject NavigationManager Nav
-@inject CatalogService CatalogService
+@inject ICatalogApiClient CatalogApiClient
 @attribute [StreamRendering]
 
 <PageTitle>AdventureWorks</PageTitle>
@@ -18,14 +22,14 @@
     {
         <div>
             <div class="catalog-items">
-                @foreach (var item in catalogResult.Data)
+                @foreach (CatalogItemViewModel item in catalogResult.Data)
                 {
                     <CatalogListItem Item="@item" />
                 }
             </div>
 
             <div class="page-links">
-                @foreach (var pageIndex in GetVisiblePageIndexes(catalogResult))
+                @foreach (int pageIndex in GetVisiblePageIndexes(catalogResult))
                 {
                     <NavLink ActiveClass="active-page" Match="@NavLinkMatch.All" href="@Nav.GetUriWithQueryParameter("page", pageIndex == 1 ? null : pageIndex)">@pageIndex</NavLink>
                 }
@@ -41,22 +45,22 @@
     public int? Page { get; set; }
 
     [SupplyParameterFromQuery(Name = "brand")]
-    public int? BrandId { get; set; }
+    public Guid? BrandId { get; set; }
 
     [SupplyParameterFromQuery(Name = "type")]
-    public int? ItemTypeId { get; set; }
+    public Guid? ItemTypeId { get; set; }
 
-    CatalogResult? catalogResult;
+    PaginatedItems<CatalogItemViewModel>? catalogResult;
 
-    static IEnumerable<int> GetVisiblePageIndexes(CatalogResult result)
+    static IEnumerable<int> GetVisiblePageIndexes(PaginatedItems<CatalogItemViewModel> result)
         => Enumerable.Range(1, (int)Math.Ceiling(1.0 * result.Count / PageSize));
 
     protected override async Task OnInitializedAsync()
     {
-        catalogResult = await CatalogService.GetPaginatedCatalogItems(
-            Page.GetValueOrDefault(1) - 1,
-            PageSize,
+        catalogResult = await CatalogApiClient.GetPaginatedCatalogItems(
+            ItemTypeId,
             BrandId,
-            ItemTypeId);
+            PageSize,
+            Page.GetValueOrDefault(1) - 1);
     }
 }

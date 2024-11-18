@@ -33,8 +33,8 @@ public class RedisBasketRepository(ILogger<RedisBasketRepository> logger, IConne
 
     public async Task<CustomerBasket?> UpdateBasketAsync(CustomerBasket basket)
     {
-        var json = JsonSerializer.SerializeToUtf8Bytes(basket, BasketSerializationContext.Default.CustomerBasket);
-        var created = await this._database.StringSetAsync(GetBasketKey(basket.BuyerId), json);
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes(basket, BasketSerializationContext.Default.CustomerBasket);
+        bool created = await this._database.StringSetAsync(GetBasketKey(basket.BuyerId), json);
 
         if (!created)
         {

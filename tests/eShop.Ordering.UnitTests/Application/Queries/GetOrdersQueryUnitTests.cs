@@ -4,7 +4,6 @@ using AutoFixture.Xunit2;
 using eShop.Ordering.API.Application.Queries.GetOrders;
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Contracts.GetOrders;
-using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Shared.Data;
 using NSubstitute.ExceptionExtensions;
 
@@ -14,10 +13,10 @@ public class GetOrdersQueryUnitTests
 {
     [Theory, AutoNSubstituteData]
     internal async Task WhenOrdersExist_ReturnOrders(
-        [Substitute, Frozen] IRepository<Order> orderRepository,
+        [Substitute, Frozen] IRepository<Ordering.Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
         GetOrdersQueryHandler sut,
         GetOrdersQuery query,
-        List<Order> orders,
+        List<Ordering.Domain.AggregatesModel.OrderAggregate.Order> orders,
         List<Buyer> buyers
     )
     {
@@ -43,7 +42,7 @@ public class GetOrdersQueryUnitTests
 
     [Theory, AutoNSubstituteData]
     internal async Task WhenExceptionIsThrown_ReturnError(
-        [Substitute, Frozen] IRepository<Order> orderRepository,
+        [Substitute, Frozen] IRepository<Ordering.Domain.AggregatesModel.OrderAggregate.Order> orderRepository,
         GetOrdersQueryHandler sut,
         GetOrdersQuery query
     )

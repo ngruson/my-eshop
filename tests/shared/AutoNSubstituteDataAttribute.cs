@@ -1,4 +1,4 @@
-﻿using AutoFixture;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 
@@ -6,7 +6,7 @@ internal class AutoNSubstituteDataAttribute() : AutoDataAttribute(() => CreateFi
 {
     private static IFixture CreateFixture()
     {
-        var fixture = new Fixture()
+        IFixture fixture = new Fixture()
             .Customize(new AutoNSubstituteCustomization());
 
         fixture.Behaviors

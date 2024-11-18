@@ -1,3 +1,3 @@
-﻿namespace Webhooks.API.IntegrationEvents;
+namespace eShop.Webhooks.API.IntegrationEvents;
 
-public record OrderStockItem(int ProductId, int Units);
+public record OrderStockItem(Guid ProductId, int Units);

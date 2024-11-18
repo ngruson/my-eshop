@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using eShop.WebApp.Extensions
+@using eShop.WebApp.Services.OrderStatus
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject OrderStatusNotificationService OrderStatusNotificationService
@@ -12,11 +13,11 @@
     {
         if (firstRender)
         {
-            var buyerId = await AuthenticationStateProvider.GetBuyerIdAsync();
-            if (!string.IsNullOrEmpty(buyerId))
+            Guid? buyerId = await AuthenticationStateProvider.GetBuyerIdAsync();
+            if (buyerId != Guid.Empty)
             {
                 orderStatusChangedSubscription = OrderStatusNotificationService.SubscribeToOrderStatusNotifications(
-                    buyerId, () => InvokeAsync(HandleOrderStatusChanged));
+                    buyerId!.Value, () => InvokeAsync(HandleOrderStatusChanged));
             }
         }
     }

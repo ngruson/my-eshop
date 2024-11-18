@@ -1,10 +1,10 @@
-using eShop.WebAppComponents.Catalog;
+using eShop.ServiceInvocation.CatalogApiClient;
 
 namespace eShop.WebAppComponents.Services;
 
 public interface IProductImageUrlProvider
 {
-    string GetProductImageUrl(CatalogItem item)
+    string GetProductImageUrl(CatalogItemViewModel item)
         => this.GetProductImageUrl(item.ObjectId);
 
     string GetProductImageUrl(Guid productId);

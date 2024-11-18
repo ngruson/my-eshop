@@ -1,38 +1,25 @@
 // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-namespace IdentityServerHost.Quickstart.UI;
+namespace eShop.Identity.API.Quickstart.Grants;
 
 /// <summary>
 /// This sample controller allows a user to revoke grants given to clients
 /// </summary>
 [SecurityHeaders]
 [Authorize]
-public class GrantsController : Controller
+public class GrantsController(IIdentityServerInteractionService interaction,
+    IClientStore clients,
+    IResourceStore resources,
+    IEventService events) : Controller
 {
-    private readonly IIdentityServerInteractionService _interaction;
-    private readonly IClientStore _clients;
-    private readonly IResourceStore _resources;
-    private readonly IEventService _events;
-
-    public GrantsController(IIdentityServerInteractionService interaction,
-        IClientStore clients,
-        IResourceStore resources,
-        IEventService events)
-    {
-        _interaction = interaction;
-        _clients = clients;
-        _resources = resources;
-        _events = events;
-    }
-
     /// <summary>
     /// Show list of grants
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        return View("Index", await BuildViewModelAsync());
+        return this.View("Index", await this.BuildViewModelAsync());
     }
 
     /// <summary>
@@ -42,25 +29,25 @@ public class GrantsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Revoke(string clientId)
     {
-        await _interaction.RevokeUserConsentAsync(clientId);
-        await _events.RaiseAsync(new GrantsRevokedEvent(User.GetSubjectId(), clientId));
+        await interaction.RevokeUserConsentAsync(clientId);
+        await events.RaiseAsync(new GrantsRevokedEvent(this.User.GetSubjectId(), clientId));
 
-        return RedirectToAction("Index");
+        return this.RedirectToAction("Index");
     }
 
     private async Task<GrantsViewModel> BuildViewModelAsync()
     {
-        var grants = await _interaction.GetAllUserGrantsAsync();
+        IEnumerable<Grant> grants = await interaction.GetAllUserGrantsAsync();
 
-        var list = new List<GrantViewModel>();
-        foreach (var grant in grants)
+        List<GrantViewModel> list = [];
+        foreach (Grant grant in grants)
         {
-            var client = await _clients.FindClientByIdAsync(grant.ClientId);
+            Client? client = await clients.FindClientByIdAsync(grant.ClientId);
             if (client != null)
             {
-                var resources = await _resources.FindResourcesByScopeAsync(grant.Scopes);
+                Resources resourcesByScope = await resources.FindResourcesByScopeAsync(grant.Scopes);
 
-                var item = new GrantViewModel()
+                GrantViewModel item = new()
                 {
                     ClientId = client.ClientId,
                     ClientName = client.ClientName ?? client.ClientId,
@@ -69,8 +56,8 @@ public class GrantsController : Controller
                     Description = grant.Description,
                     Created = grant.CreationTime,
                     Expires = grant.Expiration,
-                    IdentityGrantNames = resources.IdentityResources.Select(x => x.DisplayName ?? x.Name).ToArray(),
-                    ApiGrantNames = resources.ApiScopes.Select(x => x.DisplayName ?? x.Name).ToArray()
+                    IdentityGrantNames = resourcesByScope.IdentityResources.Select(x => x.DisplayName ?? x.Name).ToArray(),
+                    ApiGrantNames = resourcesByScope.ApiScopes.Select(x => x.DisplayName ?? x.Name).ToArray()
                 };
 
                 list.Add(item);

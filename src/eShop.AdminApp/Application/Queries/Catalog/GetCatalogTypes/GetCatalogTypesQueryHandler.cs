@@ -1,16 +1,16 @@
 using Ardalis.Result;
-using eShop.Catalog.Contracts;
 using eShop.Catalog.Contracts.GetCatalogTypes;
+using eShop.ServiceInvocation.CatalogApiClient;
 using MediatR;
 
 namespace eShop.AdminApp.Application.Queries.Catalog.GetCatalogTypes;
 
 public class GetCatalogTypesQueryHandler(
     ILogger<GetCatalogTypesQueryHandler> logger,
-    ICatalogApi catalogApi) : IRequestHandler<GetCatalogTypesQuery, Result<CatalogTypeViewModel[]>>
+    ICatalogApiClient catalogApiClient) : IRequestHandler<GetCatalogTypesQuery, Result<CatalogTypeViewModel[]>>
 {
     private readonly ILogger<GetCatalogTypesQueryHandler> logger = logger;
-    private readonly ICatalogApi catalogApi = catalogApi;
+    private readonly ICatalogApiClient catalogApiClient = catalogApiClient;
 
     public async Task<Result<CatalogTypeViewModel[]>> Handle(GetCatalogTypesQuery request, CancellationToken cancellationToken)
     {
@@ -18,7 +18,7 @@ public class GetCatalogTypesQueryHandler(
         {
             this.logger.LogInformation("Retrieving catalog types.");
 
-            CatalogTypeDto[] catalogTypes = await this.catalogApi.GetCatalogTypes();
+            CatalogTypeDto[] catalogTypes = await this.catalogApiClient.GetTypes();
 
             this.logger.LogInformation("Catalog types retrieved: {Count}", catalogTypes.Length);
 

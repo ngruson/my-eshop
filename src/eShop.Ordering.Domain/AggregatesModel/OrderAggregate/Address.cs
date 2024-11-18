@@ -1,33 +1,22 @@
-﻿using eShop.Shared.Data;
+using eShop.Shared.Data;
 
 namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
-public class Address : ValueObject
+public class Address(string street, string city, string? state, string country, string zipCode) : ValueObject
 {
-    public string Street { get; private set; }
-    public string City { get; private set; }
-    public string State { get; private set; }
-    public string Country { get; private set; }
-    public string ZipCode { get; private set; }
+    public string Street { get; private set; } = street;
+    public string City { get; private set; } = city;
+    public string? State { get; private set; } = state;
+    public string Country { get; private set; } = country;
+    public string ZipCode { get; private set; } = zipCode;
 
-    public Address() { }
-
-    public Address(string street, string city, string state, string country, string zipCode)
-    {
-        Street = street;
-        City = city;
-        State = state;
-        Country = country;
-        ZipCode = zipCode;
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
+    protected override IEnumerable<object?> GetEqualityComponents()
     {
         // Using a yield return statement to return each element one at a time
-        yield return Street;
-        yield return City;
-        yield return State;
-        yield return Country;
-        yield return ZipCode;
+        yield return this.Street;
+        yield return this.City;
+        yield return this.State;
+        yield return this.Country;
+        yield return this.ZipCode;
     }
 }

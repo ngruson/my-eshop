@@ -1,3 +1,5 @@
+using eShop.Ordering.API.Application.Commands.CancelOrder;
+
 namespace eShop.Ordering.API.Application.IntegrationEvents.EventHandling;
 
 public class OrderPaymentFailedIntegrationEventHandler(
@@ -9,13 +11,13 @@ public class OrderPaymentFailedIntegrationEventHandler(
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        var command = new CancelOrderCommand(@event.OrderId);
+        CancelOrderCommand command = new(@event.OrderId);
 
         logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
             command.GetGenericTypeName(),
-            nameof(command.OrderNumber),
-            command.OrderNumber,
+            nameof(command.ObjectId),
+            command.ObjectId,
             command);
 
         await mediator.Send(command, cancellationToken);
