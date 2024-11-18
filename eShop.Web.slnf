@@ -40,6 +40,7 @@
       "tests\\eShop.Catalog.UnitTests\\eShop.Catalog.UnitTests.csproj",
       "tests\\eShop.Customer.FunctionalTests\\eShop.Customer.FunctionalTests.csproj",
       "tests\\eShop.Customer.UnitTests\\eShop.Customer.UnitTests.csproj",
+      "tests\\eShop.EventBus.Dapr.UnitTests\\eShop.EventBus.Dapr.UnitTests.csproj",
       "tests\\eShop.EventBusRabbitMQ.UnitTests\\eShop.EventBusRabbitMQ.UnitTests.csproj",
       "tests\\eShop.Identity.UnitTests\\eShop.Identity.UnitTests.csproj",
       "tests\\eShop.IntegrationEventLogEF.UnitTests\\eShop.IntegrationEventLogEF.UnitTests.csproj",
