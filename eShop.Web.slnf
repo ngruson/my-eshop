@@ -40,13 +40,13 @@
       "tests\\eShop.Catalog.UnitTests\\eShop.Catalog.UnitTests.csproj",
       "tests\\eShop.Customer.FunctionalTests\\eShop.Customer.FunctionalTests.csproj",
       "tests\\eShop.Customer.UnitTests\\eShop.Customer.UnitTests.csproj",
+      "tests\\eShop.EventBus.Dapr.UnitTests\\eShop.EventBus.Dapr.UnitTests.csproj",
       "tests\\eShop.EventBusRabbitMQ.UnitTests\\eShop.EventBusRabbitMQ.UnitTests.csproj",
       "tests\\eShop.Identity.UnitTests\\eShop.Identity.UnitTests.csproj",
       "tests\\eShop.IntegrationEventLogEF.UnitTests\\eShop.IntegrationEventLogEF.UnitTests.csproj",
       "tests\\eShop.Ordering.FunctionalTests\\eShop.Ordering.FunctionalTests.csproj",
       "tests\\eShop.Ordering.UnitTests\\eShop.Ordering.UnitTests.csproj",
       "tests\\eShop.ServiceDefaults.UnitTests\\eShop.ServiceDefaults.UnitTests.csproj",
-      "tests\\eShop.ServiceInvocation.UnitTests\\eShop.ServiceInvocation.UnitTests.csproj",
       "tests\\eShop.Shared.UnitTests\\eShop.Shared.UnitTests.csproj"
     ]
   }

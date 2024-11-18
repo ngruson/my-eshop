@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Ardalis.Result;
+using CloudNative.CloudEvents;
+using eShop.EventBus.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -133,11 +135,15 @@ public sealed class RabbitMQEventBus(
     {
         static IEnumerable<string> ExtractTraceContextFromBasicProperties(IBasicProperties props, string key)
         {
-            if (props.Headers.TryGetValue(key, out object? value))
+            if (props.Headers is not null)
             {
-                byte[]? bytes = value as byte[];
-                return [Encoding.UTF8.GetString(bytes!)];
+                if (props.Headers.TryGetValue(key, out var value))
+                {
+                    var bytes = value as byte[];
+                    return [Encoding.UTF8.GetString(bytes!)];
+                }
             }
+            
             return [];
         }
 
@@ -212,8 +218,36 @@ public sealed class RabbitMQEventBus(
     [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "See above.")]
     private IntegrationEvent? DeserializeMessage(string message, Type eventType)
     {
+        if (IsCloudEvent(message, out CloudEvent? cloudEvent))
+        {
+            return JsonSerializer.Deserialize(cloudEvent!.Data!.ToString()!, eventType, this._subscriptionInfo.JsonSerializerOptions) as IntegrationEvent;
+        }
 
         return JsonSerializer.Deserialize(message, eventType, this._subscriptionInfo.JsonSerializerOptions) as IntegrationEvent;
+    }
+
+    [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "<Pending>")]
+    [RequiresUnreferencedCode("The 'JsonSerializer.IsReflectionEnabledByDefault' feature switch, which is set to false by default for trimmed .NET apps, ensures the JsonSerializer doesn't use Reflection.")]
+    public static bool IsCloudEvent(string input, out CloudEvent? cloudEvent)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            cloudEvent = null;
+            return false;
+        }
+
+        try
+        {
+            JsonSerializerOptions jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
+            JsonSerializerOptions options = jsonSerializerOptions;
+            cloudEvent = JsonSerializer.Deserialize<CloudEvent>(input, options);
+            return cloudEvent != null;
+        }
+        catch
+        {
+            cloudEvent = null;
+            return false;
+        }
     }
 
     [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",

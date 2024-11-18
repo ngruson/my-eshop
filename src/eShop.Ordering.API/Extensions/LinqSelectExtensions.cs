@@ -9,11 +9,11 @@ public static class LinqSelectExtensions
             SelectTryResult<TSource, TResult> returnedValue;
             try
             {
-                returnedValue = new SelectTryResult<TSource, TResult>(element, selector(element), null);
+                returnedValue = new SelectTryResult<TSource, TResult>(element, selector(element), null!);
             }
             catch (Exception ex)
             {
-                returnedValue = new SelectTryResult<TSource, TResult>(element, default, ex);
+                returnedValue = new SelectTryResult<TSource, TResult>(element, default!, ex);
             }
             yield return returnedValue;
         }

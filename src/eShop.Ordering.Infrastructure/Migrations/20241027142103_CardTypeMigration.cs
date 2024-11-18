@@ -51,7 +51,7 @@ public partial class CardTypeMigration : Migration
             schema: "ordering",
             table: "orders",
             type: "text",
-            nullable: true,
+            nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
             oldType: "text",

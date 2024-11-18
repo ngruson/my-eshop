@@ -1,3 +1,5 @@
+using eShop.EventBus.Extensions;
+using eShop.EventBus.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -40,10 +42,5 @@ public static class RabbitMqDependencyInjectionExtensions
         builder.Services.AddSingleton<IHostedService>(sp => (RabbitMQEventBus)sp.GetRequiredService<IEventBus>());
 
         return new EventBusBuilder(builder.Services);
-    }
-
-    private class EventBusBuilder(IServiceCollection services) : IEventBusBuilder
-    {
-        public IServiceCollection Services => services;
     }
 }

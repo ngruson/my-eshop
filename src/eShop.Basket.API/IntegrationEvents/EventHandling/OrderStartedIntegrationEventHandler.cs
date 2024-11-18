@@ -1,5 +1,6 @@
 using eShop.Basket.API.Repositories;
 using eShop.Basket.API.IntegrationEvents.EventHandling.Events;
+using Ardalis.Result;
 
 namespace eShop.Basket.API.IntegrationEvents.EventHandling;
 

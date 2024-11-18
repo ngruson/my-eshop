@@ -79,8 +79,7 @@ internal static class MigrateDbContextExtensions
 
         try
         {
-            bool useMigrations = configuration.GetValue<bool>("UseMigrations");
-
+            bool useMigrations = configuration.GetValue("UseMigrations", false);
             if (useMigrations)
             {
                 await context.Database.MigrateAsync();

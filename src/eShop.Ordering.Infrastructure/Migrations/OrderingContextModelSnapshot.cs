@@ -77,9 +77,10 @@ namespace Ordering.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"), "buyerseq");
 
-                    b.Property<Guid>("IdentityGuid")
+                    b.Property<string>("IdentityGuid")
+                        .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("uuid");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -300,6 +301,7 @@ namespace Ordering.Infrastructure.Migrations
                                 .HasColumnType("text");
 
                             b1.Property<string>("State")
+                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("Street")

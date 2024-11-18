@@ -9,7 +9,6 @@
   <ItemGroup>
     <PackageReference Include="Dapr.Client" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Http" />
   </ItemGroup>
 
   <ItemGroup>

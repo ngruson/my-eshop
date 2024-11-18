@@ -126,19 +126,18 @@ public class IdentifiedCommandHandlerUnitTests
     {
         // Arrange
 
-        requestManager.ExistAsync(Arg.Any<Guid>())
+        requestManager.ExistAsync(command.Id)
             .Returns(Task.FromResult(false));
 
-        mediator.Send(Arg.Any<IRequest<Result>>(), default)
-            .Returns(Task.FromResult(Result.Success()));
+        mediator.Send(command.Command, default)
+            .Returns(Result.Success());
 
         // Act
-
         Result result = await sut.Handle(command, default);
 
         // Assert
         Assert.True(result.IsSuccess);
-        await mediator.Received().Send(Arg.Any<IRequest<Result>>(), default);
+        await mediator.Received().Send(command.Command, default);
     }
 
     [Theory, AutoNSubstituteData]

@@ -1,24 +1,15 @@
-using System.Diagnostics.Metrics;
 using System.Net;
 using System.Net.Http.Json;
-using System.Reflection.Emit;
 using System.Text;
 using System.Text.Json;
 using Asp.Versioning;
 using Asp.Versioning.Http;
 using eShop.Ordering.API.Application.Commands.CancelOrder;
-using eShop.Ordering.API.Application.Commands.CreateOrder;
 using eShop.Ordering.API.Application.Commands.CreateOrderDraft;
 using eShop.Ordering.API.Application.Commands.ShipOrder;
-using eShop.Ordering.API.Application.Queries;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Contracts.GetCardTypes;
-using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
-using Fare;
-using k8s.KubeConfigModels;
 using Microsoft.AspNetCore.Mvc.Testing;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace eShop.Ordering.FunctionalTests;
 

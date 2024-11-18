@@ -38,8 +38,8 @@ internal static class Extensions
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
         if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
         {
-            builder.Services.AddDaprClient();
-            builder.Services.AddSingleton<IEventBus, DaprEventBus>();
+            builder.AddDaprEventBus()
+                .AddEventBusSubscriptions();
         }
         else
         {
@@ -53,7 +53,7 @@ internal static class Extensions
         // Configure Mediator
         builder.Services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
+            cfg.RegisterServicesFromAssemblyContaining<Program>();
 
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidatorBehavior<,>));

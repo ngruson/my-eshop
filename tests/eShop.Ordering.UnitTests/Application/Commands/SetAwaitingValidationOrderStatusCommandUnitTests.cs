@@ -23,12 +23,12 @@ public class SetAwaitingValidationOrderStatusCommandUnitTests
 
         //Act
 
-        await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         //Assert
 
+        Assert.True(result.IsSuccess);
         Assert.Equal(OrderStatus.AwaitingValidation, order.OrderStatus);
-
         await orderRepository.Received().UpdateAsync(order, default);
     }
 
@@ -49,17 +49,17 @@ public class SetAwaitingValidationOrderStatusCommandUnitTests
 
         //Act
 
-        await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         //Assert
 
+        Assert.True(result.IsSuccess);
         Assert.NotEqual(OrderStatus.AwaitingValidation, order.OrderStatus);
-
         await orderRepository.Received().UpdateAsync(order, default);
     }
 
     [Theory, AutoNSubstituteData]
-    public async Task WhenOrderDoesNotExist_ReturnFalse(
+    public async Task return_not_found_when_order_does_not_exist(
        [Substitute, Frozen] IRepository<Order> orderRepository,
        SetAwaitingValidationOrderStatusCommandHandler sut,
        SetAwaitingValidationOrderStatusCommand command)
@@ -72,8 +72,7 @@ public class SetAwaitingValidationOrderStatusCommandUnitTests
 
         //Assert
 
-        Assert.False(result.IsSuccess);
-
+        Assert.True(result.IsNotFound());
         await orderRepository.DidNotReceive().UpdateAsync(Arg.Any<Order>(), default);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace eShop.IntegrationEventLogEF;
+using Microsoft.EntityFrameworkCore;
+
+namespace eShop.IntegrationEventLogEF;
 
 public static class IntegrationLogExtensions
 {

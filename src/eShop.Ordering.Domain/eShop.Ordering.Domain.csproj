@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Ardalis.SmartEnum" />
+    <PackageReference Include="Ardalis.SmartEnum.EFCore" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="System.Reflection.TypeExtensions" />
   </ItemGroup>

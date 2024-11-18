@@ -22,16 +22,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Asp.Versioning.Http.Client" />
     <PackageReference Include="Aspire.Azure.AI.OpenAI" />    
     <PackageReference Include="Dapr.AspNetCore" />
     <PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" />
+    <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="Microsoft.SemanticKernel" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
     <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" />
     <PackageReference Include="Grpc.Tools" PrivateAssets="All" />
     <PackageReference Include="IdentityModel" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     <PackageReference Include="Refit.HttpClientFactory" />
-  </ItemGroup>  
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+  </ItemGroup>
 
 </Project>
