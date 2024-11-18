@@ -14,6 +14,15 @@ using eShop.Customer.Contracts;
 using eShop.Ordering.Contracts;
 using eShop.EventBus.Extensions;
 using eShop.EventBusRabbitMQ;
+using eShop.WebApp.Services.OrderStatus;
+using eShop.Shared.Features;
+using eShop.Shared.Auth;
+using static eShop.Basket.Contracts.Grpc.Basket;
+using eShop.ServiceInvocation.BasketApiClient;
+using eShop.ServiceInvocation.CatalogApiClient;
+using eShop.ServiceInvocation.CustomerApiClient;
+using eShop.ServiceInvocation.OrderingApiClient;
+using eShop.Catalog.Contracts;
 
 namespace eShop.WebApp.Extensions;
 
