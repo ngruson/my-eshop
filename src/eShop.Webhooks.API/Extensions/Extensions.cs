@@ -1,5 +1,7 @@
+using eShop.EventBus.Dapr;
 using eShop.EventBus.Extensions;
 using eShop.EventBusRabbitMQ;
+using eShop.Shared.Features;
 
 internal static class Extensions
 {
@@ -7,8 +9,17 @@ internal static class Extensions
     {
         builder.AddDefaultAuthentication();
 
-        builder.AddRabbitMqEventBus("eventbus")
-               .AddEventBusSubscriptions();
+        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+        if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+        {
+            builder.AddDaprEventBus()
+                .AddEventBusSubscriptions();
+        }
+        else
+        {
+            builder.AddRabbitMqEventBus("eventBus")
+                .AddEventBusSubscriptions();
+        }
 
         builder.AddNpgsqlDbContext<WebhooksContext>("webhooksdb");
 

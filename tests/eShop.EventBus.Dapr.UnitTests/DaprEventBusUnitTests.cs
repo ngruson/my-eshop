@@ -13,11 +13,11 @@ namespace eShop.EventBus.Dapr.UnitTests;
 public class DaprEventBusUnitTests
 {
     [Theory, AutoNSubstituteData]
-    public async Task return_success_when_event_is_published(
+    internal async Task return_success_when_event_is_published(
         [Frozen, Substitute] IOptions<EventBusSubscriptionInfo> subscriptionOptions,
         EventBusSubscriptionInfo eventBusSubscriptionInfo,
         DaprEventBus sut,
-        IntegrationEvent integrationEvent)
+        TestIntegrationEvent integrationEvent)
     {
         // Arrange
 
@@ -33,7 +33,7 @@ public class DaprEventBusUnitTests
     }
 
     [Theory, AutoNSubstituteData]
-    public async Task return_error_when_exception_is_thrown(
+    internal async Task return_error_when_exception_is_thrown(
         [Frozen, Substitute] DaprClient daprClient,
         DaprEventBus sut,
         IntegrationEvent integrationEvent)

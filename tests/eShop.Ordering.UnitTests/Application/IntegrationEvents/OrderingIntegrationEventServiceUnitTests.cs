@@ -9,7 +9,7 @@ using eShop.Ordering.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using NSubstitute.ExceptionExtensions;
 
-namespace Ordering.UnitTests.Application.IntegrationEvents;
+namespace eShop.Ordering.UnitTests.Application.IntegrationEvents;
 public class OrderingIntegrationEventServiceUnitTests
 {
     public class PublishEventsThroughEventBus

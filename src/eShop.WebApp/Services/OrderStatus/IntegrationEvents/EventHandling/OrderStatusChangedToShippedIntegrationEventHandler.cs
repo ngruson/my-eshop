@@ -1,4 +1,5 @@
 using eShop.EventBus.Abstractions;
+using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
 
 namespace eShop.WebApp.Services.OrderStatus.IntegrationEvents;
 

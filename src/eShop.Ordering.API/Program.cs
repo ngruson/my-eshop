@@ -27,7 +27,7 @@ orders.MapOrdersApiV1()
 FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
 if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
 {
-    //app.UseCloudEvents();
+    app.UseCloudEvents();
     app.MapSubscribeHandler();
 
     IOptions<EventBusOptions> eventbusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>();

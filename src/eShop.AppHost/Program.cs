@@ -7,7 +7,6 @@ builder.AddForwardedHeaders();
 
 IResourceBuilder<RedisResource> redis = builder.AddRedis("redis");
 
-//IResourceBuilder<ParameterResource> rabbitMqPassword = builder.AddParameter("rabbitMqDefaultPassword");
 IResourceBuilder<RabbitMQServerResource> rabbitMq = builder.AddRabbitMQ("eventbus")
     .WithManagementPlugin()
     .WithEndpoint("tcp", e => e.Port = 5672)
@@ -37,10 +36,18 @@ IResourceBuilder<ProjectResource> identityApi = builder.AddProject<Projects.eSho
 
 EndpointReference identityEndpoint = identityApi.GetEndpoint(launchProfileName);
 
+IResourceBuilder<IDaprComponentResource> pubSub = builder.AddDaprPubSub("pubsub",
+    new DaprComponentOptions
+    {
+        LocalPath = "./components/pubsub.yaml"
+    })
+    .WaitFor(rabbitMq);
+
 IResourceBuilder<ProjectResource> basketApi = builder.AddProject<Projects.eShop_Basket_API>("basket-api")
     .WithDaprSidecar()
     .WithReference(redis)
     .WithReference(rabbitMq)
+    .WithReference(pubSub)
     .WithEnvironment("Identity__Url", identityEndpoint)
     .WaitFor(redis)
     .WaitFor(rabbitMq)
@@ -50,6 +57,7 @@ IResourceBuilder<ProjectResource> catalogApi = builder.AddProject<Projects.eShop
     .WithDaprSidecar()
     .WithReference(rabbitMq)
     .WithReference(catalogDb)
+    .WithReference(pubSub)
     .WaitFor(rabbitMq)
     .WaitFor(catalogDb);
 
@@ -59,24 +67,12 @@ IResourceBuilder<ProjectResource> customerApi = builder.AddProject<Projects.eSho
     .WithEnvironment("Identity__Url", identityEndpoint)
     .WaitFor(customerDb);
 
-//IResourceBuilder<IDaprComponentResource> pubSub = builder.AddDaprPubSub("pubSub")
-    //.WaitFor(rabbitMq);
-
-IResourceBuilder<IDaprComponentResource> pubSub = builder.AddDaprPubSub("pubsub",
-    new DaprComponentOptions
-    {
-        LocalPath = "./components/pubsub.yaml"
-    })
-    .WaitFor(rabbitMq);
-
 IResourceBuilder<ProjectResource> orderingApi = builder.AddProject<Projects.eShop_Ordering_API>("ordering-api")
-    .WithDaprSidecar(new DaprSidecarOptions
-    {
-        LogLevel = "debug"
-    })
+    .WithDaprSidecar()
     .WithReference(rabbitMq)
     .WithReference(orderDb)
     .WithReference(pubSub)
+    .WaitFor(rabbitMq)
     .WithEnvironment("Identity__Url", identityEndpoint);
 
 IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eShop_MasterData_API>("masterdata-api")
@@ -84,14 +80,21 @@ IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eS
     .WithEnvironment("Identity__Url", identityEndpoint);
 
 builder.AddProject<Projects.eShop_OrderProcessor>("order-processor")
+    .WithDaprSidecar()
     .WithReference(rabbitMq)
     .WithReference(orderDb)
+    .WithReference(pubSub)
     .WaitFor(rabbitMq);
 
 builder.AddProject<Projects.eShop_PaymentProcessor>("payment-processor")
-    .WithReference(rabbitMq);    
+    .WithDaprSidecar()
+    .WithReference(pubSub)
+    .WithReference(rabbitMq)
+    .WaitFor(rabbitMq);
 
 IResourceBuilder<ProjectResource> webHooksApi = builder.AddProject<Projects.eShop_Webhooks_API>("webhooks-api")
+    .WithDaprSidecar()
+    .WithReference(pubSub)
     .WithReference(rabbitMq)
     .WithReference(webhooksDb)
     .WithEnvironment("Identity__Url", identityEndpoint)
@@ -111,13 +114,17 @@ IResourceBuilder<ProjectResource> webhooksClient = builder.AddProject<Projects.e
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
 IResourceBuilder<ProjectResource> webApp = builder.AddProject<Projects.eShop_WebApp>("webapp", launchProfileName)
-    .WithDaprSidecar()
+    .WithDaprSidecar(new DaprSidecarOptions
+    {
+        AppProtocol = launchProfileName        
+    })
     .WithExternalHttpEndpoints()
     .WithReference(basketApi)
     .WithReference(catalogApi)
     .WithReference(customerApi)
     .WithReference(orderingApi)
     .WithReference(rabbitMq)
+    .WithReference(pubSub)
     .WithEnvironment("IdentityUrl", identityEndpoint)
     .WaitFor(rabbitMq)
     .WaitFor(catalogApi);

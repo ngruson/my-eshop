@@ -1,9 +1,11 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using eShop.Basket.API.Repositories;
 using eShop.Basket.API.IntegrationEvents.EventHandling;
-using eShop.Basket.API.IntegrationEvents.EventHandling.Events;
+using eShop.EventBus.Dapr;
 using eShop.EventBus.Extensions;
 using eShop.EventBusRabbitMQ;
+using eShop.Basket.API.IntegrationEvents.Events;
+using eShop.Shared.Features;
 
 namespace eShop.Basket.API.Extensions;
 
@@ -17,9 +19,19 @@ public static class Extensions
 
         builder.Services.AddSingleton<IBasketRepository, RedisBasketRepository>();
 
-        builder.AddRabbitMqEventBus("eventbus")
-               .AddSubscription<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>()
-               .ConfigureJsonOptions(options => options.TypeInfoResolverChain.Add(IntegrationEventContext.Default));
+        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+        if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+        {
+            builder.AddDaprEventBus()
+                .AddSubscription<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>()
+                .ConfigureJsonOptions(options => options.TypeInfoResolverChain.Add(IntegrationEventContext.Default));
+        }
+        else
+        {
+            builder.AddRabbitMqEventBus("eventBus")
+                .AddSubscription<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>()
+                .ConfigureJsonOptions(options => options.TypeInfoResolverChain.Add(IntegrationEventContext.Default));
+        }
     }
 }
 
