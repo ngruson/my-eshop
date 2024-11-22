@@ -43,11 +43,19 @@ IResourceBuilder<IDaprComponentResource> pubSub = builder.AddDaprPubSub("pubsub"
     })
     .WaitFor(rabbitMq);
 
+IResourceBuilder<IDaprComponentResource> stateStore = builder.AddDaprStateStore("statestore",
+    new DaprComponentOptions
+    {
+        LocalPath = "./components/statestore.yaml"
+    })
+    .WaitFor(redis);
+
 IResourceBuilder<ProjectResource> basketApi = builder.AddProject<Projects.eShop_Basket_API>("basket-api")
     .WithDaprSidecar()
     .WithReference(redis)
     .WithReference(rabbitMq)
     .WithReference(pubSub)
+    .WithReference(stateStore)
     .WithEnvironment("Identity__Url", identityEndpoint)
     .WaitFor(redis)
     .WaitFor(rabbitMq)

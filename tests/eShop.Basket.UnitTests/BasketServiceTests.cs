@@ -9,6 +9,7 @@ using AutoFixture.Xunit2;
 using Microsoft.Extensions.Logging;
 using Grpc.Core;
 using eShop.Basket.Contracts.Grpc;
+using Ardalis.Result;
 
 namespace eShop.Basket.UnitTests;
 
@@ -18,6 +19,7 @@ public class BasketServiceTests
     {
         [Theory, AutoNSubstituteData]
         public async Task when_no_user_return_empty_basket(
+            [Substitute, Frozen] IBasketRepository repository,
             BasketService sut,
             string userId)
         {
@@ -29,6 +31,8 @@ public class BasketServiceTests
                 User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", userId)]))
             };
             serverCallContext.SetUserState("__HttpContext", httpContext);
+
+            repository.GetBasketAsync(userId).Returns(Result.NotFound());
 
             // Act
 
@@ -50,7 +54,7 @@ public class BasketServiceTests
         {
             // Arrange
 
-            repository.GetBasketAsync(userId).Returns(Task.FromResult(basket));
+            repository.GetBasketAsync(userId).Returns(basket);
 
             logger.IsEnabled(LogLevel.Debug).Returns(true);
 
@@ -79,7 +83,7 @@ public class BasketServiceTests
         {
             // Arrange
 
-            repository.GetBasketAsync("1").Returns(Task.FromResult(basket));
+            repository.GetBasketAsync("1").Returns(basket);
             TestServerCallContext serverCallContext = TestServerCallContext.Create();
             DefaultHttpContext httpContext = new();
             serverCallContext.SetUserState("__HttpContext", httpContext);
@@ -97,6 +101,7 @@ public class BasketServiceTests
     {
         [Theory, AutoNSubstituteData]
         public async Task when_no_basket_throw_not_found(
+            [Substitute, Frozen] IBasketRepository repository,
             BasketService sut,
             string userId)
         {
@@ -108,6 +113,9 @@ public class BasketServiceTests
                 User = new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", userId)]))
             };
             serverCallContext.SetUserState("__HttpContext", httpContext);
+
+            repository.UpdateBasketAsync(Arg.Any<CustomerBasket>())
+                .Returns(Result.NotFound());
 
             // Act
 
@@ -128,7 +136,7 @@ public class BasketServiceTests
         {
             // Arrange
 
-            repository.UpdateBasketAsync(Arg.Any<CustomerBasket>()).Returns(Task.FromResult(basket));
+            repository.UpdateBasketAsync(Arg.Any<CustomerBasket>()).Returns(basket);
             logger.IsEnabled(LogLevel.Debug).Returns(true);
 
             TestServerCallContext serverCallContext = TestServerCallContext.Create();

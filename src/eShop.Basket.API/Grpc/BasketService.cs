@@ -3,6 +3,7 @@ using eShop.Basket.API.Repositories;
 using eShop.Basket.API.Model;
 using static eShop.Basket.Contracts.Grpc.Basket;
 using eShop.Basket.Contracts.Grpc;
+using Ardalis.Result;
 
 namespace eShop.Basket.API.Grpc;
 
@@ -24,11 +25,11 @@ public class BasketService(
             logger.LogDebug("Begin GetBasketById call from method {Method} for basket id {Id}", context.Method, userId);
         }
 
-        CustomerBasket? data = await repository.GetBasketAsync(userId);
+        Result<CustomerBasket> result = await repository.GetBasketAsync(userId);
 
-        if (data is not null)
+        if (result.IsSuccess)
         {
-            return MapToCustomerBasketResponse(data);
+            return MapToCustomerBasketResponse(result.Value);
         }
 
         return new();
@@ -48,13 +49,13 @@ public class BasketService(
         }
 
         CustomerBasket customerBasket = MapToCustomerBasket(userId, request);
-        CustomerBasket? response = await repository.UpdateBasketAsync(customerBasket);
-        if (response is null)
+        Result<CustomerBasket> result = await repository.UpdateBasketAsync(customerBasket);
+        if (result.IsNotFound())
         {
             ThrowBasketDoesNotExist(userId);
         }
 
-        return MapToCustomerBasketResponse(response);
+        return MapToCustomerBasketResponse(result.Value);
     }
 
     public override async Task<DeleteBasketResponse> DeleteBasket(DeleteBasketRequest request, ServerCallContext context)
