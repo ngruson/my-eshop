@@ -1,9 +1,11 @@
 using eShop.Catalog.API.Services;
+using eShop.EventBus.Dapr;
 using eShop.EventBus.Extensions;
 using eShop.EventBusRabbitMQ;
 using eShop.Shared.Behaviors;
 using eShop.Shared.Data;
 using eShop.Shared.Data.EntityFramework;
+using eShop.Shared.Features;
 using eShop.Shared.IntegrationEvents;
 using Microsoft.SemanticKernel;
 
@@ -35,16 +37,26 @@ public static class Extensions
         // Configure Mediator
         builder.Services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
+            cfg.RegisterServicesFromAssemblyContaining<Program>();
 
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidatorBehavior<,>));
             cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
         });
 
-        builder.AddRabbitMqEventBus("eventbus")
-               .AddSubscription<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>()
-               .AddSubscription<OrderStatusChangedToPaidIntegrationEvent, OrderStatusChangedToPaidIntegrationEventHandler>();
+        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+        if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+        {
+            builder.AddDaprEventBus()
+                .AddEventBusSubscriptions()
+                .ConfigureJsonOptions(options => options.PropertyNameCaseInsensitive = true);
+        }
+        else
+        {
+            builder.AddRabbitMqEventBus("eventBus")
+                .AddEventBusSubscriptions()
+                .ConfigureJsonOptions(options => options.PropertyNameCaseInsensitive = true);
+        }
 
         builder.Services.AddOptions<CatalogOptions>()
             .BindConfiguration(nameof(CatalogOptions));
@@ -62,5 +74,13 @@ public static class Extensions
 
         builder.Services.AddSingleton<TextEmbeddingGenerationServiceWrapper>();
         builder.Services.AddSingleton<ICatalogAI, CatalogAI>();
+    }
+
+    private static IEventBusBuilder AddEventBusSubscriptions(this IEventBusBuilder eventBus)
+    {
+        eventBus.AddSubscription<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>();
+        eventBus.AddSubscription<OrderStatusChangedToPaidIntegrationEvent, OrderStatusChangedToPaidIntegrationEventHandler>();
+
+        return eventBus;
     }
 }

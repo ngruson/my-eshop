@@ -1,3 +1,20 @@
+using System.Security.Claims;
+using eShop.Catalog.Contracts;
+using eShop.Customer.Contracts;
+using eShop.EventBus.Dapr;
+using eShop.EventBus.Extensions;
+using eShop.EventBusRabbitMQ;
+using eShop.Ordering.Contracts;
+using eShop.ServiceInvocation.BasketApiClient;
+using eShop.ServiceInvocation.CatalogApiClient;
+using eShop.ServiceInvocation.CustomerApiClient;
+using eShop.ServiceInvocation.OrderingApiClient;
+using eShop.Shared.Auth;
+using eShop.Shared.Features;
+using eShop.WebApp.Services.OrderStatus;
+using eShop.WebApp.Services.OrderStatus.IntegrationEvents;
+using eShop.WebApp.Services.OrderStatus.IntegrationEvents.EventHandling;
+using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
 using eShop.WebAppComponents.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -5,24 +22,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.SemanticKernel;
-using eShop.WebApp.Services.OrderStatus.IntegrationEvents;
-using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
-using eShop.WebApp.Services.OrderStatus.IntegrationEvents.EventHandling;
 using Refit;
-using System.Security.Claims;
-using eShop.Customer.Contracts;
-using eShop.Ordering.Contracts;
-using eShop.EventBus.Extensions;
-using eShop.EventBusRabbitMQ;
-using eShop.WebApp.Services.OrderStatus;
-using eShop.Shared.Features;
-using eShop.Shared.Auth;
 using static eShop.Basket.Contracts.Grpc.Basket;
-using eShop.ServiceInvocation.BasketApiClient;
-using eShop.ServiceInvocation.CatalogApiClient;
-using eShop.ServiceInvocation.CustomerApiClient;
-using eShop.ServiceInvocation.OrderingApiClient;
-using eShop.Catalog.Contracts;
 
 namespace eShop.WebApp.Extensions;
 
@@ -32,8 +33,28 @@ public static class Extensions
     {
         builder.AddAuthenticationServices();
 
-        builder.AddRabbitMqEventBus("EventBus")
-               .AddEventBusSubscriptions();
+        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+        if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+        {
+            builder.AddDaprEventBus()
+                .AddEventBusSubscriptions()
+                .ConfigureJsonOptions(options => options.PropertyNameCaseInsensitive = true);
+        }
+        else
+        {
+            builder.AddRabbitMqEventBus("eventBus")
+                .AddEventBusSubscriptions()
+                .ConfigureJsonOptions(options => options.PropertyNameCaseInsensitive = true);
+        }
+
+        if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Dapr)
+        {
+            builder.AddDaprServices();
+        }
+        else
+        {
+            builder.AddRefitServices();
+        }
 
         builder.Services.AddHttpForwarderWithServiceDiscovery();
 
@@ -43,17 +64,6 @@ public static class Extensions
         builder.Services.AddSingleton<OrderStatusNotificationService>();
         builder.Services.AddSingleton<IProductImageUrlProvider, ProductImageUrlProvider>();
         builder.AddAIServices();
-
-        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
-
-        if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Dapr)
-        {
-            builder.AddDaprServices();
-        }
-        else
-        {
-            builder.AddRefitServices();            
-        }
     }
 
     private static void AddDaprServices(this IHostApplicationBuilder builder)
@@ -102,7 +112,7 @@ public static class Extensions
         builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Refit.OrderingApiClient>();
     }
 
-    public static void AddEventBusSubscriptions(this IEventBusBuilder eventBus)
+    public static IEventBusBuilder AddEventBusSubscriptions(this IEventBusBuilder eventBus)
     {
         eventBus.AddSubscription<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>();
         eventBus.AddSubscription<OrderStatusChangedToPaidIntegrationEvent, OrderStatusChangedToPaidIntegrationEventHandler>();
@@ -110,6 +120,8 @@ public static class Extensions
         eventBus.AddSubscription<OrderStatusChangedToShippedIntegrationEvent, OrderStatusChangedToShippedIntegrationEventHandler>();
         eventBus.AddSubscription<OrderStatusChangedToCancelledIntegrationEvent, OrderStatusChangedToCancelledIntegrationEventHandler>();
         eventBus.AddSubscription<OrderStatusChangedToSubmittedIntegrationEvent, OrderStatusChangedToSubmittedIntegrationEventHandler>();
+
+        return eventBus;
     }
 
     public static void AddAuthenticationServices(this IHostApplicationBuilder builder)

@@ -1,7 +1,7 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Basket.API.IntegrationEvents.EventHandling;
-using eShop.Basket.API.IntegrationEvents.EventHandling.Events;
+using eShop.Basket.API.IntegrationEvents.Events;
 using eShop.Basket.API.Repositories;
 using Xunit;
 

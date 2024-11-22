@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\eShop.Catalog.Contracts\eShop.Catalog.Contracts.csproj" />
+    <ProjectReference Include="..\eShop.EventBus.Dapr\eShop.EventBus.Dapr.csproj" />
     <ProjectReference Include="..\eShop.EventBusRabbitMQ\eShop.EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\eShop.IntegrationEventLogEF\eShop.IntegrationEventLogEF.csproj" />
     <ProjectReference Include="..\eShop.Shared\eShop.Shared.csproj" />

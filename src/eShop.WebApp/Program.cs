@@ -1,4 +1,7 @@
+using eShop.EventBus.Options;
+using eShop.Shared.Features;
 using eShop.WebApp.Extensions;
+using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,16 @@ builder.AddApplicationServices();
 WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
+
+FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+{
+    app.UseCloudEvents();
+    app.MapSubscribeHandler();
+
+    IOptions<EventBusOptions> eventbusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>();
+    app.MapSubscriptionEndpoints(eventbusOptions);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

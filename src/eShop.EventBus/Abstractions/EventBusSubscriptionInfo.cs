@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
 namespace eShop.EventBus.Abstractions;
@@ -16,8 +16,7 @@ public class EventBusSubscriptionInfo
 
 #pragma warning disable IL2026
 #pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-    private static IJsonTypeInfoResolver CreateDefaultTypeResolver()
-        => new DefaultJsonTypeInfoResolver();
+    private static DefaultJsonTypeInfoResolver CreateDefaultTypeResolver() => new();
 #pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
 #pragma warning restore IL2026
 }
