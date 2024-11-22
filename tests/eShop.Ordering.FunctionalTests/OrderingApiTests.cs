@@ -183,9 +183,10 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     CreateOrderDraftCommand command)
     {
         OrderItemDto[] orderItems = command.Items
-        .Select(x => new OrderItemDto(x.ProductId, x.ProductName, x.UnitPrice, 0, x.Units, x.PictureUrl))
-        .ToArray();
-        StringContent content = new(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
+            .Select(x => new OrderItemDto(x.ProductId, x.ProductName, x.UnitPrice, 0, x.Units, x.PictureUrl))
+            .ToArray();
+
+        StringContent content = new(JsonSerializer.Serialize(command with {  Items = orderItems }), Encoding.UTF8, "application/json")
         {
             Headers = { { "x-requestid", Guid.NewGuid().ToString() } }
         };
