@@ -17,7 +17,7 @@ public static class Extensions
 
         builder.AddRedisClient("redis");
 
-        builder.Services.AddSingleton<IBasketRepository, RedisBasketRepository>();
+        builder.Services.AddSingleton<IBasketRepository, DaprBasketRepository>();
 
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
         if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)

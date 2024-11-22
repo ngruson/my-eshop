@@ -1,10 +1,11 @@
+using Ardalis.Result;
 using eShop.Basket.API.Model;
 
 namespace eShop.Basket.API.Repositories;
 
 public interface IBasketRepository
 {
-    Task<CustomerBasket?> GetBasketAsync(string customerId);
-    Task<CustomerBasket?> UpdateBasketAsync(CustomerBasket basket);
-    Task<bool> DeleteBasketAsync(string id);
+    Task<Result<CustomerBasket>> GetBasketAsync(string customerId);
+    Task<Result<CustomerBasket>> UpdateBasketAsync(CustomerBasket basket);
+    Task<Result> DeleteBasketAsync(string id);
 }
