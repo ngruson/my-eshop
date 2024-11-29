@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace eShop.ServiceInvocation.Auth;
 
@@ -7,10 +8,15 @@ internal class HttpContextAccessTokenAccessor(IHttpContextAccessor httpContextAc
 {
     public async Task<string?> GetAccessToken()
     {
-        if (httpContextAccessor.HttpContext is not null)
+        if (httpContextAccessor.HttpContext is HttpContext httpContext)
         {
-            string? accessToken = await httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            return accessToken ?? string.Empty;
+            IAuthenticationService? authenticationService = httpContext.RequestServices.GetService<IAuthenticationService>();
+            if (authenticationService != null)
+            {
+                AuthenticateResult result = await authenticationService.AuthenticateAsync(httpContext, null);
+                string? accessToken = result.Properties?.GetTokenValue("access_token");
+                return accessToken ?? string.Empty;
+            }
         }
 
         return null;
