@@ -493,3 +493,4 @@ $RECYCLE.BIN/
 .azure
 /src/eShop.Identity.API/appsettings.Development.json
 /src/eShop.Customer.API/appsettings.Development.json
+/src/eShop.Invoicing.API/appsettings.Development.json

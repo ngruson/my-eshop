@@ -3,8 +3,8 @@ using AutoFixture.Xunit2;
 using eShop.Customer.Contracts.CreateCustomer;
 using eShop.Customer.Contracts.UpdateCustomerGeneralInfo;
 using NSubstitute;
-using eShop.Shared.Auth;
 using Dapr.Client;
+using eShop.ServiceInvocation.Auth;
 
 namespace eShop.ServiceInvocation.UnitTests.Dapr;
 
@@ -14,7 +14,8 @@ public class CustomerApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task create_customer(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CustomerApiClient.Dapr.CustomerApiClient sut,
             CreateCustomerDto dto,
@@ -22,9 +23,9 @@ public class CustomerApiClientUnitTests
             string accessToken)
         {
             // Arrange
-            
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Post,
@@ -48,7 +49,8 @@ public class CustomerApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task delete_customer(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CustomerApiClient.Dapr.CustomerApiClient sut,
             Guid objectId,
@@ -57,8 +59,8 @@ public class CustomerApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Delete,
@@ -81,7 +83,8 @@ public class CustomerApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_customer(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CustomerApiClient.Dapr.CustomerApiClient sut,
             Guid objectId,
@@ -91,8 +94,8 @@ public class CustomerApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -118,7 +121,8 @@ public class CustomerApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_customer(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CustomerApiClient.Dapr.CustomerApiClient sut,
             string name,
@@ -128,8 +132,8 @@ public class CustomerApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -155,7 +159,8 @@ public class CustomerApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_customers(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CustomerApiClient.Dapr.CustomerApiClient sut,
             Customer.Contracts.GetCustomers.CustomerDto[] customers,
@@ -165,8 +170,8 @@ public class CustomerApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -192,7 +197,8 @@ public class CustomerApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task update_customer(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CustomerApiClient.Dapr.CustomerApiClient sut,
             Guid objectId,
@@ -202,8 +208,8 @@ public class CustomerApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Put,

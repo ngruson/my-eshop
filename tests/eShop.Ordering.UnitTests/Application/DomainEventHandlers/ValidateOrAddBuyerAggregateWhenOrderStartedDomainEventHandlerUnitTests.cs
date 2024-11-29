@@ -20,7 +20,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandlerUnitTe
         // Arrange
 
         // Add AutoFixture customization later
-        OrderStartedDomainEvent copy = new(evt.Order, evt.UserId, evt.UserName,
+        OrderStartedDomainEvent copy = new(evt.Order, evt.UserId, evt.UserName, evt.BuyerName,
             evt.CardType, evt.CardNumber, evt.CardSecurityNumber, evt.CardHolderName,
             DateTime.Now.AddYears(1));
 
@@ -52,6 +52,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandlerUnitTe
             evt.Order,
             evt.UserId,
             evt.UserName,
+            evt.BuyerName,
             evt.CardType,
             evt.CardNumber,
             evt.CardSecurityNumber,

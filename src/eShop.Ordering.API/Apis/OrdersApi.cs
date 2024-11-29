@@ -9,9 +9,6 @@ using eShop.Ordering.API.Application.Queries.GetCardTypes;
 using eShop.Ordering.API.Application.Queries.GetOrder;
 using eShop.Ordering.API.Application.Queries.GetOrders;
 using eShop.Ordering.API.Application.Queries.GetOrdersFromUser;
-using eShop.Ordering.Contracts.CreateOrder;
-using eShop.Ordering.Contracts.GetCardTypes;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace eShop.Ordering.API.Apis;
 

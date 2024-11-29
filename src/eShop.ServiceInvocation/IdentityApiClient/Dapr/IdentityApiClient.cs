@@ -1,10 +1,10 @@
 using Dapr.Client;
-using eShop.Shared.Auth;
+using eShop.ServiceInvocation.Auth;
 
 namespace eShop.ServiceInvocation.IdentityApiClient.Dapr;
 
-public class IdentityApiClient(DaprClient daprClient, AccessTokenAccessor accessTokenAccessor)
-    : BaseDaprApiClient(daprClient, accessTokenAccessor), IIdentityApiClient
+public class IdentityApiClient(DaprClient daprClient, AccessTokenAccessorFactory accessTokenAccessorFactory)
+    : BaseDaprApiClient(daprClient, accessTokenAccessorFactory), IIdentityApiClient
 {
     private readonly string basePath = "api/user/";
     protected override string AppId => "identity-api";

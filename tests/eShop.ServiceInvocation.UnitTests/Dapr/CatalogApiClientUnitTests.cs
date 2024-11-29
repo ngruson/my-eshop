@@ -4,8 +4,8 @@ using Dapr.Client;
 using eShop.Catalog.Contracts.CreateCatalogItem;
 using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;
+using eShop.ServiceInvocation.Auth;
 using eShop.ServiceInvocation.CatalogApiClient;
-using eShop.Shared.Auth;
 using eShop.Shared.Data;
 using NSubstitute;
 
@@ -17,7 +17,8 @@ public class CatalogApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItem(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             Guid objectId,
@@ -27,8 +28,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -54,7 +55,8 @@ public class CatalogApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_catalog_items(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             Catalog.Contracts.GetCatalogItems.CatalogItemDto[] catalogItems,
@@ -63,8 +65,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -89,7 +91,8 @@ public class CatalogApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_catalog_items_given_catalogType(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             Guid catalogType,
@@ -100,8 +103,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -128,7 +131,8 @@ public class CatalogApiClientUnitTests
 
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItems_given_catalogBrand(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             Guid catalogBrand,
@@ -138,8 +142,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -166,7 +170,8 @@ public class CatalogApiClientUnitTests
 
         [Theory, AutoNSubstituteData]
         public async Task return_catalog_items_given_no_catalogType_and_no_catalogBrand(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             PaginatedItems<Catalog.Contracts.GetCatalogItems.CatalogItemDto> catalogItems,
@@ -175,8 +180,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -206,7 +211,8 @@ public class CatalogApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItems(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             Guid[] ids,
@@ -216,8 +222,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -244,7 +250,8 @@ public class CatalogApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_catalogItems(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             string text,
@@ -254,8 +261,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -285,7 +292,8 @@ public class CatalogApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_catalogBrands(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             CatalogBrandDto[] catalogBrands,
@@ -294,8 +302,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -321,7 +329,8 @@ public class CatalogApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_catalogTypes(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             CatalogTypeDto[] catalogTypes,
@@ -330,8 +339,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -357,7 +366,8 @@ public class CatalogApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task create_catalog_item(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             CreateCatalogItemDto dto,
@@ -366,8 +376,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Post,
@@ -391,7 +401,8 @@ public class CatalogApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task update_catalogItem(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             Guid objectId,
@@ -401,8 +412,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Put,
@@ -426,7 +437,8 @@ public class CatalogApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task delete_catalogItem(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             CatalogApiClient.Dapr.CatalogApiClient sut,
             Guid objectId,
@@ -435,8 +447,8 @@ public class CatalogApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Delete,

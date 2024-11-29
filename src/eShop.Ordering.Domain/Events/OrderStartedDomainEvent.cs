@@ -8,6 +8,7 @@ public record class OrderStartedDomainEvent(
     Order Order, 
     Guid UserId,
     string UserName,
+    string BuyerName,
     CardType CardType,
     string CardNumber,
     string CardSecurityNumber,

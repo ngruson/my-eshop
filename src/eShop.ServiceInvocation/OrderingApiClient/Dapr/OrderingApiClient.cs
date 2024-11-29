@@ -1,11 +1,11 @@
 using Dapr.Client;
 using eShop.Ordering.Contracts.GetCardTypes;
-using eShop.Shared.Auth;
+using eShop.ServiceInvocation.Auth;
 
 namespace eShop.ServiceInvocation.OrderingApiClient.Dapr;
 
-public class OrderingApiClient(DaprClient daprClient, AccessTokenAccessor accessTokenAccessor)
-    : BaseDaprApiClient(daprClient, accessTokenAccessor), IOrderingApiClient
+public class OrderingApiClient(DaprClient daprClient, AccessTokenAccessorFactory accessTokenAccessorFactory)
+    : BaseDaprApiClient(daprClient, accessTokenAccessorFactory), IOrderingApiClient
 {
     private readonly string basePath = "/api/orders";
     protected override string AppId => "ordering-api";

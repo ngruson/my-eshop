@@ -76,18 +76,21 @@ public class BasketService(
     [DoesNotReturn]
     private static void ThrowBasketDoesNotExist(string userId) => throw new RpcException(new Status(StatusCode.NotFound, $"Basket with buyer id {userId} does not exist"));
 
-    private static CustomerBasketResponse MapToCustomerBasketResponse(CustomerBasket customerBasket)
+    private static CustomerBasketResponse MapToCustomerBasketResponse(CustomerBasket? customerBasket)
     {
         CustomerBasketResponse response = new();
 
-        foreach (Model.BasketItem item in customerBasket.Items)
+        if (customerBasket is not null)
         {
-            response.Items.Add(new Contracts.Grpc.BasketItem()
+            foreach (Model.BasketItem item in customerBasket.Items)
             {
-                ProductId = item.ProductId.ToString(),
-                Quantity = item.Quantity,
-            });
-        }
+                response.Items.Add(new Contracts.Grpc.BasketItem()
+                {
+                    ProductId = item.ProductId.ToString(),
+                    Quantity = item.Quantity,
+                });
+            }
+        }        
 
         return response;
     }

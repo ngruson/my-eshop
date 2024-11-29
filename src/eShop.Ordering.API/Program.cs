@@ -22,7 +22,7 @@ app.MapDefaultEndpoints();
 IVersionedEndpointRouteBuilder orders = app.NewVersionedApi("Orders");
 
 orders.MapOrdersApiV1()
-      .RequireAuthorization();
+    .RequireAuthorization();
 
 FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
 if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)

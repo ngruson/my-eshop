@@ -3,6 +3,7 @@ namespace eShop.Ordering.Contracts.CreateOrder;
 public record OrderDto(
     Guid UserId,
     string UserName,
+    string BuyerName,
     string City,
     string Street,
     string State,

@@ -6,7 +6,7 @@ namespace eShop.Ordering.API.Application.GuardClauses;
 
 internal static class GuardClauses
 {
-    public static Result OrderNull(this IGuardClause guardClause, Domain.AggregatesModel.OrderAggregate.Order? input, ILogger logger)
+    public static Result OrderNull(this IGuardClause guardClause, Order? input, ILogger logger)
     {
         if (input is null)
         {

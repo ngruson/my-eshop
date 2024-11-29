@@ -112,6 +112,7 @@ public class BasketState(
 
         Guid buyerId = await authenticationStateProvider.GetBuyerIdAsync() ?? throw new InvalidOperationException("User does not have a buyer ID");
         string userName = await authenticationStateProvider.GetUserNameAsync() ?? throw new InvalidOperationException("User does not have a user name");
+        string buyerName = await authenticationStateProvider.GetBuyerNameAsync() ?? throw new InvalidOperationException("User does not have a name");
 
         // Get details for the items in the basket
         IReadOnlyCollection<BasketItem> basketItems = await this.FetchBasketItemsAsync();
@@ -122,6 +123,7 @@ public class BasketState(
         OrderDto request = new(
             UserId: buyerId,
             UserName: userName,
+            BuyerName: buyerName,
             City: checkoutInfo.City!,
             Street: checkoutInfo.Street!,
             State: checkoutInfo.State!,

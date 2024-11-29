@@ -26,9 +26,8 @@
     <PackageVersion Include="Aspire.RabbitMQ.Client" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.StackExchange.Redis" Version="$(AspireVersion)" />
     <PackageVersion Include="CloudNative.CloudEvents" Version="2.8.0" />
-    <PackageVersion Include="FluentValidation" Version="11.10.0" />
+    <PackageVersion Include="FluentValidation" Version="11.11.0" />
     <PackageVersion Include="IdentityModel" Version="7.0.0" />
-    
     <!-- Version together with ASP.NET -->
     <PackageVersion Include="Asp.Versioning.Http" Version="$(ApiVersioningVersion)" />
     <PackageVersion Include="Asp.Versioning.Http.Client" Version="$(ApiVersioningVersion)" />
@@ -49,16 +48,16 @@
     <PackageVersion Include="Microsoft.Extensions.Identity.Stores" Version="$(AspnetVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="$(AspnetVersion)" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.3" />
-    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.3" />
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.4" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.3.1" />
     <PackageVersion Include="Microsoft.Identity.Web.UI" Version="3.3.1" />
     <PackageVersion Include="MSTest.TestAdapter" Version="3.6.2" />
     <PackageVersion Include="MSTest.TestFramework" Version="3.6.3" />
     <!-- Version together with EF -->
-      <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfVersion)" />
-      <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EfVersion)" />
-      <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EfVersion)" />
-      <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0-rc.2.24474.1" />      
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EfVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EfVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0-rc.2.24474.1" />      
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.1" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
@@ -111,6 +110,8 @@
     <!-- Dapr -->
     <PackageVersion Include="Dapr.AspNetCore" Version="$(DaprVersion)" />
     <PackageVersion Include="Dapr.Client" Version="$(DaprVersion)" />
+    <!-- Azure-->
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.23.0" />
     <!-- Miscellaneous -->
     <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
     <PackageVersion Include="Ardalis.Result" Version="10.1.0" />
@@ -125,9 +126,11 @@
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="MediatR" Version="12.4.1" />
     <PackageVersion Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
+    <PackageVersion Include="QuestPDF" Version="2024.12.0-rc2" />
     <PackageVersion Include="Polly.Core" Version="8.5.0" />
     <PackageVersion Include="Refit" Version="8.0.0" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="8.0.0" />
+    <PackageVersion Include="Svg.Skia" Version="2.0.0.4" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.0.0" />
     <PackageVersion Include="System.Reflection.TypeExtensions" Version="4.7.0" />
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.2.0" />

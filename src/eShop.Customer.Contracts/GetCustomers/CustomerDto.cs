@@ -3,8 +3,7 @@ namespace eShop.Customer.Contracts.GetCustomers;
 public record CustomerDto(
     Guid ObjectId,
     string UserName,
-    string FirstName,
-    string LastName,
+    CustomerNameDto Name,
     string Street,
     string City,
     string State,
