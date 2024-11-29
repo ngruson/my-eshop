@@ -1,10 +1,10 @@
 using System.Net.Http.Headers;
 using Dapr.Client;
-using eShop.Shared.Auth;
+using eShop.ServiceInvocation.Auth;
 
 namespace eShop.ServiceInvocation;
 
-public abstract class BaseDaprApiClient(DaprClient daprClient, AccessTokenAccessor accessTokenAccessor)
+public abstract class BaseDaprApiClient(DaprClient daprClient, AccessTokenAccessorFactory accessTokenAccessorFactory)
 {
     private readonly KeyValuePair<string, string>[] defaultQueryStringParameters =
     [
@@ -12,6 +12,8 @@ public abstract class BaseDaprApiClient(DaprClient daprClient, AccessTokenAccess
     ];
 
     protected DaprClient DaprClient => daprClient;
+    private readonly IAccessTokenAccessor accessTokenAccessor = accessTokenAccessorFactory.Create();
+
     protected abstract string AppId { get; }
 
     protected async Task<HttpRequestMessage> CreateRequest(HttpMethod httpMethod, string methodName)
@@ -68,7 +70,7 @@ public abstract class BaseDaprApiClient(DaprClient daprClient, AccessTokenAccess
 
     private async Task<AuthenticationHeaderValue?> GetAuthToken()
     {
-        string? accessToken = await accessTokenAccessor.GetAccessTokenAsync();
+        string? accessToken = await this.accessTokenAccessor.GetAccessToken();
 
         if (accessToken is not null)
         {

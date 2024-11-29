@@ -9,11 +9,11 @@ namespace eShop.Ordering.API.Application.Queries.GetOrder;
 
 internal class GetOrderQueryHandler(
     ILogger<GetOrderQueryHandler> logger,
-    IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository)
+    IRepository<Order> orderRepository)
     : IRequestHandler<GetOrderQuery, Result<OrderDto>>
 {
     private readonly ILogger<GetOrderQueryHandler> logger = logger;
-    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository = orderRepository;
+    private readonly IRepository<Order> orderRepository = orderRepository;
 
     public async Task<Result<OrderDto>> Handle(GetOrderQuery request, CancellationToken cancellationToken)
     {
@@ -21,7 +21,7 @@ internal class GetOrderQueryHandler(
         {
             this.logger.LogInformation("Retrieving order {ObjectId}", request.ObjectId);
 
-            Domain.AggregatesModel.OrderAggregate.Order? order =
+            Order? order =
                 await this.orderRepository.SingleOrDefaultAsync(new GetOrderSpecification(request.ObjectId), cancellationToken);
 
             Result foundResult = Guard.Against.OrderNull(order, this.logger);

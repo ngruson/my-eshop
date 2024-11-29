@@ -8,6 +8,7 @@ public class Buyer : Entity, IAggregateRoot
     [Required]
     public Guid IdentityGuid { get; private set; }
 
+    public string? UserName { get; private set; }
     public string? Name { get; private set; }
 
     private readonly List<PaymentMethod> _paymentMethods;
@@ -20,11 +21,12 @@ public class Buyer : Entity, IAggregateRoot
         this._paymentMethods = [];
     }
 
-    public Buyer(Guid identity, string name) : this()
+    public Buyer(Guid identity, string userName, string name) : this()
     {
         this.ObjectId = Guid.NewGuid();
         this.IdentityGuid = identity != Guid.Empty ? identity : throw new ArgumentNullException(nameof(identity));
-        this.Name = !string.IsNullOrWhiteSpace(name) ? name : throw new ArgumentNullException(nameof(name));
+        this.UserName = userName;
+        this.Name = name;
     }
 
     public PaymentMethod VerifyOrAddPaymentMethod(

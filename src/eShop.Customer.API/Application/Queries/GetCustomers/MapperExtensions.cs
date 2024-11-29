@@ -10,8 +10,7 @@ internal static class MapperExtensions
             .Select(c => new CustomerDto(
                 c.ObjectId,
                 c.UserName!,
-                c.FirstName!,
-                c.LastName!,
+                new CustomerNameDto(c.FirstName!, c.LastName!),
                 c.Street!,
                 c.City!,
                 c.State!,

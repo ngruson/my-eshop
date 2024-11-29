@@ -24,7 +24,7 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler(
 
         if (!buyerExisted)
         {
-            buyer = new Buyer(domainEvent.UserId, domainEvent.UserName);
+            buyer = new Buyer(domainEvent.UserId, domainEvent.UserName, domainEvent.BuyerName);
         }
 
         // REVIEW: The event this creates needs to be sent after SaveChanges has propagated the buyer Id. It currently only
@@ -49,6 +49,6 @@ public class ValidateOrAddBuyerAggregateWhenOrderStartedDomainEventHandler(
 
         OrderStatusChangedToSubmittedIntegrationEvent integrationEvent = new(domainEvent.Order.ObjectId, domainEvent.Order.OrderStatus, buyer.Name!, buyer.IdentityGuid!);
         await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
-        OrderingApiTrace.LogOrderBuyerAndPaymentValidatedOrUpdated(_logger, buyer.Id, domainEvent.Order.Id);
+        OrderingApiTrace.LogOrderBuyerAndPaymentValidatedOrUpdated(this._logger, buyer.Id, domainEvent.Order.Id);
     }
 }

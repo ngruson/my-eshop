@@ -7,6 +7,7 @@ public record CreateOrderCommand(
     OrderItemDto[] Items,
     Guid UserId,
     string UserName,
+    string BuyerName,
     string City,
     string Street,
     string State,

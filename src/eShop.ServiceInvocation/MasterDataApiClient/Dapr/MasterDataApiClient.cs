@@ -1,11 +1,11 @@
 using Dapr.Client;
 using eShop.MasterData.Contracts;
-using eShop.Shared.Auth;
+using eShop.ServiceInvocation.Auth;
 
 namespace eShop.ServiceInvocation.MasterDataApiClient.Dapr;
 
-public class MasterDataApiClient(DaprClient daprClient, AccessTokenAccessor accessTokenAccessor)
-    : BaseDaprApiClient(daprClient, accessTokenAccessor), IMasterDataApiClient
+public class MasterDataApiClient(DaprClient daprClient, AccessTokenAccessorFactory accessTokenAccessorFactory)
+    : BaseDaprApiClient(daprClient, accessTokenAccessorFactory), IMasterDataApiClient
 {
     protected override string AppId => "masterdata-api";
 

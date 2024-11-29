@@ -2,8 +2,8 @@ using eShop.Ordering.Contracts.GetCardTypes;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using NSubstitute;
-using eShop.Shared.Auth;
 using Dapr.Client;
+using eShop.ServiceInvocation.Auth;
 
 namespace eShop.ServiceInvocation.UnitTests.Dapr;
 
@@ -13,7 +13,8 @@ public class OrderingApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_orders(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             OrderingApiClient.Dapr.OrderingApiClient sut,
             Ordering.Contracts.GetOrders.OrderDto[] orders,
@@ -23,8 +24,8 @@ public class OrderingApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -50,7 +51,8 @@ public class OrderingApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_order(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             OrderingApiClient.Dapr.OrderingApiClient sut,
             Ordering.Contracts.GetOrder.OrderDto order,
@@ -60,8 +62,8 @@ public class OrderingApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -87,7 +89,8 @@ public class OrderingApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_orders(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             OrderingApiClient.Dapr.OrderingApiClient sut,
             Guid requestId,
@@ -98,8 +101,8 @@ public class OrderingApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Post,
@@ -123,7 +126,8 @@ public class OrderingApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task update_order(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             OrderingApiClient.Dapr.OrderingApiClient sut,
             Guid requestId,
@@ -134,8 +138,8 @@ public class OrderingApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Put,
@@ -159,7 +163,8 @@ public class OrderingApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task delete_order(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             OrderingApiClient.Dapr.OrderingApiClient sut,
             Guid objectId,
@@ -169,8 +174,8 @@ public class OrderingApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Delete,
@@ -192,18 +197,18 @@ public class OrderingApiClientUnitTests
         {
             [Theory, AutoNSubstituteData]
             public async Task return_cardTypes(
-                [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+                [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+                [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
                 [Substitute, Frozen] DaprClient daprClient,
                 OrderingApiClient.Dapr.OrderingApiClient sut,
                 HttpRequestMessage httpRequestMessage,
                 string accessToken,
-                CardTypeDto[] cardTypes
-            )
+                CardTypeDto[] cardTypes)
             {
                 // Arrange
 
-                accessTokenAccessor.GetAccessTokenAsync()
-                    .Returns(accessToken);
+                accessTokenAccessor.GetAccessToken().Returns(accessToken);
+                accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
                 daprClient.CreateInvokeMethodRequest(
                     HttpMethod.Get,

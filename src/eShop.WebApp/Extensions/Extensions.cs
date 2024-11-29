@@ -5,17 +5,18 @@ using eShop.EventBus.Dapr;
 using eShop.EventBus.Extensions;
 using eShop.EventBusRabbitMQ;
 using eShop.Ordering.Contracts;
+using eShop.ServiceInvocation;
 using eShop.ServiceInvocation.BasketApiClient;
 using eShop.ServiceInvocation.CatalogApiClient;
 using eShop.ServiceInvocation.CustomerApiClient;
 using eShop.ServiceInvocation.OrderingApiClient;
-using eShop.Shared.Auth;
 using eShop.Shared.Features;
 using eShop.WebApp.Services.OrderStatus;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.EventHandling;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
 using eShop.WebAppComponents.Services;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -47,6 +48,7 @@ public static class Extensions
                 .ConfigureJsonOptions(options => options.PropertyNameCaseInsensitive = true);
         }
 
+        builder.AddServiceInvocation();
         if (features?.ServiceInvocation.ServiceInvocationType == ServiceInvocationType.Dapr)
         {
             builder.AddDaprServices();
@@ -69,9 +71,7 @@ public static class Extensions
     private static void AddDaprServices(this IHostApplicationBuilder builder)
     {
         builder.Services.AddGrpc();
-        builder.Services.AddDaprClient();        
-        builder.Services.AddHttpContextAccessor();
-        builder.Services.AddScoped<AccessTokenAccessor>();
+        builder.Services.AddDaprClient();
 
         string? grpcEndpoint = builder.Configuration["DAPR_GRPC_ENDPOINT"];
         builder.Services.AddGrpcClient<BasketClient>(o => o.Address = new(grpcEndpoint!))
@@ -194,5 +194,15 @@ public static class Extensions
         AuthenticationState authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         ClaimsPrincipal user = authState.User;
         return user.FindFirst(ClaimTypes.Name)?.Value;
+    }
+
+    public static async Task<string?> GetBuyerNameAsync(this AuthenticationStateProvider authenticationStateProvider)
+    {
+        AuthenticationState authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        ClaimsPrincipal user = authState.User;
+        string? firstName = user.FindFirst(ClaimTypes.GivenName)?.Value;
+        string? lastName = user.FindFirst(ClaimTypes.Surname)?.Value;
+
+        return $"{firstName} {lastName}";
     }
 }

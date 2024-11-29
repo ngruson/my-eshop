@@ -1,3 +1,4 @@
+using System.Threading;
 using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
@@ -43,7 +44,7 @@ public class DaprEventBusUnitTests
         daprClient.PublishEventAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Any<string>(),
+            Arg.Any<IntegrationEvent>(),
             Arg.Any<Dictionary<string, string>>(),
             default)
         .ThrowsAsync<Exception>();
