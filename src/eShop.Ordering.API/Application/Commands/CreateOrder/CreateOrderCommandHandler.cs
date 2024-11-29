@@ -31,7 +31,7 @@ public class CreateOrderCommandHandler(
         CardType cardType = await this._cardTypeRepository.SingleOrDefaultAsync(new CardTypeSpecification(request.CardType), cancellationToken)
             ?? throw new KeyNotFoundException($"Card Type {request.CardType} not found.");
         Address address = new(request.Street!, request.City!, request.State!, request.Country!, request.ZipCode!);
-        Order order = new(request.UserId, request.UserName!, address,
+        Order order = new(request.UserId, request.UserName!, request.BuyerName, address,
             cardType, maskedCCNumber, request.CardSecurityNumber!, request.CardHolderName!, request.CardExpiration);
 
         foreach (OrderItemDto item in request.Items)

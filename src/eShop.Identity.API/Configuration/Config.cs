@@ -252,6 +252,17 @@ internal class Config
                 ],
                 AccessTokenLifetime = 60*60*2, // 2 hours
                 IdentityTokenLifetime= 60*60*2 // 2 hours
+            },
+            new Client
+            {
+                ClientId = "invoicing",
+                ClientName = "Invoicing Client",
+                ClientSecrets =
+                [
+                    new Secret("secret".Sha256())
+                ],
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AllowedScopes = ["orders"]
             }
         ];
     }

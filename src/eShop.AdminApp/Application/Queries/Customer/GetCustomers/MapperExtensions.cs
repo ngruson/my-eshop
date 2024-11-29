@@ -14,8 +14,8 @@ internal static class MapperExtensions
             .Select(_ => new CustomerViewModel(
                 _.ObjectId,
                 _.UserName,
-                _.FirstName,
-                _.LastName,
+                _.Name.FirstName,
+                _.Name.LastName,
                 _.Street,
                 _.City,
                 GetStateName(states, _.State),

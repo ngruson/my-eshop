@@ -1,7 +1,7 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using Dapr.Client;
-using eShop.Shared.Auth;
+using eShop.ServiceInvocation.Auth;
 using NSubstitute;
 
 namespace eShop.ServiceInvocation.UnitTests.Dapr;
@@ -10,7 +10,8 @@ public class IdentityApiClientUnitTests
 {
     [Theory, AutoNSubstituteData]
     public async Task return_users(
-        [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+        [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+        [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
         [Substitute, Frozen] DaprClient daprClient,
         IdentityApiClient.Dapr.IdentityApiClient sut,
         Identity.Contracts.GetUsers.UserDto[] users,
@@ -20,8 +21,8 @@ public class IdentityApiClientUnitTests
     {
         // Arrange
 
-        accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+        accessTokenAccessor.GetAccessToken().Returns(accessToken);
+        accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
         daprClient.CreateInvokeMethodRequest(
             HttpMethod.Get,
@@ -42,7 +43,8 @@ public class IdentityApiClientUnitTests
 
     [Theory, AutoNSubstituteData]
     public async Task return_user(
-        [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+        [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+        [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
         [Substitute, Frozen] DaprClient daprClient,
         IdentityApiClient.Dapr.IdentityApiClient sut,
         Identity.Contracts.GetUser.UserDto user,
@@ -52,8 +54,8 @@ public class IdentityApiClientUnitTests
     {
         // Arrange
 
-        accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+        accessTokenAccessor.GetAccessToken().Returns(accessToken);
+        accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
         daprClient.CreateInvokeMethodRequest(
             HttpMethod.Get,

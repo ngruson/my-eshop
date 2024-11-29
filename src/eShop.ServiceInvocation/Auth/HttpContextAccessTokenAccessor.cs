@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
-namespace eShop.Shared.Auth;
+namespace eShop.ServiceInvocation.Auth;
 
-public class AccessTokenAccessor(IHttpContextAccessor httpContextAccessor)
+internal class HttpContextAccessTokenAccessor(IHttpContextAccessor httpContextAccessor) : IAccessTokenAccessor
 {
-    public virtual async Task<string?> GetAccessTokenAsync()
+    public async Task<string?> GetAccessToken()
     {
-        if (httpContextAccessor.HttpContext is HttpContext context)
+        if (httpContextAccessor.HttpContext is not null)
         {
             string? accessToken = await httpContextAccessor.HttpContext.GetTokenAsync("access_token");
             return accessToken ?? string.Empty;

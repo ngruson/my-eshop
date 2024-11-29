@@ -1,12 +1,12 @@
 using Dapr.Client;
 using eShop.Customer.Contracts.CreateCustomer;
 using eShop.Customer.Contracts.UpdateCustomerGeneralInfo;
-using eShop.Shared.Auth;
+using eShop.ServiceInvocation.Auth;
 
 namespace eShop.ServiceInvocation.CustomerApiClient.Dapr;
 
-public class CustomerApiClient(DaprClient daprClient, AccessTokenAccessor accessTokenAccessor)
-    : BaseDaprApiClient(daprClient, accessTokenAccessor), ICustomerApiClient
+public class CustomerApiClient(DaprClient daprClient, AccessTokenAccessorFactory accessTokenAccessorFactory)
+    : BaseDaprApiClient(daprClient, accessTokenAccessorFactory), ICustomerApiClient
 {
     private readonly string basePath = "api/customers/";
     protected override string AppId => "customer-api";

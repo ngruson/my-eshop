@@ -10,7 +10,7 @@ public class UpdateOrderWhenBuyerAndPaymentMethodVerifiedDomainEventHandler(
     // then we can update the original Order with the BuyerId and PaymentId (foreign keys)
     public Task Handle(BuyerAndPaymentMethodVerifiedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        Domain.AggregatesModel.OrderAggregate.Order order = domainEvent.Order;
+        Order order = domainEvent.Order;
         order.SetPaymentMethodVerified(domainEvent.Buyer.Id, domainEvent.Payment.Id);
         OrderingApiTrace.LogOrderPaymentMethodUpdated(this._logger, domainEvent.Order.ObjectId, nameof(domainEvent.Payment), domainEvent.Payment.Id);
         return Task.CompletedTask;

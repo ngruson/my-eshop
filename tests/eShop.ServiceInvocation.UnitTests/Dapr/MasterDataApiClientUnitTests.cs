@@ -1,9 +1,8 @@
-using System.Net.Http;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using Dapr.Client;
 using eShop.MasterData.Contracts;
-using eShop.Shared.Auth;
+using eShop.ServiceInvocation.Auth;
 using NSubstitute;
 
 namespace eShop.ServiceInvocation.UnitTests.Dapr;
@@ -14,18 +13,18 @@ public class MasterDataApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_countries(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             MasterDataApiClient.Dapr.MasterDataApiClient sut,
             CountryDto[] countries,
             HttpRequestMessage httpRequestMessage,
-            string accessToken
-        )
+            string accessToken)
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,
@@ -51,7 +50,8 @@ public class MasterDataApiClientUnitTests
     {
         [Theory, AutoNSubstituteData]
         public async Task return_states(
-            [Substitute, Frozen] AccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
             [Substitute, Frozen] DaprClient daprClient,
             MasterDataApiClient.Dapr.MasterDataApiClient sut,
             StateDto[] states,
@@ -61,8 +61,8 @@ public class MasterDataApiClientUnitTests
         {
             // Arrange
 
-            accessTokenAccessor.GetAccessTokenAsync()
-                .Returns(accessToken);
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
 
             daprClient.CreateInvokeMethodRequest(
                 HttpMethod.Get,

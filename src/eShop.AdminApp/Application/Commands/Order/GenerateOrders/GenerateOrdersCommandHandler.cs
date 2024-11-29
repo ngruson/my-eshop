@@ -81,6 +81,7 @@ internal partial class GenerateOrdersCommandHandler(
                 OrderDto order = new(
                     UserId: user.Id,
                     UserName: user.UserName,
+                    BuyerName: customer.Name.FullName,
                     City: customer.City!,
                     Street: customer.Street!,
                     State: customer.State!,

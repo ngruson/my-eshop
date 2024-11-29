@@ -4,15 +4,15 @@ namespace eShop.Shared.DI;
 
 public class ServiceProviderWrapper(IServiceProvider serviceProvider)
 {
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly IServiceProvider serviceProvider = serviceProvider;
 
     public virtual T GetRequiredService<T>() where T : class
     {
-        return this._serviceProvider.GetRequiredService<T>();
+        return this.serviceProvider.GetRequiredService<T>();
     }
 
     public object GetRequiredService(Type type)
     {
-        return this._serviceProvider.GetRequiredService(type);
+        return this.serviceProvider.GetRequiredService(type);
     }
 }

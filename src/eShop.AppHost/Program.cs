@@ -75,6 +75,13 @@ IResourceBuilder<ProjectResource> customerApi = builder.AddProject<Projects.eSho
     .WithEnvironment("Identity__Url", identityEndpoint)
     .WaitFor(customerDb);
 
+IResourceBuilder<ProjectResource> invoicingApi = builder.AddProject<Projects.eShop_Invoicing_API>("invoicing-api")
+    .WithDaprSidecar()
+    .WithReference(rabbitMq)
+    .WithReference(pubSub)
+    .WaitFor(rabbitMq)
+    .WithEnvironment("Identity__Url", identityEndpoint);
+
 IResourceBuilder<ProjectResource> orderingApi = builder.AddProject<Projects.eShop_Ordering_API>("ordering-api")
     .WithDaprSidecar()
     .WithReference(rabbitMq)
