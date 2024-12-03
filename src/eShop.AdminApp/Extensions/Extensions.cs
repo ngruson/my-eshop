@@ -10,6 +10,7 @@ using eShop.ServiceInvocation.CustomerApiClient;
 using eShop.ServiceInvocation.IdentityApiClient;
 using eShop.ServiceInvocation.MasterDataApiClient;
 using eShop.ServiceInvocation.OrderingApiClient;
+using eShop.Shared.DI;
 using eShop.Shared.Features;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -41,6 +42,8 @@ internal static class Extensions
         {
             builder.AddRefitServices();
         }
+
+        builder.Services.AddSingleton<ServiceProviderWrapper>();
 
         builder.Services.AddMediatR(cfg =>
         {

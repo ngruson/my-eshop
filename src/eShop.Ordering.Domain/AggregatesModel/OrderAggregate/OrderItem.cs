@@ -11,7 +11,13 @@ public class OrderItem : Entity
     public string? PictureUrl { get; private set;}
     
     public decimal UnitPrice { get; private set;}
-    
+
+    public decimal SalesTaxRate { get; private set; }
+
+    public decimal NetPrice => this.UnitPrice * (1 - this.SalesTaxRate);
+
+    public decimal SalesTax => this.UnitPrice * this.SalesTaxRate;
+
     public decimal Discount { get; private set; }
     
     public int Units { get; private set; }
@@ -22,7 +28,7 @@ public class OrderItem : Entity
 
     protected OrderItem() { }
 
-    public OrderItem(Guid productId, string productName, decimal unitPrice, decimal discount, string pictureUrl, int units = 1)
+    public OrderItem(Guid productId, string productName, decimal unitPrice, decimal salesTaxRate, decimal discount, string pictureUrl, int units = 1)
     {
         if (units <= 0)
         {
@@ -37,6 +43,7 @@ public class OrderItem : Entity
         this.ProductId = productId;
         this.ProductName = productName;
         this.UnitPrice = unitPrice;
+        this.SalesTaxRate = salesTaxRate;
         this.Discount = discount;
         this.Units = units;
         this.PictureUrl = pictureUrl;

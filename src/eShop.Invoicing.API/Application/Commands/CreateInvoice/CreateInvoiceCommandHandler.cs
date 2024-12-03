@@ -1,3 +1,4 @@
+using System.Globalization;
 using Ardalis.GuardClauses;
 using Ardalis.Result;
 using eShop.Invoicing.API.Application.GuardClauses;
@@ -18,6 +19,8 @@ internal class CreateInvoiceCommandHandler(ILogger<CreateInvoiceCommandHandler> 
 {
     private OrderDto? order;
 
+    public bool UseLocalFile { get; set; } = false;
+
     public async Task<Result> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
     {
         try
@@ -32,38 +35,31 @@ internal class CreateInvoiceCommandHandler(ILogger<CreateInvoiceCommandHandler> 
 
             QuestPDF.Settings.License = LicenseType.Community;
 
-            byte[] pdf = Document.Create(container =>
+            Document document = Document.Create(container =>
+            {
+                container.Page(page =>
                 {
-                    container.Page(page =>
-                    {
-                        page.Size(PageSizes.A4);
-                        page.Margin(2, QuestPDF.Infrastructure.Unit.Centimetre);
-                        page.MarginTop(1, QuestPDF.Infrastructure.Unit.Centimetre);
-                        page.DefaultTextStyle(_ => _.FontSize(9).FontFamily("Roboto"));
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, QuestPDF.Infrastructure.Unit.Centimetre);
+                    page.MarginTop(1, QuestPDF.Infrastructure.Unit.Centimetre);
+                    page.DefaultTextStyle(_ => _.FontSize(9).FontFamily("Roboto"));
 
-                        page.Content().Element(this.ComposeContent);
-                        page.Footer().Element(this.ComposeFooter);
-                    });
-                })
-                .GeneratePdf();
+                    page.Content().Element(this.ComposeContent);
+                    page.Footer().Element(this.ComposeFooter);
+                });
+            });
 
-            string fileName = $"INV{this.order.OrderNumber.ToString().PadLeft(8, '0')}.pdf";
-            await fileStorage.UploadFile(fileName, pdf);
+            if (!this.UseLocalFile)
+            {
+                byte[] pdf = document.GeneratePdf();
 
-            //Document.Create(container =>
-            //{
-            //    container.Page(page =>
-            //    {
-            //        page.Size(PageSizes.A4);
-            //        page.Margin(2, QuestPDF.Infrastructure.Unit.Centimetre);
-            //        page.MarginTop(1, QuestPDF.Infrastructure.Unit.Centimetre);
-            //        page.DefaultTextStyle(_ => _.FontSize(9).FontFamily("Roboto"));
-
-            //        page.Content().Element(this.ComposeContent);
-            //        page.Footer().Element(this.ComposeFooter);
-            //    });
-            //})
-            //.GeneratePdf(@"C:\temp\InvoiceTest.pdf");
+                string fileName = $"INV{this.order.OrderNumber.ToString().PadLeft(8, '0')}.pdf";
+                await fileStorage.UploadFile(fileName, pdf);
+            }
+            else
+            {
+                document.GeneratePdf(@"C:\temp\InvoiceTest.pdf");
+            }
 
             return Result.Success();
         }
@@ -78,6 +74,7 @@ internal class CreateInvoiceCommandHandler(ILogger<CreateInvoiceCommandHandler> 
     private void ComposeContent(IContainer container)
     {
         ConvertSvgToPng("logo-header.svg", "logo-header.png");
+        CultureInfo cultureInfo = CultureInfo.GetCultureInfo("en-US");
 
         container.PaddingVertical(1, QuestPDF.Infrastructure.Unit.Centimetre).Column(column =>
         {
@@ -115,17 +112,21 @@ internal class CreateInvoiceCommandHandler(ILogger<CreateInvoiceCommandHandler> 
             {
                 table.ColumnsDefinition(columns =>
                 {
-                    columns.RelativeColumn(); // Description
-                    columns.ConstantColumn(40); // Quantity                
+                    columns.ConstantColumn(100); // Description 1
+                    columns.ConstantColumn(50); // Description 2
+                    columns.RelativeColumn();   // Description 3
+                    columns.ConstantColumn(40); // Quantity
                     columns.ConstantColumn(80); // Unit Price
+                    columns.ConstantColumn(60); // Sales tax rate
                     columns.ConstantColumn(80); // Total Price
                 });
 
                 table.Header(header =>
                 {
-                    header.Cell().Element(CellStyle).Text("Description");
+                    header.Cell().ColumnSpan(3).Element(CellStyle).Text("Description");
                     header.Cell().Element(CellStyle).Text("Qty");
                     header.Cell().Element(CellStyle).Text("Unit Price");
+                    header.Cell().Element(CellStyle).Text("Sales Tax");
                     header.Cell().Element(CellStyle).Text("Total Price");
 
                     static IContainer CellStyle(IContainer container)
@@ -138,10 +139,11 @@ internal class CreateInvoiceCommandHandler(ILogger<CreateInvoiceCommandHandler> 
                 {
                     decimal lineTotal = line.UnitPrice * line.Units;
 
-                    table.Cell().Element(CellStyle).Text(line.ProductName);
+                    table.Cell().ColumnSpan(3).Element(CellStyle).Text(line.ProductName);
                     table.Cell().Element(CellStyle).Text(line.Units.ToString());
-                    table.Cell().Element(CellStyle).Text(line.UnitPrice.ToString("C"));
-                    table.Cell().Element(CellStyle).Text(lineTotal.ToString("C"));
+                    table.Cell().Element(CellStyle).Text(line.UnitPrice.ToString("C", cultureInfo));
+                    table.Cell().Element(CellStyle).Text($"{line.SalesTaxRate} %");
+                    table.Cell().Element(CellStyle).Text(lineTotal.ToString("C", cultureInfo));
 
                     // Define a style for regular cells
                     static IContainer CellStyle(IContainer container)
@@ -152,40 +154,38 @@ internal class CreateInvoiceCommandHandler(ILogger<CreateInvoiceCommandHandler> 
 
                 table.Footer(footer =>
                 {
-                    footer.Cell().Element(TableFooterLineStyle).BorderBottom(2).BorderColor(Colors.Black);
-                    footer.Cell().BorderBottom(2).BorderColor(Colors.Black);
-                    footer.Cell().BorderBottom(2).BorderColor(Colors.Black);
-                    footer.Cell().BorderBottom(2).BorderColor(Colors.Black);
+                    footer.Cell().ColumnSpan(3).PaddingTop(10).BorderBottom(1).BorderColor(Colors.Black);
+                    footer.Cell().BorderBottom(1).BorderColor(Colors.Black);
+                    footer.Cell().BorderBottom(1).BorderColor(Colors.Black);
+                    footer.Cell().BorderBottom(1).BorderColor(Colors.Black);
+                    footer.Cell().BorderBottom(1).BorderColor(Colors.Black);
 
-                    footer.Cell().Element(TotalStyle).Text("");
-                    footer.Cell().Element(TotalStyle).Text("");
-                    footer.Cell().Element(TotalsLabelStyle).Text("Subtotal").AlignRight();
-                    footer.Cell().Element(TotalStyle).Text(this.order.Total.ToString("C"));
+                    footer.Cell().Padding(5).PaddingTop(10).PaddingRight(10).Text("Net price").AlignRight();
+                    footer.Cell().Padding(5).PaddingTop(10).Text(this.order.NetTotal.ToString("C", cultureInfo));
+                    footer.Cell().Padding(5).PaddingTop(10).Text("");
+                    footer.Cell().Padding(5).PaddingTop(10).Text("");
+                    footer.Cell().Padding(5).PaddingTop(10).Text("");
+                    footer.Cell().Padding(5).PaddingTop(10).PaddingRight(10).Text("Subtotal").AlignRight();
+                    footer.Cell().Padding(5).PaddingTop(10).Text(this.order.Total.ToString("C", cultureInfo));
 
+                    footer.Cell().Padding(5).PaddingTop(-5).PaddingRight(10).Text($"Sales tax {this.order.SalesTaxGroups[0].Rate}%").AlignRight();
+                    footer.Cell().Padding(5).PaddingTop(-5).Text(this.order.SalesTaxGroups[0].Total.ToString("C", cultureInfo));
                     footer.Cell().Text("");
                     footer.Cell().Text("");
                     footer.Cell().Text("");
-                    footer.Cell().BorderBottom(2).BorderColor(Colors.Black);
+                    footer.Cell().Text("");
+                    footer.Cell().Padding(5).BorderTop(1).BorderColor(Colors.Black);
 
-                    footer.Cell().Element(TotalStyle).Text("");
-                    footer.Cell().Element(TotalStyle).Text("");
-                    footer.Cell().Element(TotalsLabelStyle).Text("Total").Bold().AlignRight();
-                    footer.Cell().Element(TotalStyle).Text(this.order.Total.ToString("C")).Bold();
+                    footer.Cell().Padding(5).PaddingTop(-5).PaddingRight(10).Text("");
+                    footer.Cell().Padding(5).BorderTop(1).BorderColor(Colors.Black);
+                    footer.Cell().Padding(5).PaddingTop(10).Text("");
+                    footer.Cell().Padding(5).PaddingTop(10).Text("");
+                    footer.Cell().Padding(5).PaddingTop(10).Text("");
+                    footer.Cell().Padding(5).PaddingTop(-5).Text("Total").Bold().AlignRight();
+                    footer.Cell().Padding(5).PaddingTop(-5).Text(this.order.Total.ToString("C", cultureInfo)).Bold();
 
-                    static IContainer TableFooterLineStyle(IContainer container)
-                    {
-                        return container.PaddingTop(10);
-                    }
-
-                    static IContainer TotalsLabelStyle(IContainer container)
-                    {
-                        return container.Padding(5).PaddingTop(10).PaddingRight(10);
-                    }
-
-                    static IContainer TotalStyle(IContainer container)
-                    {
-                        return container.Padding(5).PaddingTop(10);
-                    }
+                    footer.Cell().Padding(5).PaddingTop(-20).PaddingRight(10).Text("Total").AlignRight();
+                    footer.Cell().Padding(5).PaddingTop(-20).Text(this.order.Total.ToString("C", cultureInfo));
                 });
             });
         });

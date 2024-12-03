@@ -10,13 +10,13 @@ using eShop.ServiceInvocation.BasketApiClient;
 using eShop.ServiceInvocation.CatalogApiClient;
 using eShop.ServiceInvocation.CustomerApiClient;
 using eShop.ServiceInvocation.OrderingApiClient;
+using eShop.Shared.DI;
 using eShop.Shared.Features;
 using eShop.WebApp.Services.OrderStatus;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.EventHandling;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
 using eShop.WebAppComponents.Services;
-using IdentityModel;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -58,6 +58,7 @@ public static class Extensions
             builder.AddRefitServices();
         }
 
+        builder.Services.AddSingleton<ServiceProviderWrapper>();
         builder.Services.AddHttpForwarderWithServiceDiscovery();
 
         // Application services

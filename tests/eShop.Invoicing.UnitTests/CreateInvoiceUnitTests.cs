@@ -25,6 +25,8 @@ public class CreateInvoiceUnitTests
         apiClient.GetOrder(command.OrderId)
             .Returns(dto);
 
+        sut.UseLocalFile = false;
+
         //Act
 
         Result result = await sut.Handle(command, default);
@@ -73,5 +75,28 @@ public class CreateInvoiceUnitTests
 
         Assert.True(result.IsError());
         await fileStorage.DidNotReceive().UploadFile(Arg.Any<string>(), Arg.Any<byte[]>());
+    }
+
+    [Theory, AutoNSubstituteData]
+    internal async Task return_success_with_pdf_file_when_invoice_was_created(
+        [Substitute, Frozen] IOrderingApiClient apiClient,
+        CreateInvoiceCommandHandler sut,
+        CreateInvoiceCommand command,
+        OrderDto dto)
+    {
+        // Arrange
+
+        apiClient.GetOrder(command.OrderId)
+            .Returns(dto);
+
+        sut.UseLocalFile = true;
+
+        //Act
+
+        Result result = await sut.Handle(command, default);
+
+        //Assert
+
+        Assert.True(result.IsSuccess);
     }
 }

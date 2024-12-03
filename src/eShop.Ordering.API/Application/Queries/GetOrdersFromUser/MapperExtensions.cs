@@ -4,7 +4,7 @@ namespace eShop.Ordering.API.Application.Queries.GetOrdersFromUser;
 
 internal static class MapperExtensions
 {
-    internal static OrderDto[] Map(this List<Domain.AggregatesModel.OrderAggregate.Order> orders)
+    internal static OrderDto[] Map(this List<Order> orders)
     {
         return orders
             .Select(o => new OrderDto(
@@ -13,7 +13,7 @@ internal static class MapperExtensions
                 o.OrderDate,
                 o.Buyer?.Name!,
                 o.OrderStatus.ToString(),
-                o.GetTotal()))
+                o.Total))
             .ToArray();
     }
 }

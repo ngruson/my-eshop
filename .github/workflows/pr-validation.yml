@@ -44,6 +44,9 @@ jobs:
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.IntegrationEventLogEF.UnitTests/eShop.IntegrationEventLogEF.UnitTests.csproj
 
+            # dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
+            # tests/eShop.Invoicing.UnitTests/eShop.Invoicing.UnitTests.csproj
+
             dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover \
             tests/eShop.Ordering.FunctionalTests/eShop.Ordering.FunctionalTests.csproj
 

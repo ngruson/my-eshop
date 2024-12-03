@@ -165,17 +165,20 @@ public class BasketState(
             foreach (Basket.Contracts.Grpc.BasketItem item in basket.Items)
             {
                 Guid productId = Guid.Parse(item.ProductId);
-                CatalogItemViewModel catalogItem = catalogItems[productId];
-                BasketItem orderItem = new()
+                catalogItems.TryGetValue(productId, out CatalogItemViewModel? catalogItem);
+                if (catalogItem is not null)
                 {
-                    Id = Guid.NewGuid().ToString(), // TODO: this value is meaningless, use ProductId instead.
-                    ProductId = catalogItem.ObjectId,
-                    ProductName = catalogItem.Name,
-                    UnitPrice = catalogItem.Price,
-                    Quantity = item.Quantity,
-                    PictureUrl = catalogItem.PictureUrl
-                };
-                basketItems.Add(orderItem);
+                    BasketItem orderItem = new()
+                    {
+                        Id = Guid.NewGuid().ToString(), // TODO: this value is meaningless, use ProductId instead.
+                        ProductId = catalogItem.ObjectId,
+                        ProductName = catalogItem.Name,
+                        UnitPrice = catalogItem.Price,
+                        Quantity = item.Quantity,
+                        PictureUrl = catalogItem.PictureUrl
+                    };
+                    basketItems.Add(orderItem);
+                }
             }
 
             return basketItems.ToArray();

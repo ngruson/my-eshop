@@ -1,14 +1,15 @@
 namespace eShop.Ordering.UnitTests.Domain;
 
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
+using eShop.Ordering.Domain.AggregatesModel.SalesTaxRateAggregate;
 
 public class OrderAggregateTest
 {
     public OrderAggregateTest()
     { }
 
-    [Fact]
-    public void Create_order_item_success()
+    [Theory, AutoNSubstituteData]
+    public void Create_order_item_success(SalesTaxRate salesTaxRate)
     {
         //Arrange    
         Guid productId = Guid.NewGuid();
@@ -20,7 +21,7 @@ public class OrderAggregateTest
 
         //Act
 
-        OrderItem fakeOrderItem = new(productId, productName, unitPrice, discount, pictureUrl, units);
+        OrderItem fakeOrderItem = new(productId, productName, unitPrice, salesTaxRate.Rate, discount, pictureUrl, units);
 
         //Assert
         Assert.NotNull(fakeOrderItem);
@@ -39,7 +40,7 @@ public class OrderAggregateTest
 
         //Act - Assert
 
-        Assert.Throws<OrderingDomainException>(() => new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units));
+        Assert.Throws<OrderingDomainException>(() => new OrderItem(productId, productName, unitPrice, 0, discount, pictureUrl, units));
     }
 
     [Fact]
@@ -55,7 +56,7 @@ public class OrderAggregateTest
         
         //Act - Assert
 
-        Assert.Throws<OrderingDomainException>(() => new OrderItem(productId, productName, unitPrice, discount, pictureUrl, units));       
+        Assert.Throws<OrderingDomainException>(() => new OrderItem(productId, productName, unitPrice, 0, discount, pictureUrl, units));
     }
 
     [Fact]
@@ -71,7 +72,7 @@ public class OrderAggregateTest
 
         //Act
 
-        OrderItem fakeOrderItem = new(productId, productName, unitPrice, discount, pictureUrl, units);
+        OrderItem fakeOrderItem = new(productId, productName, unitPrice, 0, discount, pictureUrl, units);
 
         //Assert
 
@@ -92,7 +93,7 @@ public class OrderAggregateTest
 
         //Act
 
-        OrderItem fakeOrderItem = new(productId, productName, unitPrice, discount, pictureUrl, units);
+        OrderItem fakeOrderItem = new(productId, productName, unitPrice, 0,discount, pictureUrl, units);
 
         //Assert
 
@@ -110,12 +111,12 @@ public class OrderAggregateTest
 
         // Act
 
-        order.AddOrderItem(productId, productName, unitPrice, 0, null, 1);
-        order.AddOrderItem(productId, productName, unitPrice, 0, null, 1);
+        order.AddOrderItem(productId, productName, unitPrice, 0, 0, null, 1);
+        order.AddOrderItem(productId, productName, unitPrice, 0, 0, null, 1);
 
         // Assert
 
-        Assert.Equal(unitPrice * 2, order.GetTotal());
+        Assert.Equal(unitPrice * 2, order.Total);
     }
 
     [Theory, AutoNSubstituteData]
