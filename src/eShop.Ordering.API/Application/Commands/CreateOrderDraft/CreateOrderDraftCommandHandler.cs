@@ -1,5 +1,4 @@
 namespace eShop.Ordering.API.Application.Commands.CreateOrderDraft;
-
 using Ardalis.Result;
 using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
@@ -14,7 +13,7 @@ public class CreateOrderDraftCommandHandler
 
         foreach (OrderItemDto item in message.Items)
         {
-            order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, item.Discount, item.PictureUrl, item.Units);
+            order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, 0, item.Discount, item.PictureUrl, item.Units);
         }
 
         return Task.FromResult(Result.Success(OrderDraftDTO.FromOrder(order)));
@@ -37,7 +36,7 @@ public record OrderDraftDTO
                 oi.Discount,
                 oi.Units,
                 oi.PictureUrl!)),
-            Total = order.GetTotal()
+            Total = order.Total
         };
     }
 }

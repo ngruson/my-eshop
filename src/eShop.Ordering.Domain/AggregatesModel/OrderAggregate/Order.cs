@@ -31,6 +31,12 @@ public class Order : Entity, IAggregateRoot
     private readonly List<OrderItem> _orderItems;
    
     public IReadOnlyCollection<OrderItem> OrderItems => this._orderItems.AsReadOnly();
+
+    public IReadOnlyCollection<SalesTaxGroup> SalesTaxGroups => this._orderItems
+        .GroupBy(o => o.SalesTaxRate)
+        .Select(g => new SalesTaxGroup(g.Key, g.Sum(o => o.SalesTax)))
+        .ToList();
+    
     public int? PaymentId { get; private set; }
 
     public static Order NewDraft()
@@ -68,7 +74,7 @@ public class Order : Entity, IAggregateRoot
     // This Order AggregateRoot's method "AddOrderItem()" should be the only way to add Items to the Order,
     // so any behavior (discounts, etc.) and validations are controlled by the AggregateRoot 
     // in order to maintain consistency between the whole Aggregate.
-    public void AddOrderItem(Guid productId, string productName, decimal unitPrice, decimal discount, string pictureUrl, int units = 1)
+    public void AddOrderItem(Guid productId, string productName, decimal unitPrice, decimal salesTaxRate, decimal discount, string pictureUrl, int units = 1)
     {
         OrderItem? existingOrderForProduct = this._orderItems.SingleOrDefault(o => o.ProductId == productId);
 
@@ -85,7 +91,7 @@ public class Order : Entity, IAggregateRoot
         else
         {
             //add validated new order item
-            OrderItem orderItem = new(productId, productName, unitPrice, discount, pictureUrl, units);
+            OrderItem orderItem = new(productId, productName, unitPrice, salesTaxRate, discount, pictureUrl, units);
             this._orderItems.Add(orderItem);
         }
     }
@@ -190,7 +196,9 @@ public class Order : Entity, IAggregateRoot
         throw new OrderingDomainException($"Is not possible to change the order status from {this.OrderStatus} to {orderStatusToChange}.");
     }
 
-    public decimal GetTotal() => this._orderItems.Sum(o => o.Units * o.UnitPrice);
+    public decimal NetTotal => this._orderItems.Sum(o => o.Units * o.NetPrice);
+
+    public decimal Total => this._orderItems.Sum(o => o.Units * o.UnitPrice);
 
     // Used in unit tests
     public void SetBuyer(Buyer buyer)

@@ -9,6 +9,7 @@ using eShop.Ordering.Contracts;
 using eShop.ServiceDefaults;
 using eShop.ServiceInvocation;
 using eShop.ServiceInvocation.OrderingApiClient;
+using eShop.Shared.DI;
 using eShop.Shared.Features;
 using Refit;
 
@@ -26,6 +27,7 @@ internal static class Extensions
             cfg.RegisterServicesFromAssemblyContaining<Program>();
         });
 
+        builder.Services.AddSingleton<ServiceProviderWrapper>();
         builder.Services.AddSingleton<IFileStorage, AzureBlobStorage>();
 
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();

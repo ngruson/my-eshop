@@ -4,6 +4,7 @@ using eShop.Ordering.API.Application.DomainEventHandlers;
 using eShop.Ordering.API.Application.IntegrationEvents.Events;
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
+using eShop.Ordering.Domain.AggregatesModel.SalesTaxRateAggregate;
 using eShop.Shared.Data;
 using eShop.Shared.IntegrationEvents;
 
@@ -17,14 +18,15 @@ public class OrderStatusChangedToPaidDomainEventHandlerUnitTests
         [Substitute, Frozen] IIntegrationEventService integrationEventService,
         OrderStatusChangedToPaidDomainEventHandler sut,
         Order order,
-        Buyer buyer)
+        Buyer buyer,
+        SalesTaxRate salesTaxRate)
     {
         // Arrange
 
         OrderItem[] orderItems =
         [
-            new OrderItem(Guid.NewGuid(), "Product 1", 25, 0, null),
-            new OrderItem(Guid.NewGuid(), "Product 2", 30, 0, null),
+            new OrderItem(Guid.NewGuid(), "Product 1", 25, salesTaxRate.Rate, 0, null),
+            new OrderItem(Guid.NewGuid(), "Product 2", 30, salesTaxRate.Rate, 0, null),
         ];
 
 

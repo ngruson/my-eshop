@@ -13,12 +13,14 @@ public class OrderingContext(DbContextOptions<OrderingContext> options, IMediato
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("ordering");
+        modelBuilder.ApplyConfiguration(new BuyerEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new CardTypeEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new ClientRequestEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new PaymentMethodEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new OrderEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new OrderItemEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new CardTypeEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new BuyerEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentMethodEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new SalesTaxRateEntityTypeConfiguration());
+
         modelBuilder.UseIntegrationEventLogs();
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations;
+namespace eShop.Ordering.Infrastructure.EntityConfigurations;
 
 class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
 {
@@ -6,6 +6,7 @@ class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
     {
         orderConfiguration.ToTable("orders");
 
+        orderConfiguration.Ignore(_ => _.SalesTaxGroups);
         orderConfiguration.Ignore(b => b.DomainEvents);
 
         orderConfiguration.Property(o => o.Id)

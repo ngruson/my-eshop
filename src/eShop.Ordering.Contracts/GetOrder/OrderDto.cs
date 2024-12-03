@@ -7,6 +7,8 @@ public record OrderDto(
     string? BuyerName,
     string OrderStatus,
     AddressDto Address,
+    decimal NetTotal,
     decimal Total,
-    OrderItemDto[] OrderItems
+    OrderItemDto[] OrderItems,
+    SalesTaxGroup[] SalesTaxGroups
 );
