@@ -51,7 +51,7 @@
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.4" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.3.1" />
     <PackageVersion Include="Microsoft.Identity.Web.UI" Version="3.3.1" />
-    <PackageVersion Include="MSTest.TestAdapter" Version="3.6.2" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="3.6.3" />
     <PackageVersion Include="MSTest.TestFramework" Version="3.6.3" />
     <!-- Version together with EF -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfVersion)" />
