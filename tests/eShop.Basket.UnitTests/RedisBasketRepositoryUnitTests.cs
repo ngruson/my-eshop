@@ -126,7 +126,6 @@ public class RedisBasketRepositoryUnitTests
             [Substitute, Frozen] IConnectionMultiplexer connectionMultiplexer,
             [Substitute, Frozen] IDatabase database,
             ILogger<RedisBasketRepository> logger,
-            CustomerBasket basket,
             string id)
         {
             // Arrange
