@@ -1,22 +1,22 @@
 using eShop.EventBus.Dapr;
 using eShop.EventBus.Options;
+using eShop.Shared.Features;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
-using Microsoft.Extensions.Options;
 
 namespace eShop.WebApp.Extensions;
 
 internal static class DaprSubscriptionExtensions
 {
-    public static RouteGroupBuilder MapSubscriptionEndpoints(this IEndpointRouteBuilder app, IOptions<EventBusOptions> options)
+    public static RouteGroupBuilder MapSubscriptionEndpoints(this IEndpointRouteBuilder app, FeaturesConfiguration features, EventBusOptions eventBusOptions)
     {
         RouteGroupBuilder api = app.MapGroup("api/dapr");
 
-        api.MapSubscribe<OrderStatusChangedToAwaitingValidationIntegrationEvent>("/orderStatusChangedToAwaitingValidation", options);
-        api.MapSubscribe<OrderStatusChangedToPaidIntegrationEvent>("/orderStatusChangedToPaid", options);
-        api.MapSubscribe<OrderStatusChangedToStockConfirmedIntegrationEvent>("/orderStatusChangedToStockConfirmed", options);
-        api.MapSubscribe<OrderStatusChangedToShippedIntegrationEvent>("/orderStatusChangedToShipped", options);
-        api.MapSubscribe<OrderStatusChangedToCancelledIntegrationEvent>("/orderStatusChangedToCancelled", options);
-        api.MapSubscribe<OrderStatusChangedToSubmittedIntegrationEvent>("/orderStatusChangedToSubmitted", options);
+        api.MapSubscribe<OrderStatusChangedToAwaitingValidationIntegrationEvent>("/orderStatusChangedToAwaitingValidation", features, eventBusOptions);
+        api.MapSubscribe<OrderStatusChangedToPaidIntegrationEvent>("/orderStatusChangedToPaid", features, eventBusOptions);
+        api.MapSubscribe<OrderStatusChangedToStockConfirmedIntegrationEvent>("/orderStatusChangedToStockConfirmed", features, eventBusOptions);
+        api.MapSubscribe<OrderStatusChangedToShippedIntegrationEvent>("/orderStatusChangedToShipped", features, eventBusOptions);
+        api.MapSubscribe<OrderStatusChangedToCancelledIntegrationEvent>("/orderStatusChangedToCancelled", features, eventBusOptions);
+        api.MapSubscribe<OrderStatusChangedToSubmittedIntegrationEvent>("/orderStatusChangedToSubmitted", features, eventBusOptions);
 
         return api;
     }

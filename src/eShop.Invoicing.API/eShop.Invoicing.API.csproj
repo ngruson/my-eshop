@@ -34,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="logo-header.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="logo-header.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

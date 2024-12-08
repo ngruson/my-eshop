@@ -6,6 +6,10 @@ param location string = resourceGroup().location
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 param environmentName string = ''
+@secure()
+param eventbus_password string
+@secure()
+param redis_password string
 
 
 @description('Tags that will be applied to all resources')
@@ -73,7 +77,15 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-02-02-p
       componentType: 'AspireDashboard'
     }
   }
+}
 
+module resource 'dapr.bicep' = {
+  name: 'dapr'
+  params: {    
+    managedEnvironmentName: containerAppEnvironment.name
+    eventbus_password: eventbus_password
+    redis_password: redis_password
+  }
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = { 
@@ -83,6 +95,30 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   properties: { 
     Application_Type: 'web'
   } 
+}
+
+var storageAccountName = 'stg${resourceToken}'
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = { 
+  name: storageAccountName 
+  location: location 
+  sku: { 
+    name: 'Standard_LRS' 
+  } 
+  kind: 'StorageV2' 
+  properties: { 
+    accessTier: 'Hot' 
+  } 
+}
+
+var accountKey = storageAccount.listKeys().keys[0].value
+
+resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = { 
+  name: '${storageAccountName}/default/invoices'
+  properties: { 
+    publicAccess: 'None'
+  }
+  dependsOn: [ storageAccount ]
 }
 
 resource explicitContributorUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
@@ -158,5 +194,6 @@ output AZURE_CONTAINER_APPS_ENVIRONMENT_NAME string = containerAppEnvironment.na
 output AZURE_CONTAINER_APPS_ENVIRONMENT_ID string = containerAppEnvironment.id
 output AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN string = containerAppEnvironment.properties.defaultDomain
 output APPINSIGHTS_CONNECTIONSTRING string = applicationInsights.properties.ConnectionString
+output STORAGE_CONNECTIONSTRING string = 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${accountKey};EndpointSuffix=core.windows.net'
 //output IDENTITY_CLIENTID string = 'Clientid' //appRegistration.properties.outputs.appId
 //output IDENTITY_CLIENTSECRET string = 'ClientSecret' //appRegistration.properties.outputs.spPassword

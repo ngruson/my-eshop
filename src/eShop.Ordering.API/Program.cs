@@ -24,14 +24,14 @@ IVersionedEndpointRouteBuilder orders = app.NewVersionedApi("Orders");
 orders.MapOrdersApiV1()
     .RequireAuthorization();
 
-FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+FeaturesConfiguration features = app.Services.GetRequiredService<IOptions<FeaturesConfiguration>>().Value;
 if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
 {
     app.UseCloudEvents();
     app.MapSubscribeHandler();
 
-    IOptions<EventBusOptions> eventbusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>();
-    app.MapSubscriptionEndpoints(eventbusOptions);
+    EventBusOptions eventBusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>().Value;
+    app.MapSubscriptionEndpoints(features, eventBusOptions);
 }
 
 app.UseDefaultOpenApi();

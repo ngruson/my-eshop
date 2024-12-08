@@ -13,6 +13,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\eShop.EventBus\eShop.EventBus.csproj" />
+    <ProjectReference Include="..\eShop.Shared\eShop.Shared.csproj" />
   </ItemGroup>
 
 </Project>

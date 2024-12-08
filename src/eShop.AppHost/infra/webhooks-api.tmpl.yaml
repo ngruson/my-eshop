@@ -12,6 +12,10 @@ properties:
     runtime:
       dotnet:
         autoConfigureDataProtection: true
+    dapr:
+      appId: webhooks-api
+      appPort: 8080
+      enabled: true
     ingress:
       external: false
       targetPort: {{ targetPortOrDefault 8080 }}

@@ -18,11 +18,15 @@ app.MapGrpcService<BasketService>();
 FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
 if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
 {
+    ILogger<Program> logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+    logger.LogInformation("Configuring Dapr EventBus...");
+
     app.UseCloudEvents();
     app.MapSubscribeHandler();
 
-    IOptions<EventBusOptions> eventbusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>();
-    app.MapSubscriptionEndpoints(eventbusOptions);
+    IOptions<EventBusOptions> eventBusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>();
+    app.MapSubscriptionEndpoints(features, eventBusOptions.Value);
 }
 
 app.Run();

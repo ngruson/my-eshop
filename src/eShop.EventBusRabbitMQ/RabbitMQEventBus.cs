@@ -137,10 +137,10 @@ public sealed class RabbitMQEventBus(
         {
             if (props.Headers is not null)
             {
-                if (props.Headers.TryGetValue(key, out var value))
+                if (props.Headers.TryGetValue(key, out object? value))
                 {
-                    var bytes = value as byte[];
-                    return [Encoding.UTF8.GetString(bytes!)];
+                    byte[] bytes = (byte[])value;
+                    return [Encoding.UTF8.GetString(bytes)];
                 }
             }
             

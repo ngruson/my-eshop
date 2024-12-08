@@ -37,7 +37,7 @@ properties:
         name: ordering-api
         env:
           - name: AZURE_CLIENT_ID
-            value: {{ .Env.MANAGED_IDENTITY_CLIENT_ID }}
+            value: {{ .Env.MANAGED_IDENTITY_CLIENT_ID }}          
           - name: ASPNETCORE_FORWARDEDHEADERS_ENABLED
             value: "true"
           - name: HTTP_PORTS

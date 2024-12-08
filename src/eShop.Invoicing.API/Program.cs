@@ -26,14 +26,14 @@ IVersionedEndpointRouteBuilder orders = app.NewVersionedApi("Invoices");
 orders.MapInvoiceApiV1()
     .RequireAuthorization();
 
-FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+FeaturesConfiguration features = app.Services.GetRequiredService<IOptions<FeaturesConfiguration>>().Value;
 if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
 {
     app.UseCloudEvents();
     app.MapSubscribeHandler();
 
     IOptions<EventBusOptions> eventBusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>();
-    app.MapSubscriptionEndpoints(eventBusOptions);
+    app.MapSubscriptionEndpoints(features, eventBusOptions.Value);
 }
 
 app.UseDefaultOpenApi();

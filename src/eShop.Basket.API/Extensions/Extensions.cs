@@ -14,9 +14,9 @@ public static class Extensions
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
         builder.AddDefaultAuthentication();
-
         builder.AddRedisClient("redis");
 
+        builder.Services.Configure<FeaturesConfiguration>(builder.Configuration.GetSection("Features"));
         builder.Services.AddSingleton<IBasketRepository, DaprBasketRepository>();
 
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();

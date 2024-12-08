@@ -26,6 +26,13 @@ param eventbus_password string
 })
 @secure()
 param postgres_password string
+@metadata({azd: {
+  type: 'generate'
+  config: {length:22}
+  }
+})
+@secure()
+param redis_password string
 
 var tags = {
   'azd-env-name': environmentName
@@ -45,6 +52,8 @@ module resources 'resources.bicep' = {
     tags: tags
     principalId: principalId
     environmentName: environmentName
+    eventbus_password: eventbus_password
+    redis_password: redis_password
   }
 }
 
@@ -58,5 +67,6 @@ output AZURE_CONTAINER_APPS_ENVIRONMENT_NAME string = resources.outputs.AZURE_CO
 output AZURE_CONTAINER_APPS_ENVIRONMENT_ID string = resources.outputs.AZURE_CONTAINER_APPS_ENVIRONMENT_ID
 output AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN string = resources.outputs.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN
 output APPINSIGHTS_CONNECTIONSTRING string = resources.outputs.APPINSIGHTS_CONNECTIONSTRING
+output STORAGE_CONNECTIONSTRING string = resources.outputs.STORAGE_CONNECTIONSTRING
 //output IDENTITY_CLIENTID string = resources.outputs.IDENTITY_CLIENTID
 //output IDENTITY_CLIENTSECRET string = resources.outputs.IDENTITY_CLIENTSECRET

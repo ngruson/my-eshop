@@ -1,10 +1,10 @@
-using System.Threading;
 using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using Dapr.Client;
 using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
+using eShop.Shared.Features;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -15,13 +15,16 @@ public class DaprEventBusUnitTests
 {
     [Theory, AutoNSubstituteData]
     internal async Task return_success_when_event_is_published(
+        [Frozen, Substitute] IOptions<FeaturesConfiguration> featuresConfiguration,
         [Frozen, Substitute] IOptions<EventBusSubscriptionInfo> subscriptionOptions,
+        FeaturesConfiguration features,
         EventBusSubscriptionInfo eventBusSubscriptionInfo,
         DaprEventBus sut,
         TestIntegrationEvent integrationEvent)
     {
         // Arrange
 
+        featuresConfiguration.Value.Returns(features);
         subscriptionOptions.Value.Returns(eventBusSubscriptionInfo);
 
         // Act
