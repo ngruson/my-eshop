@@ -2,16 +2,15 @@ using Ardalis.Result;
 using Dapr.Client;
 using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
+using eShop.Shared.Features;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace eShop.EventBus.Dapr;
 
 public class DaprEventBus(
-    ILogger<DaprEventBus> logger,
-    DaprClient daprClient) : IEventBus
+    ILogger<DaprEventBus> logger, DaprClient daprClient, IOptions<FeaturesConfiguration> features) : IEventBus
 {
-    private readonly string topicName = "eShop_event_bus";
-
     public async Task<Result> PublishAsync(IntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         try
@@ -20,8 +19,8 @@ public class DaprEventBus(
                 integrationEvent.GetType().Name, integrationEvent.Id);
 
             await daprClient.PublishEventAsync(
-                "pubsub",
-                this.topicName,
+                features.Value.PublishSubscribe.PubsubName,
+                features.Value.PublishSubscribe.TopicName,
                 Convert.ChangeType(integrationEvent, integrationEvent.GetType()),
                 new Dictionary<string, string> {
                     { "routingKey", integrationEvent.GetType().Name }

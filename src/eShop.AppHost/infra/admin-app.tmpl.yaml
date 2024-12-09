@@ -15,7 +15,7 @@ properties:
     dapr:
       appId: admin-app
       appPort: 8080
-      enabled: true
+      enabled: {{ .Env.ENABLE_DAPR }}
     ingress:
       external: true
       targetPort: {{ targetPortOrDefault 8080 }}
@@ -47,9 +47,9 @@ properties:
           - name: OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES
             value: "true"
           - name: OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY
-            value: in_memory
+            value: in_memory          
           - name: services__catalog-api__http__0
-            value: http://catalog-api.internal.{{ .Env.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN }}
+            value: http://catalog-api.internal.{{ .Env.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN }}          
           - name: services__catalog-api__https__0
             value: https://catalog-api.internal.{{ .Env.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN }}
           - name: services__customer-api__http__0

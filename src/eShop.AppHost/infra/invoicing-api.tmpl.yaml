@@ -13,7 +13,7 @@ properties:
       dotnet:
         autoConfigureDataProtection: true
     dapr:
-      appId: customer-api
+      appId: invoicing-api
       appPort: 8080
       enabled: {{ .Env.ENABLE_DAPR }}
     ingress:
@@ -27,12 +27,16 @@ properties:
     secrets:
       - name: connectionstrings--appinsights
         value: {{ .Env.APPINSIGHTS_CONNECTIONSTRING }}
-      - name: connectionstrings--customerdb
-        value: Host=postgres;Port=5432;Username=postgres;Password={{ securedParameter "postgres_password" }};Database=customerdb
+      - name: connectionstrings--storage
+        value: {{ .Env.STORAGE_CONNECTIONSTRING }}
+      - name: identity--clientcredentials--clientid
+        value: {{ .Env.INVOICING_API_IDENTITY_CLIENTCREDENTIALS_CLIENTID }}
+      - name: identity--clientcredentials--clientsecret
+        value: {{ .Env.INVOICING_API_IDENTITY_CLIENTCREDENTIALS_CLIENTSECRET }}
   template:
     containers:
       - image: {{ .Image }}
-        name: customer-api
+        name: invoicing-api
         env:
           - name: AZURE_CLIENT_ID
             value: {{ .Env.MANAGED_IDENTITY_CLIENT_ID }}
@@ -40,6 +44,10 @@ properties:
             value: "true"
           - name: HTTP_PORTS
             value: '{{ targetPortOrDefault 0 }}'
+          - name: Identity__ClientCredentials__ClientId
+            secretRef: identity--clientcredentials--clientid
+          - name: Identity__ClientCredentials__ClientSecret
+            secretRef: identity--clientcredentials--clientsecret
           - name: Identity__Url
             value: https://identity-api.{{ .Env.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN }}
           - name: OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES
@@ -50,10 +58,10 @@ properties:
             value: in_memory
           - name: ConnectionStrings__appinsights
             secretRef: connectionstrings--appinsights
-          - name: ConnectionStrings__customerdb
-            secretRef: connectionstrings--customerdb
+          - name: AzureBlobStorageConnectionString
+            secretRef: connectionstrings--storage
     scale:
       minReplicas: 1
 tags:
-  azd-service-name: customer-api
-  aspire-resource-name: customer-api
+  azd-service-name: invoicing-api
+  aspire-resource-name: invoicing-api

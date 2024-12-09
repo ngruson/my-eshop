@@ -73,7 +73,7 @@ internal class CreateInvoiceCommandHandler(ILogger<CreateInvoiceCommandHandler> 
 
     private void ComposeContent(IContainer container)
     {
-        ConvertSvgToPng("logo-header.svg", "logo-header.png");
+        //ConvertSvgToPng("logo-header.svg", "logo-header.png");
         CultureInfo cultureInfo = CultureInfo.GetCultureInfo("en-US");
 
         container.PaddingVertical(1, QuestPDF.Infrastructure.Unit.Centimetre).Column(column =>

@@ -1,13 +1,15 @@
 using Ardalis.Result;
 using Dapr.Client;
 using eShop.Basket.API.Model;
+using eShop.Shared.Features;
 
 namespace eShop.Basket.API.Repositories;
 
-public class DaprBasketRepository(DaprClient daprClient,
+public class DaprBasketRepository(DaprClient daprClient, IConfiguration configuration,
     ILogger<DaprBasketRepository> logger) : IBasketRepository
 {
-    private readonly string storeName = "statestore";
+    private readonly string storeName = "statestore";    
+    private FeaturesConfiguration? features => configuration.GetSection("Features").Get<FeaturesConfiguration>();
 
     public async Task<Result> DeleteBasketAsync(string id)
     {

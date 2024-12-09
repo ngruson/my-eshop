@@ -35,6 +35,7 @@ internal static class Extensions
 
         builder.Services.AddTransient<IIntegrationEventService, OrderingIntegrationEventService>();
 
+        builder.Services.Configure<FeaturesConfiguration>(builder.Configuration.GetSection("Features"));
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
         if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
         {

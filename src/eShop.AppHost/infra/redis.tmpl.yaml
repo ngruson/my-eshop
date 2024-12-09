@@ -20,6 +20,9 @@ properties:
     registries:
       - server: {{ .Env.AZURE_CONTAINER_REGISTRY_ENDPOINT }}
         identity: {{ .Env.AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID }}
+    secrets:
+      - name: redis-password
+        value: '{{ securedParameter "redis_password" }}'
   template:
     containers:
       - image: {{ .Image }}
@@ -27,6 +30,8 @@ properties:
         env:
           - name: AZURE_CLIENT_ID
             value: {{ .Env.MANAGED_IDENTITY_CLIENT_ID }}
+          - name: REDIS_PASSWORD
+            secretRef: redis-password
     scale:
       minReplicas: 1
 tags:

@@ -1,17 +1,17 @@
 using eShop.EventBus.Dapr;
 using eShop.EventBus.Options;
 using eShop.Invoicing.API.Application.IntegrationEvents.Events;
-using Microsoft.Extensions.Options;
+using eShop.Shared.Features;
 
 namespace eShop.Invoicing.API.Extensions;
 
 internal static class DaprSubscriptionExtensions
 {
-    public static RouteGroupBuilder MapSubscriptionEndpoints(this IEndpointRouteBuilder app, IOptions<EventBusOptions> options)
+    public static RouteGroupBuilder MapSubscriptionEndpoints(this IEndpointRouteBuilder app, FeaturesConfiguration features, EventBusOptions eventBusOptions)
     {
         RouteGroupBuilder api = app.MapGroup("api/dapr");
 
-        api.MapSubscribe<OrderStatusChangedToStockConfirmedIntegrationEvent>("/orderStockConfirmed", options);
+        api.MapSubscribe<OrderStatusChangedToStockConfirmedIntegrationEvent>("/orderStockConfirmed", features, eventBusOptions);
 
         return api;
     }

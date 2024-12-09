@@ -34,6 +34,8 @@ public static class Extensions
     {
         builder.AddAuthenticationServices();
 
+        builder.Services.Configure<FeaturesConfiguration>(builder.Configuration.GetSection("Features"));
+
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
         if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
         {

@@ -16,7 +16,7 @@ properties:
       appId: basket-api
       appPort: 8080
       appProtocol: grpc
-      enabled: true
+      enabled: {{ .Env.ENABLE_DAPR }}
     ingress:
       external: false
       targetPort: {{ targetPortOrDefault 8080 }}
@@ -31,7 +31,7 @@ properties:
       - name: connectionstrings--eventbus
         value: amqp://guest:{{ securedParameter "eventbus_password" }}@eventbus:5672
       - name: connectionstrings--redis
-        value: redis:6379
+        value: '{{ securedParameter "redis_password" }}@redis:6379'
   template:
     containers:
       - image: {{ .Image }}
@@ -57,6 +57,8 @@ properties:
             secretRef: connectionstrings--eventbus
           - name: ConnectionStrings__redis
             secretRef: connectionstrings--redis
+          - name: Features__PublishSubscribe__EventBus
+            value: Dapr
     scale:
       minReplicas: 1
 tags:

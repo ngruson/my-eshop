@@ -33,8 +33,8 @@ if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
     app.UseCloudEvents();
     app.MapSubscribeHandler();
 
-    IOptions<EventBusOptions> eventbusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>();
-    app.MapSubscriptionEndpoints(eventbusOptions);
+    IOptions<EventBusOptions> eventBusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>();
+    app.MapSubscriptionEndpoints(features, eventBusOptions.Value);
 }
 
 await app.RunAsync();
