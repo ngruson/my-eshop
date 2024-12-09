@@ -15,7 +15,7 @@ properties:
     dapr:
       appId: masterdata-api
       appPort: 8080
-      enabled: true
+      enabled: {{ .Env.ENABLE_DAPR }}
     ingress:
       external: false
       targetPort: {{ targetPortOrDefault 8080 }}

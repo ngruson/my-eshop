@@ -16,7 +16,7 @@ properties:
       appId: identity-api
       appPort: 8080
       appProtocol: http
-      enabled: true
+      enabled: {{ .Env.ENABLE_DAPR }}
     ingress:
       external: true
       targetPort: {{ targetPortOrDefault 8080 }}
