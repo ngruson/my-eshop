@@ -20,7 +20,7 @@ internal static class Extensions
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
         builder.AddDefaultAuthentication();
-        builder.AddClientCredentials(builder.Configuration);
+        builder.AddClientCredentials(builder.Configuration, "orders");
 
         builder.Services.AddMediatR(cfg =>
         {
@@ -73,18 +73,5 @@ internal static class Extensions
             .AddAuthToken();
 
         builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Refit.OrderingApiClient>();
-    }
-
-    private static void AddClientCredentials(this IHostApplicationBuilder builder, IConfiguration configuration)
-    {
-        builder.Services.AddDistributedMemoryCache();
-        builder.Services.AddClientCredentialsTokenManagement()
-            .AddClient(configuration["Identity:ClientCredentials:ClientId"]!, client =>
-            {
-                client.TokenEndpoint = $"{configuration["Identity:Url"]}/connect/token"; //"https://demo.duendesoftware.com/connect/token";
-                client.ClientId = configuration["Identity:ClientCredentials:ClientId"];
-                client.ClientSecret = configuration["Identity:ClientCredentials:ClientSecret"];
-                client.Scope = "orders";
-            });
     }
 }

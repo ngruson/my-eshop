@@ -15,7 +15,9 @@ public static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
-        builder.Services.Configure<FeaturesConfiguration>(builder.Configuration.GetSection("Features"));
+        IConfigurationSection featuresSection = builder.Configuration.GetSection("Features");
+        builder.Services.Configure<FeaturesConfiguration>(featuresSection);
+        FeaturesConfiguration? features = featuresSection.Get<FeaturesConfiguration>();        
 
         builder.AddNpgsqlDbContext<CatalogContext>("catalogdb", configureDbContextOptions: dbContextOptionsBuilder =>
         {
@@ -45,8 +47,7 @@ public static class Extensions
             cfg.AddOpenBehavior(typeof(ValidatorBehavior<,>));
             cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
         });
-
-        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+        
         if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
         {
             builder.AddDaprEventBus()

@@ -1,3 +1,4 @@
+using eShop.Catalog.Contracts.AssessStockItemsForOrder;
 using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;
 using eShop.Shared.Data;
@@ -6,6 +7,7 @@ namespace eShop.ServiceInvocation.CatalogApiClient;
 
 public interface ICatalogApiClient
 {
+    Task<AssessStockItemsForOrderResponseDto> AssessStockItemsForOrder(AssessStockItemsForOrderRequestDto dto);
     Task CreateCatalogItem(Catalog.Contracts.CreateCatalogItem.CreateCatalogItemDto dto);
     Task DeleteCatalogItem(Guid objectId);
     Task<CatalogItemViewModel> GetCatalogItem(Guid objectId);

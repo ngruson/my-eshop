@@ -7,6 +7,9 @@ using eShop.ServiceInvocation.CatalogApiClient;
 using eShop.ServiceInvocation.OrderingApiClient;
 using eShop.ServiceInvocation.BasketApiClient;
 using eShop.Basket.Contracts.Grpc;
+using Microsoft.Extensions.Options;
+using eShop.Shared.Features;
+using eShop.ServiceInvocation.WorkflowApiClient;
 
 namespace eShop.WebApp.Services;
 
@@ -14,7 +17,9 @@ public class BasketState(
     IBasketApiClient basketApiClient,
     ICatalogApiClient catalogApiClient,
     IOrderingApiClient orderingApiClient,
-    AuthenticationStateProvider authenticationStateProvider) : IBasketState
+    AuthenticationStateProvider authenticationStateProvider,
+    IOptions<FeaturesConfiguration> features,
+    IWorkflowApiClient workflowApiClient) : IBasketState
 {
     private Task<BasketItem[]>? _cachedBasket;
     private readonly HashSet<BasketStateChangedSubscription> _changeSubscriptions = [];
@@ -38,7 +43,7 @@ public class BasketState(
     {
         BasketItem[] items = await this.FetchBasketItemsAsync();
         bool found = false;
-        for (int i = 0; i < items.Count(); i++)
+        for (int i = 0; i < items.Length; i++)
         {
             BasketItem existing = items[i];
             if (existing.ProductId == item.ObjectId)
@@ -121,6 +126,7 @@ public class BasketState(
 
         // Call into Ordering.API to create the order using those details
         OrderDto request = new(
+            WorkflowInstanceId: string.Empty,
             UserId: buyerId,
             UserName: userName,
             BuyerName: buyerName,
@@ -136,7 +142,16 @@ public class BasketState(
             CardType: checkoutInfo.CardTypeId,
             Buyer: buyerId,
             Items: [.. orderItems]);
-        await orderingApiClient.CreateOrder(checkoutInfo.RequestId, request);
+
+        if (features.Value.Workflow.Enabled)
+        {
+            await workflowApiClient.CreateOrder(request);
+        }
+        else
+        {
+            await orderingApiClient.CreateOrder(checkoutInfo.RequestId, request);
+        }
+
         await this.DeleteBasketAsync();
     }
 

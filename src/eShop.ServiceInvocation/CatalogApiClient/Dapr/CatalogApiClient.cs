@@ -1,4 +1,5 @@
 using Dapr.Client;
+using eShop.Catalog.Contracts.AssessStockItemsForOrder;
 using eShop.Catalog.Contracts.CreateCatalogItem;
 using eShop.ServiceInvocation.Auth;
 using eShop.Shared.Data;
@@ -10,6 +11,17 @@ public class CatalogApiClient(DaprClient daprClient, AccessTokenAccessorFactory 
 {
     private readonly string basePath = "api/catalog";
     protected override string AppId => "catalog-api";
+
+    public async Task<AssessStockItemsForOrderResponseDto> AssessStockItemsForOrder(AssessStockItemsForOrderRequestDto dto)
+    {
+        HttpRequestMessage request = await this.CreateRequest(
+            HttpMethod.Post,
+            $"{this.basePath}/assessStockItemsForOrder",
+            null,
+            dto);
+
+        return await this.DaprClient.InvokeMethodAsync<AssessStockItemsForOrderResponseDto>(request);
+    }
 
     public async Task CreateCatalogItem(CreateCatalogItemDto dto)
     {

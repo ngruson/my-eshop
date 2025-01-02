@@ -136,7 +136,7 @@ public class OrderAggregateTest
         int expectedResult = 1;
 
         //Act 
-        Order fakeOrder = new(Guid.NewGuid(), "userName", "buyerName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        Order fakeOrder = new(Guid.NewGuid().ToString(), Guid.NewGuid(), "userName", "buyerName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
 
         //Assert
         Assert.Equal(fakeOrder.DomainEvents.Count, expectedResult);
@@ -159,7 +159,7 @@ public class OrderAggregateTest
         int expectedResult = 2;
 
         //Act 
-        Order fakeOrder = new(Guid.NewGuid(), "userName", "buyerName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        Order fakeOrder = new(Guid.NewGuid().ToString(), Guid.NewGuid(), "userName", "buyerName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
         fakeOrder.AddDomainEvent(new OrderStartedDomainEvent(fakeOrder, Guid.NewGuid(), "userName", "buyerName", cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration));
         //Assert
         Assert.Equal(fakeOrder.DomainEvents.Count, expectedResult);
@@ -180,7 +180,7 @@ public class OrderAggregateTest
         string cardSecurityNumber = "123";
         string cardHolderName = "FakeName";
         DateTime cardExpiration = DateTime.UtcNow.AddYears(1);
-        Order fakeOrder = new(Guid.NewGuid(), "userName", "buyerName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
+        Order fakeOrder = new(Guid.NewGuid().ToString(), Guid.NewGuid(), "userName", "buyerName", new Address(street, city, state, country, zipCode), cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
         OrderStartedDomainEvent fakeEvent = new(fakeOrder, Guid.NewGuid(), "userName", "buyerName", cardType, cardNumber, cardSecurityNumber, cardHolderName, cardExpiration);
         int expectedResult = 1;
 

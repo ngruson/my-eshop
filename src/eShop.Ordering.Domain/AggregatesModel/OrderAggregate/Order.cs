@@ -5,6 +5,7 @@ namespace eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
 public class Order : Entity, IAggregateRoot
 {
+    public string? WorkflowInstanceId { get; private set; }
     public DateTime OrderDate { get; private set; }
 
     // Address is a Value Object pattern example persisted as EF Core 2.0 owned entity
@@ -32,10 +33,9 @@ public class Order : Entity, IAggregateRoot
    
     public IReadOnlyCollection<OrderItem> OrderItems => this._orderItems.AsReadOnly();
 
-    public IReadOnlyCollection<SalesTaxGroup> SalesTaxGroups => this._orderItems
+    public IReadOnlyCollection<SalesTaxGroup> SalesTaxGroups => [.. this._orderItems
         .GroupBy(o => o.SalesTaxRate)
-        .Select(g => new SalesTaxGroup(g.Key, g.Sum(o => o.SalesTax)))
-        .ToList();
+        .Select(g => new SalesTaxGroup(g.Key, g.Sum(o => o.SalesTax)))];
     
     public int? PaymentId { get; private set; }
 
@@ -54,10 +54,11 @@ public class Order : Entity, IAggregateRoot
         this._isDraft = false;
     }
 
-    public Order(Guid userId, string userName, string buyerName, Address address, CardType cardType, string cardNumber, string cardSecurityNumber,
+    public Order(string? workflowInstanceId, Guid userId, string userName, string buyerName, Address address, CardType cardType, string cardNumber, string cardSecurityNumber,
             string cardHolderName, DateTime cardExpiration, int? buyerId = null, int? paymentMethodId = null) : this()
     {
         this.ObjectId = Guid.NewGuid();
+        this.WorkflowInstanceId = workflowInstanceId;
         this.BuyerId = buyerId;
         this.PaymentId = paymentMethodId;
         this.OrderStatus = OrderStatus.Submitted;

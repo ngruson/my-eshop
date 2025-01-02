@@ -15,6 +15,9 @@ internal static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
+        builder.Services.Configure<FeaturesConfiguration>(builder.Configuration.GetSection("Features"));
+        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
+
         // Add the authentication services to DI
         builder.AddDefaultAuthentication();
 
@@ -35,17 +38,16 @@ internal static class Extensions
 
         builder.Services.AddTransient<IIntegrationEventService, OrderingIntegrationEventService>();
 
-        builder.Services.Configure<FeaturesConfiguration>(builder.Configuration.GetSection("Features"));
-        FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
-        if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+        
+        if (features!.PublishSubscribe.EventBus == EventBusType.Dapr)
         {
             builder.AddDaprEventBus()
-                .AddEventBusSubscriptions();
+                .AddEventBusSubscriptions(features.Workflow.Enabled);
         }
         else
         {
             builder.AddRabbitMqEventBus("eventBus")
-                .AddEventBusSubscriptions();
+                .AddEventBusSubscriptions(features.Workflow.Enabled);
         }
 
         builder.Services.AddHttpContextAccessor();
@@ -64,18 +66,22 @@ internal static class Extensions
         // Register the command validators for the validator behavior (validators based on FluentValidation library)
         builder.Services.AddSingleton<IValidator<CancelOrderCommand>, CancelOrderCommandValidator>();
         builder.Services.AddSingleton<IValidator<CreateOrderCommand>, CreateOrderCommandValidator>();
-        builder.Services.AddSingleton<IValidator<IdentifiedCommand<CreateOrderCommand, Result>>, IdentifiedCommandValidator>();
+        builder.Services.AddSingleton<IValidator<IdentifiedCommand<CreateOrderCommand, Result<Guid>>>, IdentifiedCommandValidator>();
         builder.Services.AddSingleton<IValidator<ShipOrderCommand>, ShipOrderCommandValidator>();
 
         builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         builder.Services.AddScoped<IRequestManager, RequestManager>();
     }
 
-    private static void AddEventBusSubscriptions(this IEventBusBuilder eventBus)
+    private static void AddEventBusSubscriptions(this IEventBusBuilder eventBus, bool workflowEnabled)
     {
-        eventBus.AddSubscription<GracePeriodConfirmedIntegrationEvent, GracePeriodConfirmedIntegrationEventHandler>();
-        eventBus.AddSubscription<OrderStockConfirmedIntegrationEvent, OrderStockConfirmedIntegrationEventHandler>();
-        eventBus.AddSubscription<OrderStockRejectedIntegrationEvent, OrderStockRejectedIntegrationEventHandler>();
+        if (workflowEnabled is false)
+        {
+            eventBus.AddSubscription<GracePeriodConfirmedIntegrationEvent, GracePeriodConfirmedIntegrationEventHandler>();
+            eventBus.AddSubscription<OrderStockConfirmedIntegrationEvent, OrderStockConfirmedIntegrationEventHandler>();
+            eventBus.AddSubscription<OrderStockRejectedIntegrationEvent, OrderStockRejectedIntegrationEventHandler>();
+        }
+        
         eventBus.AddSubscription<OrderPaymentFailedIntegrationEvent, OrderPaymentFailedIntegrationEventHandler>();
         eventBus.AddSubscription<OrderPaymentSucceededIntegrationEvent, OrderPaymentSucceededIntegrationEventHandler>();
     }

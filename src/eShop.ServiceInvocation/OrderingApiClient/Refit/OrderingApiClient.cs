@@ -5,9 +5,24 @@ namespace eShop.ServiceInvocation.OrderingApiClient.Refit;
 
 public class OrderingApiClient(IOrderingApi orderingApi) : IOrderingApiClient
 {
-    public async Task CreateOrder(Guid requestId, Ordering.Contracts.CreateOrder.OrderDto dto)
+    public async Task Cancel(Guid objectId)
     {
-        await orderingApi.CreateOrder(requestId, dto);
+        await orderingApi.Cancel(objectId);
+    }
+
+    public async Task ConfirmGracePeriod(Guid objectId)
+    {
+        await orderingApi.ConfirmGracePeriod(objectId);
+    }
+
+    public async Task ConfirmStock(Guid objectId)
+    {
+        await orderingApi.ConfirmStock(objectId);
+    }
+
+    public async Task<Guid> CreateOrder(Guid requestId, Ordering.Contracts.CreateOrder.OrderDto dto)
+    {
+        return await orderingApi.CreateOrder(requestId, dto);
     }
 
     public async Task DeleteOrder(Guid objectId)
@@ -28,6 +43,16 @@ public class OrderingApiClient(IOrderingApi orderingApi) : IOrderingApiClient
     public async Task<CardTypeDto[]> GetCardTypes()
     {
         return await orderingApi.GetCardTypes();
+    }
+
+    public async Task Paid(Guid objectId)
+    {
+        await orderingApi.Paid(objectId);
+    }
+
+    public Task RejectStock(Guid objectId, Guid[] orderStockItems)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task UpdateOrder(Guid objectId, Ordering.Contracts.UpdateOrder.OrderDto dto)

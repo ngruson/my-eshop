@@ -10,7 +10,11 @@ internal static class DaprSubscriptionExtensions
     {
         RouteGroupBuilder api = app.MapGroup("api/dapr");
 
-        api.MapSubscribe<GracePeriodConfirmedIntegrationEvent>("/gracePeriodConfirmed", features, eventBusOptions);
+        if (features.Workflow.Enabled is false)
+        {
+            api.MapSubscribe<GracePeriodConfirmedIntegrationEvent>("/gracePeriodConfirmed", features, eventBusOptions);
+        }
+        
         api.MapSubscribe<OrderPaymentFailedIntegrationEvent>("/orderPaymentFailed", features, eventBusOptions);
         api.MapSubscribe<OrderPaymentSucceededIntegrationEvent>("/orderPaymentSucceeded", features, eventBusOptions);
         api.MapSubscribe<OrderStockConfirmedIntegrationEvent>("/orderStockConfirmed", features, eventBusOptions);

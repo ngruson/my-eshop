@@ -1,5 +1,6 @@
 using eShop.ServiceInvocation.Auth;
 using eShop.ServiceInvocation.Options;
+using eShop.Shared.DI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -11,6 +12,7 @@ public static class DependencyInjectionExtensions
     {
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddSingleton<AccessTokenAccessorFactory>();
+        builder.Services.AddSingleton<ServiceProviderWrapper>();
 
         builder.Services.Configure<ServiceInvocationOptions>(builder.Configuration.GetSection("Identity"));
 

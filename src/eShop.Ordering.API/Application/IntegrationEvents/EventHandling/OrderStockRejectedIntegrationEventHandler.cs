@@ -9,10 +9,9 @@ public class OrderStockRejectedIntegrationEventHandler(
     {
         logger.LogInformation("Handling integration event: {IntegrationEventId} - ({@IntegrationEvent})", @event.Id, @event);
 
-        List<Guid> orderStockRejectedItems = @event.OrderStockItems.ToList()
+        Guid[] orderStockRejectedItems = [.. @event.OrderStockItems
             .FindAll(c => !c.HasStock)
-            .Select(c => c.ProductId)
-            .ToList();
+            .Select(c => c.ProductId)];
 
         SetStockRejectedOrderStatusCommand command = new(@event.OrderId, orderStockRejectedItems);
 

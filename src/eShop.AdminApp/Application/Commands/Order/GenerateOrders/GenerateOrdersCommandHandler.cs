@@ -79,6 +79,7 @@ internal partial class GenerateOrdersCommandHandler(
                 }
 
                 OrderDto order = new(
+                    WorkflowInstanceId: string.Empty,
                     UserId: user.Id,
                     UserName: user.UserName,
                     BuyerName: customer.Name.FullName,

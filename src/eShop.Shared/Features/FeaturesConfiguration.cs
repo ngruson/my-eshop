@@ -3,6 +3,7 @@ public class FeaturesConfiguration
 {
     public PublishSubscribeConfiguration PublishSubscribe { get; set; } = new PublishSubscribeConfiguration();
     public ServiceInvocationConfiguration ServiceInvocation { get; set; } = new ServiceInvocationConfiguration();
+    public WorkflowConfiguration Workflow { get; set; } = new WorkflowConfiguration();
 }
 public class PublishSubscribeConfiguration
 {
@@ -17,6 +18,10 @@ public class ServiceInvocationConfiguration
 public class StateConfiguration
 {
     public required string StateStoreName { get; set; }
+}
+public class WorkflowConfiguration
+{
+    public bool Enabled { get; set; }
 }
 public enum EventBusType
 {

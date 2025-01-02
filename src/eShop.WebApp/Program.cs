@@ -1,3 +1,4 @@
+using Asp.Versioning.Builder;
 using eShop.EventBus.Options;
 using eShop.Shared.Features;
 using eShop.WebApp.Extensions;
@@ -16,13 +17,21 @@ WebApplication app = builder.Build();
 app.MapDefaultEndpoints();
 
 FeaturesConfiguration features = app.Services.GetRequiredService<IOptions<FeaturesConfiguration>>().Value;
-if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+if (features!.PublishSubscribe.EventBus == EventBusType.Dapr)
 {
     app.UseCloudEvents();
     app.MapSubscribeHandler();
 
     EventBusOptions eventBusOptions = app.Services.GetRequiredService<IOptions<EventBusOptions>>().Value;
     app.MapSubscriptionEndpoints(features, eventBusOptions);
+}
+
+if (features.Workflow.Enabled)
+{
+    IVersionedEndpointRouteBuilder orders = app.NewVersionedApi("Orders");
+
+    orders.MapApiV1();
+        //.RequireAuthorization();
 }
 
 // Configure the HTTP request pipeline.

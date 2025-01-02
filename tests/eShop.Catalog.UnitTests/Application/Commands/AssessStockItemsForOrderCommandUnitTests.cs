@@ -5,9 +5,12 @@ using eShop.Catalog.API.Application.Commands.AssessStockItemsForOrder;
 using eShop.Catalog.API.IntegrationEvents.Events;
 using eShop.Catalog.API.Model;
 using eShop.Catalog.API.Specifications;
+using eShop.Catalog.Contracts.AssessStockItemsForOrder;
 using eShop.EventBus.Events;
 using eShop.Shared.Data;
+using eShop.Shared.Features;
 using eShop.Shared.IntegrationEvents;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -20,19 +23,23 @@ public class AssessStockItemsForOrderCommandUnitTests
         AssessStockItemsForOrderCommand command,
         [Substitute, Frozen] IRepository<CatalogItem> catalogItemRepository,
         [Substitute, Frozen] IIntegrationEventService integrationEventService,
+        [Substitute, Frozen] IOptions<FeaturesConfiguration> featuresOptions,
+        [Substitute, Frozen] FeaturesConfiguration featuresConfiguration,
         AssessStockItemsForOrderCommandHandler sut,
         CatalogItem catalogItem)
     {
         // Arrange
 
-        catalogItem.AvailableStock = command.OrderStockItems.Max(_ => _.Units);
+        catalogItem.AvailableStock = command.Dto.OrderStockItems.Max(_ => _.Units);
 
         catalogItemRepository.SingleOrDefaultAsync(Arg.Any<GetCatalogItemByObjectIdSpecification>(), default)
             .Returns(catalogItem);
 
+        featuresOptions.Value.Returns(featuresConfiguration);
+
         // Act
 
-        Result result = await sut.Handle(command, CancellationToken.None);
+        Result<AssessStockItemsForOrderResponseDto> result = await sut.Handle(command, CancellationToken.None);
 
         // Assert
 
@@ -46,19 +53,23 @@ public class AssessStockItemsForOrderCommandUnitTests
         AssessStockItemsForOrderCommand command,
         [Substitute, Frozen] IRepository<CatalogItem> catalogItemRepository,
         [Substitute, Frozen] IIntegrationEventService integrationEventService,
+        [Substitute, Frozen] IOptions<FeaturesConfiguration> featuresOptions,
+        [Substitute, Frozen] FeaturesConfiguration featuresConfiguration,
         AssessStockItemsForOrderCommandHandler sut,
         CatalogItem catalogItem)
     {
         // Arrange
 
-        catalogItem.AvailableStock = command.OrderStockItems.Max(_ => _.Units) - 1;
+        catalogItem.AvailableStock = command.Dto.OrderStockItems.Max(_ => _.Units) - 1;
 
         catalogItemRepository.SingleOrDefaultAsync(Arg.Any<GetCatalogItemByObjectIdSpecification>(), default)
             .Returns(catalogItem);
 
+        featuresOptions.Value.Returns(featuresConfiguration);
+
         // Act
 
-        Result result = await sut.Handle(command, CancellationToken.None);
+        Result<AssessStockItemsForOrderResponseDto> result = await sut.Handle(command, CancellationToken.None);
 
         // Assert
 
@@ -81,7 +92,7 @@ public class AssessStockItemsForOrderCommandUnitTests
 
         // Act
 
-        Result result = await sut.Handle(command, CancellationToken.None);
+        Result<AssessStockItemsForOrderResponseDto> result = await sut.Handle(command, CancellationToken.None);
 
         // Assert
 

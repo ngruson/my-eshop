@@ -1,3 +1,4 @@
+using eShop.Catalog.Contracts.AssessStockItemsForOrder;
 using eShop.Catalog.Contracts.UpdateCatalogItem;
 using eShop.Shared.Data;
 using Refit;
@@ -47,4 +48,7 @@ public interface ICatalogApi
 
     [Get("/api/catalog/catalogBrands?api-version=1.0")]
     Task<GetCatalogBrands.CatalogBrandDto[]> GetCatalogBrands();
+
+    [Post("/api/catalog/assessStockItemsForOrder?api-version=1.0")]
+    Task<AssessStockItemsForOrderResponseDto> AssessStockItemsForOrder(AssessStockItemsForOrderRequestDto dto);
 }

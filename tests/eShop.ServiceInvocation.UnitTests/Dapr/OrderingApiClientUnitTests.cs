@@ -118,7 +118,7 @@ public class OrderingApiClientUnitTests
 
             // Assert
 
-            await daprClient.Received().InvokeMethodAsync(httpRequestMessage);
+            await daprClient.Received().InvokeMethodAsync<Guid>(httpRequestMessage);
         }
     }
 

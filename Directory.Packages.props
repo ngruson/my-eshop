@@ -110,6 +110,7 @@
     <!-- Dapr -->
     <PackageVersion Include="Dapr.AspNetCore" Version="$(DaprVersion)" />
     <PackageVersion Include="Dapr.Client" Version="$(DaprVersion)" />
+    <PackageVersion Include="Dapr.Workflow" Version="$(DaprVersion)" />
     <!-- Azure-->
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.23.0" />
     <!-- Miscellaneous -->

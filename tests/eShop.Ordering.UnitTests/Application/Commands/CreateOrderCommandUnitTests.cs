@@ -6,6 +6,8 @@ using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Ordering.Domain.AggregatesModel.SalesTaxRateAggregate;
 using eShop.Shared.Data;
+using eShop.Shared.Features;
+using Microsoft.Extensions.Options;
 
 namespace eShop.Ordering.UnitTests.Application.Commands;
 public class CreateOrderCommandUnitTests
@@ -14,6 +16,8 @@ public class CreateOrderCommandUnitTests
     public async Task return_success_when_order_created(
         [Substitute, Frozen] IRepository<Order> orderRepositoryMock,
         [Substitute, Frozen] IRepository<CardType> cardTypeRepositoryMock,
+        [Substitute, Frozen] IOptions<FeaturesConfiguration> featuresOptions,
+        [Substitute, Frozen] FeaturesConfiguration featuresConfiguration,
         CreateOrderCommandHandler sut,
         CreateOrderCommand command,
         CardType cardType)
@@ -25,6 +29,8 @@ public class CreateOrderCommandUnitTests
 
         OrderItemDto[] orderItems = command.Items.Select(
             x => new OrderItemDto(x.ProductId, x.ProductName, Math.Abs(x.UnitPrice), 0, x.Units, x.PictureUrl)).ToArray();
+
+        featuresOptions.Value.Returns(featuresConfiguration);
 
         //Act
 
@@ -40,6 +46,8 @@ public class CreateOrderCommandUnitTests
         [Substitute, Frozen] IRepository<Order> orderRepositoryMock,
         [Substitute, Frozen] IRepository<CardType> cardTypeRepositoryMock,
         [Substitute, Frozen] IRepository<SalesTaxRate> salesTaxRateRepositoryMock,
+        [Substitute, Frozen] IOptions<FeaturesConfiguration> featuresOptions,
+        [Substitute, Frozen] FeaturesConfiguration featuresConfiguration,
         CreateOrderCommandHandler sut,
         CreateOrderCommand command,
         CardType cardType,
@@ -53,8 +61,10 @@ public class CreateOrderCommandUnitTests
         salesTaxRateRepositoryMock.SingleOrDefaultAsync(Arg.Any<SalesTaxRateSpecification>(), default)
             .Returns(salesTaxRate);
 
-        OrderItemDto[] orderItems = command.Items.Select(
-            x => new OrderItemDto(x.ProductId, x.ProductName, Math.Abs(x.UnitPrice), 0, x.Units, x.PictureUrl)).ToArray();
+        OrderItemDto[] orderItems = [.. command.Items.Select(
+            x => new OrderItemDto(x.ProductId, x.ProductName, Math.Abs(x.UnitPrice), 0, x.Units, x.PictureUrl))];
+
+        featuresOptions.Value.Returns(featuresConfiguration);
 
         //Act
 

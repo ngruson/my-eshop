@@ -35,6 +35,7 @@
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     <PackageReference Include="Pgvector" />
     <PackageReference Include="Pgvector.EntityFrameworkCore" />
+    <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
 
@@ -43,6 +44,7 @@
     <ProjectReference Include="..\eShop.EventBus.Dapr\eShop.EventBus.Dapr.csproj" />
     <ProjectReference Include="..\eShop.EventBusRabbitMQ\eShop.EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\eShop.IntegrationEventLogEF\eShop.IntegrationEventLogEF.csproj" />
+    <ProjectReference Include="..\eShop.ServiceInvocation\eShop.ServiceInvocation.csproj" />
     <ProjectReference Include="..\eShop.Shared\eShop.Shared.csproj" />
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
   </ItemGroup>

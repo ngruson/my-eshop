@@ -11,7 +11,9 @@ internal class Config
             new ApiResource("basket", "Basket Service"),
             new ApiResource("masterData", "Master Data Service"),
             new ApiResource("orders", "Orders Service"),
-            new ApiResource("webhooks", "Webhooks registration Service")
+            new ApiResource("webapp", "Web Application"),
+            new ApiResource("webhooks", "Webhooks registration Service"),
+            new ApiResource("workflows", "Workflow Service"),
         ];
     }
 
@@ -24,8 +26,10 @@ internal class Config
             new ApiScope("customers", "Customer Service"),
             new ApiScope("basket", "Basket Service"),
             new ApiScope("masterData", "Master Data Service"),
+            new ApiScope("order-status", "Order Status"),
             new ApiScope("orders", "Orders Service"),
             new ApiScope("webhooks", "Webhooks registration Service"),
+            new ApiScope("workflows", "Workflow Service"),
             new ApiScope(IdentityServerConstants.LocalApi.ScopeName)
         ];
     }
@@ -69,7 +73,7 @@ internal class Config
                     "orders",
                     "basket",
                     "mobileshoppingagg",
-                    "webhooks"
+                    "webhooks"                    
                 ],
                 //Allow requesting refresh tokens for long lived API access
                 AllowOfflineAccess = true,
@@ -109,7 +113,8 @@ internal class Config
                     "orders",
                     "basket",
                     "webshoppingagg",
-                    "webhooks"
+                    "webhooks",
+                    "workflows"
                 ],
                 AccessTokenLifetime = 60*60*2, // 2 hours
                 IdentityTokenLifetime= 60*60*2 // 2 hours
@@ -263,7 +268,53 @@ internal class Config
                 ],
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
                 AllowedScopes = ["orders"]
-            }
+            },
+            new Client
+            {
+                ClientId = "order-processor",
+                ClientName = "Order Processor Client",
+                ClientSecrets =
+                [
+                    new Secret("secret".Sha256())
+                ],
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AllowedScopes = ["workflows"]
+            },
+            new Client
+            {
+                ClientId = "payment-processor",
+                ClientName = "Payment Processor Client",
+                ClientSecrets =
+                [
+                    new Secret("secret".Sha256())
+                ],
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AllowedScopes = ["workflows"]
+            },
+            new Client
+            {
+                ClientId = "workflow",
+                ClientName = "Workflow Client",
+                ClientSecrets =
+                [
+                    new Secret("secret".Sha256())
+                ],
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AllowedScopes = ["orders"]
+            },
+            new Client
+            {
+                ClientId = "workflowswaggerui",
+                ClientName = "Workflow Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                RedirectUris = { $"{configuration["WorkflowApiClient"]}/swagger/oauth2-redirect.html" },
+                PostLogoutRedirectUris = { $"{configuration["WorkflowApiClient"]}/swagger/" },
+                AllowedScopes =
+                {
+                    "workflows"
+                }
+            },
         ];
     }
 }

@@ -8,6 +8,7 @@ public class SalesTaxRate : Entity, IAggregateRoot
     public SalesTaxRate(int id, string state, decimal rate)
     {
         this.Id = id;
+        this.ObjectId = Guid.NewGuid();
         this.State = state;
         this.Rate = rate;
     }

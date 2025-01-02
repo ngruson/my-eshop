@@ -25,6 +25,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -69,6 +70,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -114,6 +116,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -159,6 +162,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -204,6 +208,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -249,6 +254,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -294,6 +300,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -339,6 +346,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -384,6 +392,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -422,13 +431,12 @@ public class CreateOrderCommandValidatorUnitTests
         // Create AutoFixture customization later
 
         // Random string between 12 and 19 characters
-        string cardNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12)
-            .Select(s => s[new Random().Next(s.Length)]).ToArray());
+        string cardNumber = new([.. Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12).Select(s => s[new Random().Next(s.Length)])]);
 
-        string cardSecurityNumber = new(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3)
-            .Select(s => s[new Random().Next(s.Length)]).ToArray());
+        string cardSecurityNumber = new([.. Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 3).Select(s => s[new Random().Next(s.Length)])]);
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -474,6 +482,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -519,6 +528,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -561,6 +571,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -607,6 +618,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -653,6 +665,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -698,6 +711,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             orderItems,
             command.UserId,
             command.UserName,
@@ -742,6 +756,7 @@ public class CreateOrderCommandValidatorUnitTests
             .Select(s => s[new Random().Next(s.Length)]).ToArray());
 
         CreateOrderCommand copy = new(
+            command.WorkflowInstanceId,
             [],
             command.UserId,
             command.UserName,

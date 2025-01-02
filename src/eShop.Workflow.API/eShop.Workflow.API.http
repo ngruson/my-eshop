@@ -1,0 +1,6 @@
+@eShop.WorkflowHost_HostAddress = http://localhost:5084
+
+GET {{eShop.WorkflowHost_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

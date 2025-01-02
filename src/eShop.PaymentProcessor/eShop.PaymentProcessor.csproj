@@ -16,6 +16,7 @@
     <ProjectReference Include="..\eShop.EventBus.Dapr\eShop.EventBus.Dapr.csproj" />
     <ProjectReference Include="..\eShop.EventBusRabbitMQ\eShop.EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\eShop.Ordering.Domain\eShop.Ordering.Domain.csproj" />
+    <ProjectReference Include="..\eShop.PaymentProcessor.Contracts\eShop.PaymentProcessor.Contracts.csproj" />
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
   </ItemGroup>
 

@@ -10,8 +10,7 @@
     <PackageReference Include="Ardalis.GuardClauses" />
     <PackageReference Include="Ardalis.Result.AspNetCore" />
     <PackageReference Include="Azure.Storage.Blobs" />
-    <PackageReference Include="Dapr.AspNetCore" />
-    <PackageReference Include="Duende.AccessTokenManagement" />
+    <PackageReference Include="Dapr.AspNetCore" />    
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="QuestPDF" />

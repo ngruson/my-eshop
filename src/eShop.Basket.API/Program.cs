@@ -16,7 +16,7 @@ app.MapDefaultEndpoints();
 app.MapGrpcService<BasketService>();
 
 FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
-if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+if (features!.PublishSubscribe.EventBus == EventBusType.Dapr && features.Workflow.Enabled is false)
 {
     ILogger<Program> logger = app.Services.GetRequiredService<ILogger<Program>>();
 

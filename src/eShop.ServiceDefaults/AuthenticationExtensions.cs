@@ -53,4 +53,17 @@ public static class AuthenticationExtensions
 
         return services;
     }
+
+    public static void AddClientCredentials(this IHostApplicationBuilder builder, IConfiguration configuration, string scope)
+    {
+        builder.Services.AddDistributedMemoryCache();
+        builder.Services.AddClientCredentialsTokenManagement()
+            .AddClient(configuration["Identity:ClientCredentials:ClientId"]!, client =>
+            {
+                client.TokenEndpoint = $"{configuration["Identity:Url"]}/connect/token"; //"https://demo.duendesoftware.com/connect/token";
+                client.ClientId = configuration["Identity:ClientCredentials:ClientId"];
+                client.ClientSecret = configuration["Identity:ClientCredentials:ClientSecret"];
+                client.Scope = scope;
+            });
+    }
 }
