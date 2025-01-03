@@ -1,6 +1,7 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using Dapr.Client;
+using eShop.Catalog.Contracts.AssessStockItemsForOrder;
 using eShop.Catalog.Contracts.CreateCatalogItem;
 using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;
@@ -13,6 +14,45 @@ namespace eShop.ServiceInvocation.UnitTests.Dapr;
 
 public class CatalogApiClientUnitTests
 {
+    public class AssessStockItemsForOrder
+    {
+        [Theory, AutoNSubstituteData]
+        public async Task assess_stock_items(
+            [Substitute, Frozen] IAccessTokenAccessor accessTokenAccessor,
+            [Substitute, Frozen] AccessTokenAccessorFactory accessTokenAccessorFactory,
+            [Substitute, Frozen] DaprClient daprClient,
+            CatalogApiClient.Dapr.CatalogApiClient sut,
+            AssessStockItemsForOrderRequestDto requestDto,
+            AssessStockItemsForOrderResponseDto responseDto,
+            HttpRequestMessage httpRequestMessage,
+            string accessToken)
+        {
+            // Arrange
+
+            accessTokenAccessor.GetAccessToken().Returns(accessToken);
+            accessTokenAccessorFactory.Create().Returns(accessTokenAccessor);
+
+            daprClient.CreateInvokeMethodRequest(
+                HttpMethod.Post,
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<IReadOnlyCollection<KeyValuePair<string, string>>>(),
+                requestDto)
+                    .Returns(httpRequestMessage);
+
+            daprClient.InvokeMethodAsync<AssessStockItemsForOrderResponseDto>(httpRequestMessage)
+                .Returns(responseDto);
+
+            // Act
+
+            AssessStockItemsForOrderResponseDto actual = await sut.AssessStockItemsForOrder(requestDto);
+
+            // Assert
+
+            Assert.Equivalent(actual, responseDto);
+        }
+    }
+
     public class GetCatalogItem
     {
         [Theory, AutoNSubstituteData]
@@ -325,7 +365,7 @@ public class CatalogApiClientUnitTests
         }
     }
 
-    public class GetTypes
+    public class GetCatalogTypes
     {
         [Theory, AutoNSubstituteData]
         public async Task return_catalogTypes(

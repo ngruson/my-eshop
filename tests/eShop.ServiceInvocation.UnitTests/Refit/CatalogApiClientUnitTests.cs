@@ -1,6 +1,7 @@
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Catalog.Contracts;
+using eShop.Catalog.Contracts.AssessStockItemsForOrder;
 using eShop.Catalog.Contracts.CreateCatalogItem;
 using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;
@@ -12,6 +13,30 @@ namespace eShop.ServiceInvocation.UnitTests.Refit;
 
 public class CatalogApiClientUnitTests
 {
+    public class AssessStockItemsForOrder
+    {
+        [Theory, AutoNSubstituteData]
+        public async Task return_catalogItem(
+            [Substitute, Frozen] ICatalogApi catalogApi,
+            CatalogApiClient.Refit.CatalogApiClient sut,            
+            AssessStockItemsForOrderRequestDto requestDto,
+            AssessStockItemsForOrderResponseDto responseDto)
+        {
+            // Arrange
+
+            catalogApi.AssessStockItemsForOrder(requestDto)
+                .Returns(responseDto);
+
+            // Act
+
+            AssessStockItemsForOrderResponseDto actual = await sut.AssessStockItemsForOrder(requestDto);
+
+            // Assert
+
+            Assert.Equivalent(actual, responseDto);
+        }
+    }
+
     public class GetCatalogItem
     {
         [Theory, AutoNSubstituteData]

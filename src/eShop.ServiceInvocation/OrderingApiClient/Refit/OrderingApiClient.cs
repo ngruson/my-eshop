@@ -50,9 +50,9 @@ public class OrderingApiClient(IOrderingApi orderingApi) : IOrderingApiClient
         await orderingApi.Paid(objectId);
     }
 
-    public Task RejectStock(Guid objectId, Guid[] orderStockItems)
+    public async Task RejectStock(Guid objectId, Guid[] orderStockItems)
     {
-        throw new NotImplementedException();
+        await orderingApi.RejectStock(objectId, orderStockItems);
     }
 
     public async Task UpdateOrder(Guid objectId, Ordering.Contracts.UpdateOrder.OrderDto dto)
