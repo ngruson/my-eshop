@@ -19,12 +19,14 @@ WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
 
+FeaturesConfiguration features = app.Services.GetRequiredService<IOptions<FeaturesConfiguration>>().Value;
+
 IVersionedEndpointRouteBuilder orders = app.NewVersionedApi("Orders");
 
-orders.MapOrdersApiV1()
+orders.MapOrdersApiV1(features.Workflow.Enabled)
     .RequireAuthorization();
 
-FeaturesConfiguration features = app.Services.GetRequiredService<IOptions<FeaturesConfiguration>>().Value;
+
 if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
 {
     app.UseCloudEvents();

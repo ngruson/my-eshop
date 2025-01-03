@@ -16,7 +16,11 @@ internal static class DaprSubscriptionExtensions
         api.MapSubscribe<OrderStatusChangedToStockConfirmedIntegrationEvent>("/orderStatusChangedToStockConfirmed", features, eventBusOptions);
         api.MapSubscribe<OrderStatusChangedToShippedIntegrationEvent>("/orderStatusChangedToShipped", features, eventBusOptions);
         api.MapSubscribe<OrderStatusChangedToCancelledIntegrationEvent>("/orderStatusChangedToCancelled", features, eventBusOptions);
-        api.MapSubscribe<OrderStatusChangedToSubmittedIntegrationEvent>("/orderStatusChangedToSubmitted", features, eventBusOptions);
+
+        if (features.Workflow.Enabled is false)
+        {
+            api.MapSubscribe<OrderStatusChangedToSubmittedIntegrationEvent>("/orderStatusChangedToSubmitted", features, eventBusOptions);
+        }
 
         return api;
     }

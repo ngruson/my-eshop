@@ -2,6 +2,8 @@ using Aspire.Hosting.Dapr;
 using eShop.AppHost;
 using Microsoft.Extensions.Configuration;
 
+bool useWorkflows = true;
+
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 builder.AddForwardedHeaders();
 
@@ -47,8 +49,7 @@ IResourceBuilder<IDaprComponentResource> stateStore = builder.AddDaprStateStore(
     new DaprComponentOptions
     {
         LocalPath = "./components/statestore.yaml"
-    })
-    .WaitFor(redis);
+    });
 
 IResourceBuilder<ProjectResource> basketApi = builder.AddProject<Projects.eShop_Basket_API>("basket-api")
     .WithDaprSidecar()
@@ -56,6 +57,7 @@ IResourceBuilder<ProjectResource> basketApi = builder.AddProject<Projects.eShop_
     .WithReference(rabbitMq)
     .WithReference(pubSub)
     .WithReference(stateStore)
+    .WithEnvironment("Features__Workflow__Enabled", useWorkflows.ToString())
     .WithEnvironment("Identity__Url", identityEndpoint)
     .WaitFor(redis)
     .WaitFor(rabbitMq)
@@ -63,6 +65,8 @@ IResourceBuilder<ProjectResource> basketApi = builder.AddProject<Projects.eShop_
 
 IResourceBuilder<ProjectResource> catalogApi = builder.AddProject<Projects.eShop_Catalog_API>("catalog-api")
     .WithDaprSidecar()
+    .WithEnvironment("Features__Workflow__Enabled", useWorkflows.ToString())
+    .WithEnvironment("Identity__Url", identityEndpoint)
     .WithReference(rabbitMq)
     .WithReference(catalogDb)
     .WithReference(pubSub)
@@ -87,8 +91,9 @@ IResourceBuilder<ProjectResource> orderingApi = builder.AddProject<Projects.eSho
     .WithReference(rabbitMq)
     .WithReference(orderDb)
     .WithReference(pubSub)
-    .WaitFor(rabbitMq)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Features__Workflow__Enabled", useWorkflows.ToString())
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WaitFor(rabbitMq);    
 
 IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eShop_MasterData_API>("masterdata-api")
     .WithDaprSidecar()
@@ -96,6 +101,8 @@ IResourceBuilder<ProjectResource> masterDataApi = builder.AddProject<Projects.eS
 
 builder.AddProject<Projects.eShop_OrderProcessor>("order-processor")
     .WithDaprSidecar()
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WithEnvironment("Features__Workflow__Enabled", useWorkflows.ToString())
     .WithReference(rabbitMq)
     .WithReference(orderDb)
     .WithReference(pubSub)
@@ -103,6 +110,8 @@ builder.AddProject<Projects.eShop_OrderProcessor>("order-processor")
 
 builder.AddProject<Projects.eShop_PaymentProcessor>("payment-processor")
     .WithDaprSidecar()
+    .WithEnvironment("Features__Workflow__Enabled", useWorkflows.ToString())
+    .WithEnvironment("Identity__Url", identityEndpoint)
     .WithReference(pubSub)
     .WithReference(rabbitMq)
     .WaitFor(rabbitMq);
@@ -131,7 +140,7 @@ IResourceBuilder<ProjectResource> webhooksClient = builder.AddProject<Projects.e
 IResourceBuilder<ProjectResource> webApp = builder.AddProject<Projects.eShop_WebApp>("webapp", launchProfileName)
     .WithDaprSidecar(new DaprSidecarOptions
     {
-        AppProtocol = launchProfileName        
+        AppProtocol = launchProfileName
     })
     .WithExternalHttpEndpoints()
     .WithReference(basketApi)
@@ -141,6 +150,7 @@ IResourceBuilder<ProjectResource> webApp = builder.AddProject<Projects.eShop_Web
     .WithReference(rabbitMq)
     .WithReference(pubSub)
     .WithEnvironment("IdentityUrl", identityEndpoint)
+    .WithEnvironment("Features__Workflow__Enabled", useWorkflows.ToString())
     .WaitFor(rabbitMq)
     .WaitFor(catalogApi);
 
@@ -211,6 +221,19 @@ identityApi.WithEnvironment("AdminAppClient", adminApp.GetEndpoint(launchProfile
     .WithEnvironment("WebAppClient", webApp.GetEndpoint(launchProfileName))
     .WithEnvironment("WebhooksApiClient", webHooksApi.GetEndpoint("http"))
     .WithEnvironment("WebhooksWebClient", webhooksClient.GetEndpoint(launchProfileName));
+
+if (useWorkflows)
+{
+    IResourceBuilder<ProjectResource> workflowApi = builder.AddProject<Projects.eShop_Workflow_API>("workflow-api")
+        .WithDaprSidecar()
+        .WithEnvironment("Identity__Url", identityEndpoint)
+        .WithReference(pubSub)
+        .WithReference(stateStore)
+        .WaitFor(rabbitMq)
+        .WaitFor(redis);
+
+    identityApi.WithEnvironment("WorkflowApiClient", workflowApi.GetEndpoint("http"));
+}
 
 builder.Build().Run();
 

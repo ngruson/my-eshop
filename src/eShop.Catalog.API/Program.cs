@@ -18,7 +18,7 @@ WebApplication app = builder.Build();
 app.MapDefaultEndpoints();
 
 FeaturesConfiguration features = app.Services.GetRequiredService<IOptions<FeaturesConfiguration>>().Value;
-if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+if (features.PublishSubscribe.EventBus == EventBusType.Dapr)
 {
     app.UseCloudEvents();
     app.MapSubscribeHandler();
@@ -28,7 +28,7 @@ if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
 }
 
 app.NewVersionedApi("Catalog")
-   .MapCatalogApiV1();
+   .MapCatalogApiV1(features.Workflow.Enabled);
 
 app.UseDefaultOpenApi();
 app.Run();

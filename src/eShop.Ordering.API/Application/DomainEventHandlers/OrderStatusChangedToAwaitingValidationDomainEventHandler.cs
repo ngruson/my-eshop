@@ -1,6 +1,8 @@
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
+using eShop.Shared.Features;
 using eShop.Shared.IntegrationEvents;
+using Microsoft.Extensions.Options;
 
 namespace eShop.Ordering.API.Application.DomainEventHandlers;
 
@@ -8,7 +10,8 @@ public class OrderStatusChangedToAwaitingValidationDomainEventHandler(
     IRepository<Order> orderRepository,
     ILogger<OrderStatusChangedToAwaitingValidationDomainEventHandler> logger,
     IRepository<Buyer> buyerRepository,
-    IIntegrationEventService integrationEventService)
+    IIntegrationEventService integrationEventService,
+    IOptions<FeaturesConfiguration> features)
         : INotificationHandler<OrderStatusChangedToAwaitingValidationDomainEvent>
 {
     private readonly IRepository<Order> _orderRepository = orderRepository;
@@ -29,11 +32,14 @@ public class OrderStatusChangedToAwaitingValidationDomainEventHandler(
             buyer = await this._buyerRepository.GetByIdAsync(order!.BuyerId!.Value, cancellationToken);
         }
 
-        OrderStockItem[] orderStockList = domainEvent.OrderItems
-            .Select(orderItem => new OrderStockItem(orderItem.ProductId, orderItem.Units))
-            .ToArray();
+        if (features.Value.Workflow.Enabled is false)
+        {
+            OrderStatusChangedToAwaitingValidationIntegrationEvent integrationEvent = new(
+                order.ObjectId, order.OrderStatus, buyer?.Name, buyer?.IdentityGuid,
+                [.. domainEvent.OrderItems.Select(orderItem => new OrderStockItem(orderItem.ProductId, orderItem.Units))],
+                order.WorkflowInstanceId);
 
-        OrderStatusChangedToAwaitingValidationIntegrationEvent integrationEvent = new(order.ObjectId, order.OrderStatus, buyer?.Name, buyer?.IdentityGuid, orderStockList);
-        await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
+            await this._integrationEventService.AddAndSaveEventAsync(integrationEvent, cancellationToken);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using eShop.Catalog.Contracts;
+using eShop.Catalog.Contracts.AssessStockItemsForOrder;
 using eShop.Catalog.Contracts.CreateCatalogItem;
 using eShop.Catalog.Contracts.GetCatalogBrands;
 using eShop.Catalog.Contracts.GetCatalogTypes;
@@ -76,5 +77,10 @@ public class CatalogApiClient(ICatalogApi catalogApi) : ICatalogApiClient
     public async Task UpdateCatalogItem(Guid objectId, Catalog.Contracts.UpdateCatalogItem.CatalogItemDto dto)
     {
         await catalogApi.UpdateCatalogItem(objectId, dto);
+    }
+
+    public async Task<AssessStockItemsForOrderResponseDto> AssessStockItemsForOrder(AssessStockItemsForOrderRequestDto dto)
+    {
+        return await catalogApi.AssessStockItemsForOrder(dto);
     }
 }

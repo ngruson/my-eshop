@@ -4,6 +4,7 @@ using Ardalis.Result;
 using eShop.Ordering.Contracts.CreateOrder;
 
 public record CreateOrderCommand(
+    string WorkflowInstanceId,
     OrderItemDto[] Items,
     Guid UserId,
     string UserName,
@@ -17,4 +18,4 @@ public record CreateOrderCommand(
     string CardHolderName,
     DateTime CardExpiration,
     string CardSecurityNumber,
-    Guid CardType) : IRequest<Result>;
+    Guid CardType) : IRequest<Result<Guid>>;

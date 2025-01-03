@@ -1,5 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0-rc.1.24511.1" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
@@ -31,5 +31,6 @@
     <ProjectReference Include="..\eShop.WebApp\eShop.WebApp.csproj" />
     <ProjectReference Include="..\eShop.WebhookClient\eShop.WebhookClient.csproj" />
     <ProjectReference Include="..\eShop.Webhooks.API\eShop.Webhooks.API.csproj" />
+    <ProjectReference Include="..\eShop.Workflow.API\eShop.Workflow.API.csproj" />
   </ItemGroup>
 </Project>

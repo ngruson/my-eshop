@@ -28,6 +28,7 @@
       "src\\eShop.Ordering.Contracts\\eShop.Ordering.Contracts.csproj",
       "src\\eShop.Ordering.Domain\\eShop.Ordering.Domain.csproj",
       "src\\eShop.Ordering.Infrastructure\\eShop.Ordering.Infrastructure.csproj",
+      "src\\eShop.PaymentProcessor.Contracts\\eShop.PaymentProcessor.Contracts.csproj",
       "src\\eShop.PaymentProcessor\\eShop.PaymentProcessor.csproj",
       "src\\eShop.ServiceDefaults\\eShop.ServiceDefaults.csproj",
       "src\\eShop.ServiceInvocation\\eShop.ServiceInvocation.csproj",
@@ -36,6 +37,8 @@
       "src\\eShop.WebApp\\eShop.WebApp.csproj",
       "src\\eShop.WebhookClient\\eShop.WebhookClient.csproj",
       "src\\eShop.Webhooks.API\\eShop.Webhooks.API.csproj",
+      "src\\eShop.Workflow.API\\eShop.Workflow.API.csproj",
+      "src\\eShop.Workflow.Contracts\\eShop.Workflow.Contracts.csproj",
       "tests\\eShop.AdminApp.UnitTests\\eShop.AdminApp.UnitTests.csproj",
       "tests\\eShop.Basket.UnitTests\\eShop.Basket.UnitTests.csproj",
       "tests\\eShop.Catalog.FunctionalTests\\eShop.Catalog.FunctionalTests.csproj",
@@ -51,7 +54,8 @@
       "tests\\eShop.Ordering.UnitTests\\eShop.Ordering.UnitTests.csproj",
       "tests\\eShop.ServiceDefaults.UnitTests\\eShop.ServiceDefaults.UnitTests.csproj",
       "tests\\eShop.ServiceInvocation.UnitTests\\eShop.ServiceInvocation.UnitTests.csproj",
-      "tests\\eShop.Shared.UnitTests\\eShop.Shared.UnitTests.csproj"
+      "tests\\eShop.Shared.UnitTests\\eShop.Shared.UnitTests.csproj",
+      "tests\\eShop.Workflow.UnitTests\\eShop.Workflow.UnitTests.csproj"
     ]
   }
 }

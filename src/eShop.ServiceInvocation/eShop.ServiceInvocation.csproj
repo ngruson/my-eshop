@@ -19,6 +19,8 @@
     <ProjectReference Include="..\eShop.Identity.Contracts\eShop.Identity.Contracts.csproj" />
     <ProjectReference Include="..\eShop.MasterData.Contracts\eShop.MasterData.Contracts.csproj" />
     <ProjectReference Include="..\eShop.Ordering.Contracts\eShop.Ordering.Contracts.csproj" />
+    <ProjectReference Include="..\eShop.PaymentProcessor.Contracts\eShop.PaymentProcessor.Contracts.csproj" />
+    <ProjectReference Include="..\eShop.Workflow.Contracts\eShop.Workflow.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

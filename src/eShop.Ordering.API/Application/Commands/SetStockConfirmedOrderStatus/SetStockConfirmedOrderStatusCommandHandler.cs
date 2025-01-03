@@ -1,14 +1,13 @@
+using Ardalis.Result;
 using eShop.Ordering.API.Application.Specifications;
 using eShop.Shared.Data;
 
 namespace eShop.Ordering.API.Application.Commands.SetStockConfirmedOrderStatus;
 
 // Regular CommandHandler
-public class SetStockConfirmedOrderStatusCommandHandler(
-    IRepository<Domain.AggregatesModel.OrderAggregate.Order> orderRepository)
-        : IRequestHandler<SetStockConfirmedOrderStatusCommand, bool>
+public class SetStockConfirmedOrderStatusCommandHandler(IRepository<Order> orderRepository) : IRequestHandler<SetStockConfirmedOrderStatusCommand, Result>
 {
-    private readonly IRepository<Domain.AggregatesModel.OrderAggregate.Order> _orderRepository = orderRepository;
+    private readonly IRepository<Order> _orderRepository = orderRepository;
 
     /// <summary>
     /// Handler which processes the command when
@@ -16,22 +15,23 @@ public class SetStockConfirmedOrderStatusCommandHandler(
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public async Task<bool> Handle(SetStockConfirmedOrderStatusCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(SetStockConfirmedOrderStatusCommand command, CancellationToken cancellationToken)
     {
         // Simulate a work time for confirming the stock
         await Task.Delay(10000, cancellationToken);
 
-        Domain.AggregatesModel.OrderAggregate.Order? orderToUpdate =
+        Order? orderToUpdate =
             await this._orderRepository.SingleOrDefaultAsync(new GetOrderSpecification(command.ObjectId), cancellationToken);
 
         if (orderToUpdate is null)
         {
-            return false;
+            return Result.NotFound();
         }
 
         orderToUpdate.SetStockConfirmedStatus();
         await this._orderRepository.UpdateAsync(orderToUpdate, cancellationToken);
-        return true;
+
+        return Result.Success();
     }
 }
 
@@ -40,10 +40,10 @@ public class SetStockConfirmedOrderStatusCommandHandler(
 public class SetStockConfirmedOrderStatusIdentifiedCommandHandler(
     IMediator mediator,
     IRequestManager requestManager,
-    ILogger<IdentifiedCommandHandler<SetStockConfirmedOrderStatusCommand, bool>> logger) : IdentifiedCommandHandler<SetStockConfirmedOrderStatusCommand, bool>(mediator, requestManager, logger)
+    ILogger<IdentifiedCommandHandler<SetStockConfirmedOrderStatusCommand, Result>> logger) : IdentifiedCommandHandler<SetStockConfirmedOrderStatusCommand, Result>(mediator, requestManager, logger)
 {
-    protected override bool CreateResultForDuplicateRequest()
+    protected override Result CreateResultForDuplicateRequest()
     {
-        return true; // Ignore duplicate requests for processing order.
+        return Result.Success(); // Ignore duplicate requests for processing order.
     }
 }

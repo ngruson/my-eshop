@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Ardalis.Result;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using eShop.Ordering.API.Application.Commands.SetStockRejectedOrderStatus;
@@ -70,11 +71,11 @@ public class SetStockRejectedOrderStatusCommandUnitTests
 
         // Act
 
-        bool result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         //Assert
 
-        Assert.False(result);
+        Assert.True(result.IsNotFound());
 
         await orderRepository.DidNotReceive().UpdateAsync(Arg.Any<Order>(), default);
     }
@@ -98,9 +99,9 @@ public class SetStockRejectedOrderStatusCommandUnitTests
         //Assert for List<int>
 
         Assert.NotNull(deserializedCommand.OrderStockItems);
-        Assert.Equal(command.OrderStockItems.Count, deserializedCommand.OrderStockItems.Count);
+        Assert.Equal(command.OrderStockItems.Length, deserializedCommand.OrderStockItems.Length);
 
-        for (int i = 0; i < command.OrderStockItems.Count; i++)
+        for (int i = 0; i < command.OrderStockItems.Length; i++)
         {
             Assert.Equal(command.OrderStockItems[i], deserializedCommand.OrderStockItems[i]);
         }

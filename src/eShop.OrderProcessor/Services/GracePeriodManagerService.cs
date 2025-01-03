@@ -2,6 +2,8 @@ using eShop.EventBus.Abstractions;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using eShop.OrderProcessor.Events;
+using eShop.Shared.Features;
+using eShop.ServiceInvocation.WorkflowApiClient;
 
 namespace eShop.OrderProcessor.Services;
 
@@ -9,7 +11,9 @@ public class GracePeriodManagerService(
     IOptions<BackgroundTaskOptions> options,
     IEventBus eventBus,
     ILogger<GracePeriodManagerService> logger,
-    NpgsqlDataSource dataSource) : BackgroundService
+    NpgsqlDataSource dataSource,
+    IOptions<FeaturesConfiguration> features,
+    IWorkflowApiClient workflowApiClient) : BackgroundService
 {
     private readonly BackgroundTaskOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
@@ -48,41 +52,47 @@ public class GracePeriodManagerService(
             logger.LogDebug("Checking confirmed grace period orders");
         }
 
-        List<Guid> orderIds = await this.GetConfirmedGracePeriodOrders();
+        List<(Guid, string)> orders = await this.GetConfirmedGracePeriodOrders();
 
-        foreach (Guid orderId in orderIds)
+        foreach ((Guid OrderId, string WorkflowInstanceId) order in orders)
         {
-            GracePeriodConfirmedIntegrationEvent confirmGracePeriodEvent = new(orderId);
-
-            logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", confirmGracePeriodEvent.Id, confirmGracePeriodEvent);
-
-            await eventBus.PublishAsync(confirmGracePeriodEvent, default);
+            if (features.Value.Workflow.Enabled)
+            {
+                logger.LogInformation("Resuming workflow {WorkflowInstanceId}", order.WorkflowInstanceId);
+                await workflowApiClient.ConfirmGracePeriod(order.WorkflowInstanceId);
+            }
+            else
+            {
+                GracePeriodConfirmedIntegrationEvent confirmGracePeriodEvent = new(order.OrderId);
+                logger.LogInformation("Publishing integration event: {IntegrationEventId} - ({@IntegrationEvent})", confirmGracePeriodEvent.Id, confirmGracePeriodEvent);                
+                await eventBus.PublishAsync(confirmGracePeriodEvent, default);
+            }
         }
     }
 
-    private async ValueTask<List<Guid>> GetConfirmedGracePeriodOrders()
+    private async ValueTask<List<(Guid, string)>> GetConfirmedGracePeriodOrders()
     {
         try
         {
             using NpgsqlConnection conn = dataSource.CreateConnection();
             using NpgsqlCommand command = conn.CreateCommand();
             command.CommandText = """
-                SELECT "ObjectId"
+                SELECT "ObjectId", "WorkflowInstanceId"
                 FROM ordering.orders
                 WHERE CURRENT_TIMESTAMP - "OrderDate" >= @GracePeriodTime AND "OrderStatus" = 'Submitted'
                 """;
             command.Parameters.AddWithValue("GracePeriodTime", TimeSpan.FromMinutes(this._options.GracePeriodTime));
 
-            List<Guid> ids = [];
+            List<(Guid, string)> results = [];
 
             await conn.OpenAsync();
             using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                ids.Add(reader.GetGuid(0));
+                results.Add((reader.GetGuid(0), reader.GetString(1)));
             }
 
-            return ids;
+            return results;
         }
         catch (NpgsqlException exception)
         {

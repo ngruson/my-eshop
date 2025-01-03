@@ -1,6 +1,7 @@
 namespace eShop.Ordering.Contracts.CreateOrder;
 
 public record OrderDto(
+    string WorkflowInstanceId,
     Guid UserId,
     string UserName,
     string BuyerName,

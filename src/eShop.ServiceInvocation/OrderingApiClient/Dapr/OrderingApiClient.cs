@@ -10,7 +10,34 @@ public class OrderingApiClient(DaprClient daprClient, AccessTokenAccessorFactory
     private readonly string basePath = "/api/orders";
     protected override string AppId => "ordering-api";
 
-    public async Task CreateOrder(Guid requestId, Ordering.Contracts.CreateOrder.OrderDto dto)
+    public async Task Cancel(Guid objectId)
+    {
+        HttpRequestMessage request = await this.CreateRequest(
+            HttpMethod.Post,
+            $"{this.basePath}/cancel/{objectId}");
+
+        await this.DaprClient.InvokeMethodAsync(request);
+    }
+
+    public async Task ConfirmGracePeriod(Guid objectId)
+    {
+        HttpRequestMessage request = await this.CreateRequest(
+            HttpMethod.Post,
+            $"{this.basePath}/confirmGracePeriod/{objectId}");
+
+        await this.DaprClient.InvokeMethodAsync(request);
+    }
+
+    public async Task ConfirmStock(Guid objectId)
+    {
+        HttpRequestMessage request = await this.CreateRequest(
+            HttpMethod.Post,
+            $"{this.basePath}/confirmStock/{objectId}");
+
+        await this.DaprClient.InvokeMethodAsync(request);
+    }
+
+    public async Task<Guid> CreateOrder(Guid requestId, Ordering.Contracts.CreateOrder.OrderDto dto)
     {
         HttpRequestMessage request = await this.CreateRequest(
             HttpMethod.Post,
@@ -20,7 +47,7 @@ public class OrderingApiClient(DaprClient daprClient, AccessTokenAccessorFactory
 
         request.Headers.Add("x-requestid", requestId.ToString());
 
-        await this.DaprClient.InvokeMethodAsync(request);
+        return await this.DaprClient.InvokeMethodAsync<Guid>(request);
     }
 
     public async Task DeleteOrder(Guid objectId)
@@ -57,6 +84,26 @@ public class OrderingApiClient(DaprClient daprClient, AccessTokenAccessorFactory
             $"{this.basePath}/cardTypes");
 
         return await this.DaprClient.InvokeMethodAsync<CardTypeDto[]>(request);
+    }
+
+    public async Task Paid(Guid objectId)
+    {
+        HttpRequestMessage request = await this.CreateRequest(
+            HttpMethod.Post,
+            $"{this.basePath}/paid/{objectId}");
+
+        await this.DaprClient.InvokeMethodAsync(request);
+    }
+
+    public async Task RejectStock(Guid objectId, Guid[] orderStockItems)
+    {
+        HttpRequestMessage request = await this.CreateRequest(
+            HttpMethod.Post,
+            $"{this.basePath}/rejectStock/{objectId}",
+            null,
+            orderStockItems);
+
+        await this.DaprClient.InvokeMethodAsync(request);
     }
 
     public async Task UpdateOrder(Guid objectId, Ordering.Contracts.UpdateOrder.OrderDto dto)

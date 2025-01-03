@@ -117,7 +117,7 @@ internal sealed class ConfigureSwaggerOptions(IApiVersionDescriptionProvider pro
     {
         IConfigurationSection identitySection = configuration.GetSection("Identity");
 
-        if (!identitySection.Exists())
+        if (!identitySection.Exists() || !identitySection.GetSection("Scopes").Exists())
         {
             // No identity section, so no authentication open api definition
             return;

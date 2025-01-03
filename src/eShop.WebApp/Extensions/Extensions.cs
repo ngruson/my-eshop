@@ -10,6 +10,7 @@ using eShop.ServiceInvocation.BasketApiClient;
 using eShop.ServiceInvocation.CatalogApiClient;
 using eShop.ServiceInvocation.CustomerApiClient;
 using eShop.ServiceInvocation.OrderingApiClient;
+using eShop.ServiceInvocation.WorkflowApiClient;
 using eShop.Shared.DI;
 using eShop.Shared.Features;
 using eShop.WebApp.Services.OrderStatus;
@@ -17,6 +18,7 @@ using eShop.WebApp.Services.OrderStatus.IntegrationEvents;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.EventHandling;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents.Events;
 using eShop.WebAppComponents.Services;
+using eShop.Workflow.Contracts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -33,20 +35,22 @@ public static class Extensions
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
         builder.AddAuthenticationServices();
+        builder.AddDefaultAuthentication();
+        builder.Services.AddApiVersioning();
 
         builder.Services.Configure<FeaturesConfiguration>(builder.Configuration.GetSection("Features"));
 
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
-        if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+        if (features!.PublishSubscribe.EventBus == EventBusType.Dapr)
         {
             builder.AddDaprEventBus()
-                .AddEventBusSubscriptions()
+                .AddEventBusSubscriptions(features.Workflow.Enabled)
                 .ConfigureJsonOptions(options => options.PropertyNameCaseInsensitive = true);
         }
         else
         {
             builder.AddRabbitMqEventBus("eventBus")
-                .AddEventBusSubscriptions()
+                .AddEventBusSubscriptions(features.Workflow.Enabled)
                 .ConfigureJsonOptions(options => options.PropertyNameCaseInsensitive = true);
         }
 
@@ -84,6 +88,7 @@ public static class Extensions
         builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Dapr.CatalogApiClient>();
         builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Dapr.CustomerApiClient>();
         builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Dapr.OrderingApiClient>();
+        builder.Services.AddScoped<IWorkflowApiClient, ServiceInvocation.WorkflowApiClient.Dapr.WorkflowApiClient>();
     }
 
     private static void AddRefitServices(this IHostApplicationBuilder builder)
@@ -92,10 +97,10 @@ public static class Extensions
             .AddAuthToken();
 
         builder.Services
-                .AddRefitClient<ICatalogApi>()
-                .ConfigureHttpClient(c =>
-                    c.BaseAddress = new Uri("http://catalog-api"))
-                .AddAuthToken();
+            .AddRefitClient<ICatalogApi>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri("http://catalog-api"))
+            .AddAuthToken();
 
         builder.Services
             .AddRefitClient<ICustomerApi>()
@@ -109,20 +114,30 @@ public static class Extensions
                 c.BaseAddress = new Uri("http://ordering-api"))
             .AddAuthToken();
 
+        builder.Services
+            .AddRefitClient<IWorkflowApi>()
+            .ConfigureHttpClient(c =>
+                c.BaseAddress = new Uri("http://workflow-api"))
+            .AddAuthToken();
+
         builder.Services.AddScoped<IBasketApiClient, ServiceInvocation.BasketApiClient.Refit.BasketApiClient>();
         builder.Services.AddScoped<ICatalogApiClient, ServiceInvocation.CatalogApiClient.Refit.CatalogApiClient>();
         builder.Services.AddScoped<ICustomerApiClient, ServiceInvocation.CustomerApiClient.Refit.CustomerApiClient>();
         builder.Services.AddScoped<IOrderingApiClient, ServiceInvocation.OrderingApiClient.Refit.OrderingApiClient>();
     }
 
-    public static IEventBusBuilder AddEventBusSubscriptions(this IEventBusBuilder eventBus)
+    public static IEventBusBuilder AddEventBusSubscriptions(this IEventBusBuilder eventBus, bool workflowEnabled)
     {
         eventBus.AddSubscription<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>();
         eventBus.AddSubscription<OrderStatusChangedToPaidIntegrationEvent, OrderStatusChangedToPaidIntegrationEventHandler>();
         eventBus.AddSubscription<OrderStatusChangedToStockConfirmedIntegrationEvent, OrderStatusChangedToStockConfirmedIntegrationEventHandler>();
         eventBus.AddSubscription<OrderStatusChangedToShippedIntegrationEvent, OrderStatusChangedToShippedIntegrationEventHandler>();
         eventBus.AddSubscription<OrderStatusChangedToCancelledIntegrationEvent, OrderStatusChangedToCancelledIntegrationEventHandler>();
-        eventBus.AddSubscription<OrderStatusChangedToSubmittedIntegrationEvent, OrderStatusChangedToSubmittedIntegrationEventHandler>();
+
+        if (workflowEnabled is false)
+        {
+            eventBus.AddSubscription<OrderStatusChangedToSubmittedIntegrationEvent, OrderStatusChangedToSubmittedIntegrationEventHandler>();
+        }
 
         return eventBus;
     }
@@ -158,6 +173,7 @@ public static class Extensions
             options.Scope.Add("profile");
             options.Scope.Add("orders");
             options.Scope.Add("basket");
+            options.Scope.Add("workflows");
         });
 
         // Blazor auth services

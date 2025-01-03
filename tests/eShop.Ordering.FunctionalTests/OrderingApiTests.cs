@@ -41,23 +41,6 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
     }
 
     [Theory, AutoNSubstituteData]
-    public async Task CancelWithEmptyGuidFails(
-        CancelOrderCommand command)
-    {
-        // Act
-
-        StringContent content = new(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
-        {
-            Headers = { { "x-requestid", Guid.Empty.ToString() } }
-        };
-        HttpResponseMessage response = await this._httpClient.PutAsync("/api/orders/cancel", content);
-
-        // Assert
-
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
-
-    [Theory, AutoNSubstituteData]
     public async Task CancelNonExistentOrderFails(
         CancelOrderCommand command)
     {
@@ -71,25 +54,8 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
 
         // Assert
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
-
-    [Theory, AutoNSubstituteData]
-    public async Task ShipWithEmptyGuidFails(
-        ShipOrderCommand command)
-    {
-        // Act
-
-        StringContent content = new(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json")
-        {
-            Headers = { { "x-requestid", Guid.Empty.ToString() } }
-        };
-        HttpResponseMessage response = await this._httpClient.PutAsync("api/orders/ship", content);
-
-        // Assert
-
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }    
 
     [Theory, AutoNSubstituteData]
     public async Task ShipNonExistentOrderFails(
@@ -105,7 +71,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
 
         // Assert
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
@@ -165,7 +131,7 @@ public sealed class OrderingApiTests : IClassFixture<OrderingApiFixture>
         string cardNumber = order.CardNumber[..12];
         string cardSecurityNumber = order.CardSecurityNumber[..3];
         DateTime cardExpirationDate = DateTime.Now.AddYears(1);
-        OrderDto orderRequest = new(order.UserId, order.UserName, order.BuyerName, order.City, order.Street, order.State, order.Country, order.ZipCode,
+        OrderDto orderRequest = new(order.WorkflowInstanceId, order.UserId, order.UserName, order.BuyerName, order.City, order.Street, order.State, order.Country, order.ZipCode,
             cardNumber, order.CardHolderName, cardExpirationDate, cardSecurityNumber, cardType.ObjectId, order.UserId,
             [orderItem with {  Discount = 0 }]);
         StringContent content = new(JsonSerializer.Serialize(orderRequest), Encoding.UTF8, "application/json")

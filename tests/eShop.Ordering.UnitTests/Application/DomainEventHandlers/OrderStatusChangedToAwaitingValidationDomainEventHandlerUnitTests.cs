@@ -6,7 +6,9 @@ using eShop.Ordering.API.Application.Specifications;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Ordering.Domain.AggregatesModel.SalesTaxRateAggregate;
 using eShop.Shared.Data;
+using eShop.Shared.Features;
 using eShop.Shared.IntegrationEvents;
+using Microsoft.Extensions.Options;
 
 namespace eShop.Ordering.UnitTests.Application.DomainEventHandlers;
 public class OrderStatusChangedToAwaitingValidationDomainEventHandlerUnitTests
@@ -16,6 +18,8 @@ public class OrderStatusChangedToAwaitingValidationDomainEventHandlerUnitTests
         [Substitute, Frozen] IRepository<Order> orderRepository,
         [Substitute, Frozen] IRepository<Buyer> buyerRepository,
         [Substitute, Frozen] IIntegrationEventService integrationEventService,
+        [Substitute, Frozen] IOptions<FeaturesConfiguration> featuresOptions,
+        [Substitute, Frozen] FeaturesConfiguration featuresConfiguration,
         OrderStatusChangedToAwaitingValidationDomainEventHandler sut,
         Order order,
         Buyer buyer,
@@ -38,6 +42,8 @@ public class OrderStatusChangedToAwaitingValidationDomainEventHandlerUnitTests
 
         buyerRepository.GetByIdAsync(order.BuyerId.Value, default)
             .Returns(buyer);
+
+        featuresOptions.Value.Returns(featuresConfiguration);
 
         //Act
 

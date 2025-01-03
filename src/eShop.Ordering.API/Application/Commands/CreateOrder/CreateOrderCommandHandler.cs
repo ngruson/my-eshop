@@ -7,15 +7,18 @@ using eShop.Ordering.Contracts.CreateOrder;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 using eShop.Ordering.Domain.AggregatesModel.SalesTaxRateAggregate;
 using eShop.Shared.Data;
+using eShop.Shared.Features;
 using eShop.Shared.IntegrationEvents;
+using Microsoft.Extensions.Options;
 
 public class CreateOrderCommandHandler(
     IIntegrationEventService integrationEventService,
     IRepository<Order> orderRepository,
     IRepository<CardType> cardTypeRepository,
     IRepository<SalesTaxRate> salesTaxRateRepository,
-    ILogger<CreateOrderCommandHandler> logger)
-        : IRequestHandler<CreateOrderCommand, Result>
+    ILogger<CreateOrderCommandHandler> logger,
+    IOptions<FeaturesConfiguration> features)
+        : IRequestHandler<CreateOrderCommand, Result<Guid>>
 {
     private readonly IRepository<Order> orderRepository = orderRepository;
     private readonly IRepository<CardType> cardTypeRepository = cardTypeRepository;
@@ -23,19 +26,23 @@ public class CreateOrderCommandHandler(
     private readonly IIntegrationEventService orderingIntegrationEventService = integrationEventService;
     private readonly ILogger<CreateOrderCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-    public async Task<Result> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
         try
         {
             // Add Integration event to clean the basket
             OrderStartedIntegrationEvent orderStartedIntegrationEvent = new(request.UserId);
-            await this.orderingIntegrationEventService.AddAndSaveEventAsync(orderStartedIntegrationEvent, cancellationToken);
+
+            if (!features.Value.Workflow.Enabled)
+            {
+                await this.orderingIntegrationEventService.AddAndSaveEventAsync(orderStartedIntegrationEvent, cancellationToken);
+            }
 
             string maskedCCNumber = request.CardNumber[^4..].PadLeft(request.CardNumber.Length, 'X');
             CardType cardType = await this.cardTypeRepository.SingleOrDefaultAsync(new CardTypeSpecification(request.CardType), cancellationToken)
                 ?? throw new KeyNotFoundException($"Card Type {request.CardType} not found.");
             Address address = new(request.Street!, request.City!, request.State!, request.Country!, request.ZipCode!);
-            Order order = new(request.UserId, request.UserName!, request.BuyerName, address,
+            Order order = new(request.WorkflowInstanceId, request.UserId, request.UserName!, request.BuyerName, address,
                 cardType, maskedCCNumber, request.CardSecurityNumber!, request.CardHolderName!, request.CardExpiration);
 
             SalesTaxRate? salesTaxRate = null;
@@ -54,7 +61,7 @@ public class CreateOrderCommandHandler(
 
             await this.orderRepository.AddAsync(order, cancellationToken);
 
-            return Result.Success();
+            return Result.Success(order.ObjectId);
         }
         catch (Exception ex)
         {
@@ -69,9 +76,9 @@ public class CreateOrderCommandHandler(
 public class CreateOrderIdentifiedCommandHandler(
     IMediator mediator,
     IRequestManager requestManager,
-    ILogger<IdentifiedCommandHandler<CreateOrderCommand, Result>> logger) : IdentifiedCommandHandler<CreateOrderCommand, Result>(mediator, requestManager, logger)
+    ILogger<IdentifiedCommandHandler<CreateOrderCommand, Result<Guid>>> logger) : IdentifiedCommandHandler<CreateOrderCommand, Result<Guid>>(mediator, requestManager, logger)
 {
-    protected override Result CreateResultForDuplicateRequest()
+    protected override Result<Guid> CreateResultForDuplicateRequest()
     {
         return Result.Success(); // Ignore duplicate requests for creating order.
     }

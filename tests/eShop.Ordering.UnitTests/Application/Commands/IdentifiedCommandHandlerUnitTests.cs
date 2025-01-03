@@ -19,7 +19,8 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         CreateOrderIdentifiedCommandHandler sut,
-        IdentifiedCommand<CreateOrderCommand, Result> command
+        IdentifiedCommand<CreateOrderCommand, Result<Guid>> command,
+        Guid orderId
     )
     {
         // Arrange
@@ -27,16 +28,17 @@ public class IdentifiedCommandHandlerUnitTests
         requestManager.ExistAsync(Arg.Any<Guid>())
             .Returns(Task.FromResult(false));
 
-        mediator.Send(Arg.Any<IRequest<Result>>(), default)
-            .Returns(Task.FromResult(Result.Success()));
+        mediator.Send(Arg.Any<CreateOrderCommand>(), default)
+            .Returns(Task.FromResult(Result.Success(orderId)));
 
         // Act
 
-        Result result = await sut.Handle(command, default);
+        Result<Guid> result = await sut.Handle(command, default);
 
         // Assert
+
         Assert.True(result.IsSuccess);
-        await mediator.Received().Send(Arg.Any<IRequest<Result>>(), default);
+        await mediator.Received().Send(Arg.Any<CreateOrderCommand>(), default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -145,7 +147,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         SetStockConfirmedOrderStatusIdentifiedCommandHandler sut,
-        IdentifiedCommand<SetStockConfirmedOrderStatusCommand, bool> command
+        IdentifiedCommand<SetStockConfirmedOrderStatusCommand, Result> command
     )
     {
         // Arrange
@@ -153,17 +155,17 @@ public class IdentifiedCommandHandlerUnitTests
         requestManager.ExistAsync(Arg.Any<Guid>())
             .Returns(Task.FromResult(false));
 
-        mediator.Send(Arg.Any<IRequest<bool>>(), default)
-            .Returns(Task.FromResult(true));
+        mediator.Send(Arg.Any<SetStockConfirmedOrderStatusCommand>(), default)
+            .Returns(Task.FromResult(Result.Success()));
 
         // Act
 
-        bool result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         // Assert
 
-        Assert.True(result);
-        await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
+        Assert.True(result.IsSuccess);
+        await mediator.Received().Send(Arg.Any<SetStockConfirmedOrderStatusCommand>(), default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -171,7 +173,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         SetStockRejectedOrderStatusIdentifiedCommandHandler sut,
-        IdentifiedCommand<SetStockRejectedOrderStatusCommand, bool> command
+        IdentifiedCommand<SetStockRejectedOrderStatusCommand, Result> command
     )
     {
         // Arrange
@@ -179,16 +181,16 @@ public class IdentifiedCommandHandlerUnitTests
         requestManager.ExistAsync(Arg.Any<Guid>())
             .Returns(Task.FromResult(false));
 
-        mediator.Send(Arg.Any<IRequest<bool>>(), default)
-            .Returns(Task.FromResult(true));
+        mediator.Send(Arg.Any<SetStockRejectedOrderStatusCommand>(), default)
+            .Returns(Task.FromResult(Result.Success()));
 
         // Act
 
-        bool result = await sut.Handle(command, default);
+        Result result = await sut.Handle(command, default);
 
         // Assert
-        Assert.True(result);
-        await mediator.Received().Send(Arg.Any<IRequest<bool>>(), default);
+        Assert.True(result.IsSuccess);
+        await mediator.Received().Send(Arg.Any<SetStockRejectedOrderStatusCommand>(), default);
     }
 
     [Theory, AutoNSubstituteData]
@@ -196,7 +198,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         CreateOrderIdentifiedCommandHandler sut,
-        IdentifiedCommand<CreateOrderCommand, Result> message
+        IdentifiedCommand<CreateOrderCommand, Result<Guid>> message
     )
     {
         // Arrange
@@ -206,7 +208,7 @@ public class IdentifiedCommandHandlerUnitTests
 
         // Act
 
-        Result result = await sut.Handle(message, default);
+        Result<Guid> result = await sut.Handle(message, default);
 
         // Assert
 
@@ -220,7 +222,7 @@ public class IdentifiedCommandHandlerUnitTests
         [Substitute, Frozen] IRequestManager requestManager,
         [Substitute, Frozen] IMediator mediator,
         CreateOrderIdentifiedCommandHandler sut,
-        IdentifiedCommand<CreateOrderCommand, Result> message
+        IdentifiedCommand<CreateOrderCommand, Result<Guid>> message
     )
     {
         // Arrange
@@ -233,12 +235,12 @@ public class IdentifiedCommandHandlerUnitTests
 
         // Act
 
-        Result result = await sut.Handle(message, default);
+        Result<Guid> result = await sut.Handle(message, default);
 
         // Assert
 
         Assert.Null(result);
 
-        await mediator.Received().Send(Arg.Any<IRequest<Result>>(), default);
+        await mediator.Received().Send(message.Command, default);
     }
 }

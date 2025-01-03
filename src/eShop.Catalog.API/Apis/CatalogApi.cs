@@ -17,12 +17,14 @@ using eShop.Catalog.Contracts.CreateCatalogItem;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Ardalis.Result;
+using eShop.Catalog.Contracts.AssessStockItemsForOrder;
+using eShop.Catalog.API.Application.Commands.AssessStockItemsForOrder;
 
 namespace eShop.Catalog.API.APIs;
 
 public static class CatalogApi
 {
-    public static IEndpointRouteBuilder MapCatalogApiV1(this IEndpointRouteBuilder app)
+    public static IEndpointRouteBuilder MapCatalogApiV1(this IEndpointRouteBuilder app, bool workflowsEnabled)
     {
         RouteGroupBuilder api = app.MapGroup("api/catalog").HasApiVersion(1.0);
 
@@ -74,7 +76,15 @@ public static class CatalogApi
                 .ToMinimalApiResult());
         api.MapDelete("/items/{objectId}", async (Guid objectId, [FromServices] IMediator mediator) =>
             (await mediator.Send(new DeleteCatalogItemCommand(objectId)))
-                .ToMinimalApiResult());
+        .ToMinimalApiResult());
+
+        if (workflowsEnabled)
+        {
+            api.MapPost("/assessStockItemsForOrder", async ([FromBody] AssessStockItemsForOrderRequestDto dto, [FromServices] IMediator mediator) =>
+                (await mediator.Send(new AssessStockItemsForOrderCommand(dto)))
+                    .ToMinimalApiResult());
+        }
+        
 
         return api;
     }

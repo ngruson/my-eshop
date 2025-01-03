@@ -12,12 +12,14 @@
     <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+    <PackageReference Include="Refit.HttpClientFactory" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\eShop.EventBus.Dapr\eShop.EventBus.Dapr.csproj" />
     <ProjectReference Include="..\eShop.EventBusRabbitMQ\eShop.EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\eShop.ServiceDefaults\eShop.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\eShop.ServiceInvocation\eShop.ServiceInvocation.csproj" />
     <ProjectReference Include="..\eShop.Shared\eShop.Shared.csproj" />
   </ItemGroup>
 </Project>

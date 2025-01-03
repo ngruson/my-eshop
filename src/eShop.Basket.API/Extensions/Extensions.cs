@@ -20,18 +20,28 @@ public static class Extensions
         builder.Services.AddSingleton<IBasketRepository, DaprBasketRepository>();
 
         FeaturesConfiguration? features = builder.Configuration.GetSection("Features").Get<FeaturesConfiguration>();
-        if (features?.PublishSubscribe.EventBus == EventBusType.Dapr)
+        if (features!.PublishSubscribe.EventBus == EventBusType.Dapr)
         {
             builder.AddDaprEventBus()
-                .AddSubscription<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>()
+                .AddEventBusSubscriptions(features.Workflow.Enabled)
                 .ConfigureJsonOptions(options => options.TypeInfoResolverChain.Add(IntegrationEventContext.Default));
         }
         else
         {
             builder.AddRabbitMqEventBus("eventBus")
-                .AddSubscription<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>()
+                .AddEventBusSubscriptions(features.Workflow.Enabled)
                 .ConfigureJsonOptions(options => options.TypeInfoResolverChain.Add(IntegrationEventContext.Default));
         }
+    }
+
+    private static IEventBusBuilder AddEventBusSubscriptions(this IEventBusBuilder eventBus, bool workflowEnabled)
+    {
+        if (workflowEnabled is false)
+        {
+            eventBus.AddSubscription<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>();
+        }
+        
+        return eventBus;
     }
 }
 

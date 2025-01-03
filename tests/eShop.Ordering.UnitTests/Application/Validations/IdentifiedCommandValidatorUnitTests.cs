@@ -9,14 +9,14 @@ public class IdentifiedCommandValidatorUnitTests
     [Theory, AutoNSubstituteData]
     internal void valid(
         IdentifiedCommandValidator sut,
-        IdentifiedCommand<CreateOrderCommand, Result> command
+        IdentifiedCommand<CreateOrderCommand, Result<Guid>> command
     )
     {
         // Arrange
 
         // Act
 
-        TestValidationResult<IdentifiedCommand<CreateOrderCommand, Result>> result = sut.TestValidate(command);
+        TestValidationResult<IdentifiedCommand<CreateOrderCommand, Result<Guid>>> result = sut.TestValidate(command);
 
         //Assert
 
@@ -31,11 +31,11 @@ public class IdentifiedCommandValidatorUnitTests
     {
         // Arrange
 
-        IdentifiedCommand<CreateOrderCommand, Result> request = new(command, Guid.Empty);
+        IdentifiedCommand<CreateOrderCommand, Result<Guid>> request = new(command, Guid.Empty);
 
         // Act
 
-        TestValidationResult<IdentifiedCommand<CreateOrderCommand, Result>> result = sut.TestValidate(request);
+        TestValidationResult<IdentifiedCommand<CreateOrderCommand, Result<Guid>>> result = sut.TestValidate(request);
 
         //Assert
 
