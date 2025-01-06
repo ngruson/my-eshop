@@ -16,8 +16,8 @@
 <div class="tw-container tw-p-8">
     <div class="tw-mb-4">
         <FluentToolbar>
-            <FluentIcon Title="Add Customer" Value="@(new Icons.Regular.Size16.PersonAdd())" OnClick="AddCustomer" />
-            <FluentIcon Title="Delete Selected Customers" Value="@(new Icons.Regular.Size16.Delete())" OnClick="DeleteCustomers" />
+            <FluentIcon Title="Add Customer" Value="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16.PersonAdd())" OnClick="AddCustomer" />
+            <FluentIcon Title="Delete Selected Customers" Value="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16.Delete())" OnClick="DeleteCustomers" />
         </FluentToolbar>
     </div>
     <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
@@ -31,7 +31,7 @@
                           SelectFromEntireRow="false"
                           @bind-SelectedItems="@SelectedItems" />
             <TemplateColumn>
-                <FluentIcon Title="Customer Detail"  Value="@(new Icons.Regular.Size16.ArrowCircleRight())" OnClick="() => NavigateToCustomer(context.ObjectId)" />
+                <FluentIcon Title="Customer Detail" Value="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16.ArrowCircleRight())" OnClick="() => NavigateToCustomer(context.ObjectId)" />
             </TemplateColumn>
             <PropertyColumn Property="@(p => p.FirstName)" Sortable="true" />
             <PropertyColumn Property="@(p => p.LastName)" Sortable="true" />

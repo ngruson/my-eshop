@@ -21,7 +21,7 @@
                           SelectFromEntireRow="false"
                           @bind-SelectedItems="@SelectedItems" />
             <TemplateColumn>
-                <FluentIcon Title="Order Detail" Value="@(new Icons.Regular.Size16.ArrowCircleRight())" OnClick="() => NavigateToOrder(context.ObjectId)" />
+                <FluentIcon Title="Order Detail" Value="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16.ArrowCircleRight())" OnClick="() => NavigateToOrder(context.ObjectId)" />
             </TemplateColumn>
             <PropertyColumn Property="@(p => p.OrderNumber)" Sortable="true" />
             <PropertyColumn Property="@(p => p.OrderDate)" Format="yyyy-MM-dd" Sortable="true" />

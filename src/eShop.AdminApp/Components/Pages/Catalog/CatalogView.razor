@@ -15,8 +15,8 @@
         <div class="tw-container tw-p-8">
             <div class="tw-mb-4">
                 <FluentToolbar>
-                    <FluentIcon Title="Add Catalog Item" Value="@(new Icons.Regular.Size16.ShoppingBagAdd())" OnClick="AddCatalogItem" />
-                    <FluentIcon Title="Delete Selected Catalog Items" Value="@(new Icons.Regular.Size16.Delete())" OnClick="DeleteCatalogItems" />
+                    <FluentIcon Title="Add Catalog Item" Value="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16.ShoppingBagAdd())" OnClick="AddCatalogItem" />
+                    <FluentIcon Title="Delete Selected Catalog Items" Value="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16.Delete())" OnClick="DeleteCatalogItems" />
                 </FluentToolbar>
             </div>
             <div class="tw-border-b tw-border-b-solid tw-border-b-[#dfe3e8] tw-pb-4 tw-mb-4">
@@ -30,7 +30,7 @@
                           SelectFromEntireRow="false"
                           @bind-SelectedItems="@SelectedItems" />
                     <TemplateColumn>
-                        <FluentIcon Title="Catalog Item Detail"  Value="@(new Icons.Regular.Size16.ArrowCircleRight())" OnClick="() => NavigateToCatalogItem(context.ObjectId)" />
+                        <FluentIcon Title="Catalog Item Detail" Value="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16.ArrowCircleRight())" OnClick="() => NavigateToCatalogItem(context.ObjectId)" />
                     </TemplateColumn>
                     <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
                     <PropertyColumn Property="@(p => p.Price)" Sortable="true" />
