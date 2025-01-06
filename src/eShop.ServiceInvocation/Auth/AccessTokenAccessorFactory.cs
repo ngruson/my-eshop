@@ -3,7 +3,7 @@ using eShop.ServiceInvocation.Options;
 using eShop.Shared.DI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using static IdentityModel.OidcConstants;
+using static Duende.IdentityModel.OidcConstants;
 
 namespace eShop.ServiceInvocation.Auth;
 
