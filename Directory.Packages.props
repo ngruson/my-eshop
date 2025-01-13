@@ -70,7 +70,7 @@
     <!-- Xabaril packages -->
     <PackageVersion Include="AspNetCore.HealthChecks.Uris" Version="8.0.1" />
     <!-- AI -->
-    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.32.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.33.0" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.25.0-alpha" />
     <!-- Open Telemetry -->
     <PackageVersion Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.4.0-beta.2" />
